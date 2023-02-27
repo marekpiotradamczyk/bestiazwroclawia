@@ -8,6 +8,8 @@ import chess
 @dataclass
 class SearchPositionCommand(object):
     position : chess.Board
+    t : int = 0
+    infinite : bool = True
 
 @dataclass
 class StopSearchCommand(object):
