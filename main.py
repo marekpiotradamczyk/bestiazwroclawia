@@ -1,4 +1,4 @@
-#!/path/to/good/interpreter
+#!path/to/interpreter
 # ******************************************************
 # Made by Krzysztof Łukasiewicz
 # 26.02.2023 23:20
