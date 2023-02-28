@@ -1,6 +1,6 @@
 # Bestia pod grunwaldem
 Chess engine template made by Krzysztof Łukasiewicz \
-Last update: 28.02.2023 22:20
+Last update: 28.02.2023 22:50
 
 Implements partially standard UCI:
 https://gist.github.com/aliostad/f4470274f39d29b788c1b09519e67372
