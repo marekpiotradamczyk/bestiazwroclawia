@@ -27,3 +27,24 @@ Click new and set the name and the path to the executable. \
 ![Engine Details window](./images/engine_settings.png) \
 Eventually click "Start this engine now!". \
 The engine should be loaded when you start a new game.
+
+# How to run on Windows
+
+Install Windows Subsystem for Linux \
+https://learn.microsoft.com/en-us/windows/wsl/install \
+and follow the steps for Linux
+
+# Quick architecture overview
+
+![Process architecture](./images/process_diagram.png) 
+
+## UCI part
+Input parser process doesn't understand UCI protocol, but it can interpret strings and send commands to UCI Protocol process. \
+Output parser process also doesn't understand UCI protocol, but it can interpret UCI Protocol commands into respective strings. \
+UCI Protocol process manages communication via Input parser process and Output parser process. Inteface between those processes is defined in https://github.com/marekpiotradamczyk/bestiapodgrunwaldem/blob/master/parser_commands.py
+
+## Engine part
+
+Engine process is the middleman between UCI Protocol process and Search process. \
+Interface Engine <-> UCI is defined in https://github.com/marekpiotradamczyk/bestiapodgrunwaldem/blob/master/uci_commands.py \
+Interface Engine <-> Search is defined in https://github.com/marekpiotradamczyk/bestiapodgrunwaldem/blob/master/search_commands.py
