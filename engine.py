@@ -21,7 +21,6 @@ class Engine(object):
         self.search_process = None
         self.searching = False
         self.position = None
-        self.time_manager = TimeManager()
         logging.info("Engine ready!")
 
     def engine_loop(self):
@@ -48,9 +47,10 @@ class Engine(object):
                     match msg:
                         case SC.BestMoveCommand():
                             self._handle_bestmove_command(msg)
+                            self.searching = False
                 
-                if self.searching and self.time_manager.out_of_time():
-                    self._stop_search()
+                # if self.searching and self.time_manager.out_of_time():
+                #     self._stop_search()
         self._handle_exit()
 
     def _handle_exit(self):
@@ -70,24 +70,30 @@ class Engine(object):
         self.position = board
     
     def _handle_startsearch_command(self, command : UC.StartSearchCommand):
-        logging.critical(command)
+        c = SC.SearchPositionCommand(self.position)
         self.searching = True
         if command.infinite:
-            self.time_manager.set_timer(0, True)
+            c.t = 0
+            c.infinite = True
         elif command.movetime != None:
-            self.time_manager.set_timer(command.movetime, False)
+            c.t = command.movetime
+            c.infinite = False
         else:
             if self.position.turn == chess.WHITE:
                 if command.wtime != None:
-                    self.time_manager.set_timer(command.wtime//60, False)
+                    c.t = command.wtime//60
+                    c.infinite = False
                 else:
-                    self.time_manager.set_timer(0, True)
+                    c.t = 0
+                    c.infinite = True
             else:
                 if command.btime != None:
-                    self.time_manager.set_timer(command.btime//60, False)
+                    c.t = command.btime//60
+                    c.infinite = False
                 else:
-                    self.time_manager.set_timer(0, True)
-        self.search_pipe.send(SC.SearchPositionCommand(self.position))
+                    c.t = 0
+                    c.infinite = True
+        self.search_pipe.send(c)
 
     def _stop_search(self):
         self.searching = False

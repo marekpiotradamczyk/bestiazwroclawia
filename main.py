@@ -1,6 +1,7 @@
+#!/path/to/good/interpreter
 # ******************************************************
 # Made by Krzysztof Łukasiewicz
-# 23.02.2023 03:55
+# 26.02.2023 23:20
 # ******************************************************
 from engine import Engine
 import logging
@@ -9,6 +10,6 @@ import logging
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s; %(process)d-%(levelname)s: %(message)s')
+    logging.basicConfig(level=logging.DEBUG, filename="log.txt", filemode="w",format='%(asctime)s; %(process)d-%(levelname)s: %(message)s')
     my_engine = Engine()
     my_engine.engine_loop()
