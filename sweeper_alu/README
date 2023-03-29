@@ -1,0 +1,10 @@
+Kompilację silnika wykonuje się poleceniem:
+
+make sweeper
+
+Wynikowy plik wykonywalny nazywa się main.
+
+Uruchomienie testów poprawnościowych i wydajnościowych można wykonać poleceniami:
+
+make test
+./test
