@@ -1,3 +1,6 @@
+import os
+import pandas as pd
+import numpy as np
 import chess
 
 
@@ -48,3 +51,29 @@ def get_columns_names():
         columns.append(fix_names_func[player]("K"))
         columns.append(fix_names_func[player]("Q"))
     return columns
+
+
+def _read_and_merge_files(files):
+    """Read and merge multiple CSV files containing chess board positions and scores and remove duplicates."""
+    columns = get_columns_names()
+    types_dict = {col: np.bool for col in columns}
+    frames = []
+    for filename in files:
+        frames.append(pd.read_csv(filename, dtype=types_dict))
+
+    return pd.concat(frames).dropna().drop_duplicates(subset=columns).reset_index()
+
+
+def read_database(directory="./database"):
+    """Read from given directory all CSV files containing chess board positions and scores and remove duplicates."""
+
+    def file_matcher(prefix):
+        return lambda file: file.startswith(prefix) and file.endswith(".csv")
+
+    def full_name(file):
+        return f"{directory}/{file}"
+
+    white_files = map(full_name, filter(file_matcher("white_"), os.listdir(directory)))
+    black_files = map(full_name, filter(file_matcher("black_"), os.listdir(directory)))
+
+    return _read_and_merge_files(white_files), _read_and_merge_files(black_files)
