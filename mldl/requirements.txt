@@ -1,0 +1,5 @@
+argparse
+pandas
+numpy
+python-chess
+tqdm
