@@ -1,0 +1,11 @@
+# vscode
+.vscode/
+
+# lichess database in pgn format
+*.pgn
+
+# pychache
+**/__pycache__/
+
+# stockfish binary
+mldl/stockfish_*
