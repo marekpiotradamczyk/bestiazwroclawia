@@ -15,13 +15,24 @@ from utils import encode_board, get_columns_names
 
 
 _DATABASE_DIR = "./database"  # Directory for generated files
-_PART_SIZE = 1  # Number of games to process in each part
+_PART_SIZE = 100  # Number of games to process in each part
 
 _MATE_SCORE = 1000000  # Score for a mate
 _MAX_TIME = 1.0  # Maximum time (in seconds) to use for engine analysis
 _MIN_DEPTH = 18  # Minimum depth for engine analysis
 _TIME_LIMIT = chess.engine.Limit(time=_MAX_TIME)  # Time limit for engine analysis
 _DEPTH_LIMIT = chess.engine.Limit(depth=_MIN_DEPTH)  # Depth limit for engine analysis
+
+_SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))  # Path to current script
+_DEFAULT_DATABASE_PATH = f"{_SCRIPT_PATH}/database"  # Default path to database
+_DEFAULT_STOCKFISH_PATH = f"{_SCRIPT_PATH}/stockfish_15.1_linux_x64_avx2/stockfish-ubuntu-20.04-x86-64-avx2"  # Default path to stockfish
+
+_DEFAULT_DATABASE_REL_PATH = os.path.relpath(
+    _DEFAULT_DATABASE_PATH, os.getcwd()
+)  # Default relative path to database
+_DEFAULT_STOCKFISH_REL_PATH = os.path.relpath(
+    _DEFAULT_STOCKFISH_PATH, os.getcwd()
+)  # Default relative path to stockfish
 
 
 def board_score(board, engine):
@@ -114,26 +125,24 @@ if __name__ == "__main__":
         "-s",
         "--stockfish",
         type=str,
-        default="stockfish_15.1_linux_x64_avx2/stockfish-ubuntu-20.04-x86-64-avx2",
-        help=f"Path to stockfish binary. Default is 'stockfish_15.1_linux_x64_avx2/stockfish-ubuntu-20.04-x86-64-avx2'",
+        default=_DEFAULT_STOCKFISH_REL_PATH,
+        help=f"Path to stockfish binary. Default is '{_DEFAULT_STOCKFISH_REL_PATH}'",
     )
     parser.add_argument(
         "-d",
         "--database",
         type=str,
-        default=f"{_DATABASE_DIR}/lichess_db.pgn",
-        help=f"Path to lichess database in pgn format. Default is '{_DATABASE_DIR}/lichess_db.pgn'",
+        default=f"{_DEFAULT_DATABASE_REL_PATH}/lichess_db.pgn",
+        help=f"Path to lichess database in pgn format. Default is '{_DEFAULT_DATABASE_REL_PATH}/lichess_db.pgn'",
     )
     parser.add_argument(
         "-o",
         "--output",
         type=str,
-        default=_DATABASE_DIR,
-        help=f"Directory to save generated CSV files. Default is '{_DATABASE_DIR}'",
+        default=_DEFAULT_DATABASE_REL_PATH,
+        help=f"Directory to save generated CSV files. Default is '{_DEFAULT_DATABASE_REL_PATH}'",
     )
     args = parser.parse_args()
-
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     # check if required files and directories exist
     _check_if_file_exists(args.stockfish)
@@ -145,6 +154,7 @@ if __name__ == "__main__":
     engine = chess.engine.SimpleEngine.popen_uci(args.stockfish)
     pgn = open(args.database)
 
+    # ignore games which already exist in database
     games_to_drop = _largest_number_of_available_game(args.output)
     for _ in range(games_to_drop):
         chess.pgn.read_game(pgn)
