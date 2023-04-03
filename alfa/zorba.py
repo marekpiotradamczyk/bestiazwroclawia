@@ -39,7 +39,13 @@ def hash(board, prevHash, move, turn):
     hash = prevHash ^ zobristNumbers[0] ^ zobristNumbers[1]
     # Ponieważ w szachach poza standardowymi ruchami są jeszcze roszady
     # i bicia w przelocie, musimy je wyifować, obawiam się
-    if board.is_castling(move):
+    if move.promotion is not None:
+        fromSquare = move.from_square
+        toSquare = move.to_square
+        newPiece = move.promotion
+        hash ^= zobristNumbers[(1, pieceColor, fromSquare)]
+        hash ^= zobristNumbers[(newPiece, pieceColor, toSquare)]
+    elif board.is_castling(move):
         king = 6
         rook = 4
         # Roszady możemy, nieco brzydko, zahardkodować, ponieważ król i wieża
@@ -57,24 +63,16 @@ def hash(board, prevHash, move, turn):
         hash ^= zobristNumbers[(king, pieceColor, toSquare1)]
         hash ^= zobristNumbers[(rook, pieceColor, fromSquare2)]
         hash ^= zobristNumbers[(rook, pieceColor, toSquare2)]
-        return hash
     elif board.is_en_passant(move):
         fromSquare = move.from_square
         toSquare = move.to_square
         if turn:
-            if toSquare - fromSquare == 7:
-                beatenPieceSquare = fromSquare - 1
-            else:
-                beatenPieceSquare = fromSquare + 1
+            beatenPieceSquare = toSquare - 8
         else:
-            if fromSquare - toSquare == 7:
-                beatenPieceSquare = fromSquare + 1
-            else:
-                beatenPieceSquare = fromSquare - 1
+            beatenPieceSquare = toSquare + 8
         hash ^= zobristNumbers[(1, pieceColor, fromSquare)]
         hash ^= zobristNumbers[(1, pieceColor, toSquare)]
         hash ^= zobristNumbers[(1, 1 - pieceColor, beatenPieceSquare)]
-        return hash
     else:
         fromSquare = move.from_square
         pieceType = board.piece_type_at(fromSquare)
@@ -85,4 +83,4 @@ def hash(board, prevHash, move, turn):
         hash ^= zobristNumbers[(pieceType, pieceColor, toSquare)]
         if beatenPieceType is not None:
             hash ^= zobristNumbers[(beatenPieceType, beatenPieceColor, toSquare)]
-        return hash
+    return hash
