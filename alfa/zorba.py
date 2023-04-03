@@ -57,6 +57,7 @@ def hash(board, prevHash, move, turn):
         hash ^= zobristNumbers[(king, pieceColor, toSquare1)]
         hash ^= zobristNumbers[(rook, pieceColor, fromSquare2)]
         hash ^= zobristNumbers[(rook, pieceColor, toSquare2)]
+        return hash
     elif board.is_en_passant(move):
         fromSquare = move.from_square
         toSquare = move.to_square
@@ -73,6 +74,7 @@ def hash(board, prevHash, move, turn):
         hash ^= zobristNumbers[(1, pieceColor, fromSquare)]
         hash ^= zobristNumbers[(1, pieceColor, toSquare)]
         hash ^= zobristNumbers[(1, 1 - pieceColor, beatenPieceSquare)]
+        return hash
     else:
         fromSquare = move.from_square
         pieceType = board.piece_type_at(fromSquare)
