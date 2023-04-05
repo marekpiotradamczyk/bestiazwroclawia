@@ -2,6 +2,7 @@
 
 import random
 import chess
+import board_interface
 
 zobristNumbers = {}
 
@@ -23,9 +24,9 @@ def hashGen():
 def hashInit(board):
     hashGen()
     hash = 0
-    for square in board.piece_map():
-        piece = board.piece_type_at(square)
-        color = [1, 0][board.color_at(square)]
+    for square in board_interface.piece_map(board):
+        piece = board_interface.piece_at(board, square)
+        color = [1, 0][board_interface.color_at(board, square)]
         hash ^= zobristNumbers[(piece, color, square)]
     hash ^= zobristNumbers[0]
     return hash
@@ -41,19 +42,19 @@ def hash(board, prevHash, move, turn):
     hash = prevHash ^ zobristNumbers[0] ^ zobristNumbers[1]
     # Ponieważ w szachach poza standardowymi ruchami są jeszcze roszady
     # i bicia w przelocie, musimy je wyifować, obawiam się
-    if move.promotion is not None:
-        fromSquare = move.from_square
-        toSquare = move.to_square
-        newPiece = move.promotion
+    if board_interface.promotion(move) is not None:
+        fromSquare = board_interface.from_square(move)
+        toSquare = board_interface.to_square(move)
+        newPiece = board_interface.promotion(move)
         hash ^= zobristNumbers[(1, pieceColor, fromSquare)]
         hash ^= zobristNumbers[(newPiece, pieceColor, toSquare)]
-    elif board.is_castling(move):
+    elif board_interface.is_castling(board, move):
         king = 6
         rook = 4
         # Roszady możemy, nieco brzydko, zahardkodować, ponieważ król i wieża
         # muszą być w pozycjach wyjściowych i iść na konkretne pozycje.
         fromSquare1 = 4 + pieceColor * 56
-        if board.is_kingside_castling(move):
+        if board_interface.is_kingside_castling(board, move):
             fromSquare2 = 7 + pieceColor * 56
             toSquare1 = 6 + pieceColor * 56
             toSquare2 = 5 + pieceColor * 56
@@ -65,9 +66,9 @@ def hash(board, prevHash, move, turn):
         hash ^= zobristNumbers[(king, pieceColor, toSquare1)]
         hash ^= zobristNumbers[(rook, pieceColor, fromSquare2)]
         hash ^= zobristNumbers[(rook, pieceColor, toSquare2)]
-    elif board.is_en_passant(move):
-        fromSquare = move.from_square
-        toSquare = move.to_square
+    elif board_interface.is_en_passant(board, move):
+        fromSquare = board_interface.from_square(move)
+        toSquare = board_interface.to_square(move)
         if turn:
             beatenPieceSquare = toSquare - 8
         else:
@@ -76,10 +77,10 @@ def hash(board, prevHash, move, turn):
         hash ^= zobristNumbers[(1, pieceColor, toSquare)]
         hash ^= zobristNumbers[(1, 1 - pieceColor, beatenPieceSquare)]
     else:
-        fromSquare = move.from_square
-        pieceType = board.piece_type_at(fromSquare)
-        toSquare = move.to_square
-        beatenPieceType = board.piece_type_at(toSquare)
+        fromSquare = board_interface.from_square(move)
+        pieceType = board_interface.piece_at(board, fromSquare)
+        toSquare = board_interface.to_square(move)
+        beatenPieceType = board_interface.piece_at(board, toSquare)
         beatenPieceColor = 1 - pieceColor
         hash ^= zobristNumbers[(pieceType, pieceColor, fromSquare)]
         hash ^= zobristNumbers[(pieceType, pieceColor, toSquare)]
