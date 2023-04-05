@@ -5,13 +5,15 @@ import chess
 
 zobristNumbers = {}
 
+
 # Generator
 def hashGen():
-    for c in range(2): # Dla każdego koloru
-        for p in range(1, 7): # Dla każdego rodzaju bierki
-            for s in range(64): # Dla każdego pola szachownicy
+    for c in range(2):  # Dla każdego koloru
+        for p in range(1, 7):  # Dla każdego rodzaju bierki
+            for s in range(64):  # Dla każdego pola szachownicy
                 number = random.randint(1, 2**64)
-                zobristNumbers[(p, c, s)] = number # Tworzymy liczbę dla hasha zobrista
+                # Tworzymy liczbę dla hasha zobrista
+                zobristNumbers[(p, c, s)] = number
     zobristNumbers[0] = random.randint(1, 2**64)
     zobristNumbers[1] = random.randint(1, 2**64)
 
