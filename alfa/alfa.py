@@ -30,17 +30,27 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
                     beta = v
             if res[2] == "PV":  # Jeżeli wierzchołek jest typu "PV" to z zadaną dokładnością wyznazczyliśmy już BSF i możemy zwrócić
                 return v
-    if depth == 0:
+
+    if depth <= 0:
+        # Poniższą linijkę należy odkomentować a jeszcze poniższą wciąć, żeby
+        # włączyć pogłębianie do końca wymian.
+        # if not board_interface.has_captures(board):
         return eval.eval(pos)
+
     BestTempMove = ""
     BestSoFar = -infinity
     moves = list(board_interface.get_moves(pos))  # TO DO: W tym miejscu kolejka priorytetowa
+
+    if depth <= 0:
+        # print(depth)
+        moves = board_interface.filter_only_captures(board, moves)
     if hash in HASHES:  # Najpierw sprawdzamy wierdzchołek, który wcześniej uznaliśmy za najlepszy
         res = HASHES[hash]
         move = res[3]
         if move in moves:
             moves.remove(move)
             moves.insert(0, move)
+
     for move in moves:
         # Wyznaczamy hash dla danej pozycji i dla danego ruchu
         newHash = zorba.hash(pos, hash, move, pos.turn)
@@ -75,4 +85,8 @@ def Search(board, depth):
     HASHES = {}
     posHash = zorba.hashInit(board)
     for i in range(1, depth + 1):
-        print(AlphaBeta(board, i, -infinity, infinity, posHash, i))
+        print(AlphaBeta(board, i, -infinity, infinity, posHash, i), BestMove)
+
+
+board = chess.Board()
+Search(board, 10)

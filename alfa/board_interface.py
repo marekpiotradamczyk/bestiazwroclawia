@@ -59,3 +59,22 @@ def is_kingside_castling(board, move):
 
 def is_en_passant(board, move):
     return board.is_en_passant(move)
+
+
+def is_capture(board, m):
+    return board.is_capture(m)
+
+
+def has_captures(board):
+    for m in list(board.legal_moves):
+        if is_capture(board, m):
+            return True
+    return False
+
+
+def filter_only_captures(board, moves):
+    res = []
+    for m in moves:
+        if is_capture(board, m):
+            res.append(m)
+    return res
