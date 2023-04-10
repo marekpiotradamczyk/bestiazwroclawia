@@ -157,7 +157,7 @@ if __name__ == "__main__":
     # ignore games which already exist in database
     games_to_drop = _largest_number_of_available_game(args.output)
     for _ in range(games_to_drop):
-        chess.pgn.read_game(pgn)
+        chess.pgn.skip_game(pgn)
 
     start = games_to_drop + 1
     for part in range(args.parts):
