@@ -4,7 +4,7 @@ import chess
 import eval
 import board_interface
 import zorba
-#import time
+# import time
 from queue import PriorityQueue
 
 infinity = int(1e6)
@@ -19,7 +19,7 @@ Branches_Checkd = 0  # Aby sprawdzić czy optymalizacje ucina głałęzie zlicza
 ply_counter = 0
 
 
-def PriorityList(pos, hash,depth): # TO DO: W tym miejscu kolejka priorytetowa
+def PriorityList(pos, hash, depth):  # TO DO: W tym miejscu kolejka priorytetowa
     global killer_list
     global ply_counter_counter
     moves = list(board_interface.get_moves(pos))
@@ -27,17 +27,18 @@ def PriorityList(pos, hash,depth): # TO DO: W tym miejscu kolejka priorytetowa
     if hash in HASHES:  # Najpierw sprawdzamy wierzchołek, który wcześniej uznaliśmy za najlepszy
         res = HASHES[hash]
         move = res[3]
-    moves = board_interface.filter(pos, moves, move, killer_list) #only_captures - Przeszukanie w miejscu
+    moves = board_interface.filter(pos, moves, move, killer_list)  # only_captures - Przeszukanie w miejscu
     # killer moves
-    #for move in killer_list[ply_counter-depth]:
-     #  moves.remove(move)
-      # moves.insert(0, move)
-        
+    # for move in killer_list[ply_counter-depth]:
+    # moves.remove(move)
+    # moves.insert(0, move)
+
     # 1 HashMove
     # 2 KillerMoves
     # 3 Captures
     # 4 Rest
     return moves
+
 
 # Wstępna wersja alpha bety.
 def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
@@ -68,11 +69,11 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
     if depth <= 0:
         # Poniższą linijkę należy odkomentować a jeszcze poniższą wciąć, żeby
         # włączyć pogłębianie do końca wymian.
-        #if not board_interface.has_captures(pos): #Wszystkie bicia czy tylko na polu którym było wcześniej
+        # if not board_interface.has_captures(pos): #Wszystkie bicia czy tylko na polu którym było wcześniej
         return eval.eval(pos)
-        #moves = board_interface.filter_only_captures(pos, list(board_interface.get_moves(pos)))
+        # moves = board_interface.filter_only_captures(pos, list(board_interface.get_moves(pos)))
     else:
-        moves = PriorityList(pos,hash, depth)
+        moves = PriorityList(pos, hash, depth)
     BestTempMove = ""
     BestSoFar = -infinity
     while not moves.empty():
@@ -81,7 +82,7 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
         newHash = zorba.hash(pos, hash, move, pos.turn)
         pos = board_interface.make_move(pos, move)
         # Rekurencyjnie wchodzimy glebiej w pozycje, zmiana gracza ktory wykonuje ruch
-        val = -AlphaBeta(pos, depth-1, -beta, -alpha, newHash, StartDepth)
+        val = -AlphaBeta(pos, depth - 1, -beta, -alpha, newHash, StartDepth)
         pos = board_interface.reverse_move(pos)
         # Znaleziona pozycja jest lepsza niz najlepsza do tej pory
         if val > BestSoFar:
@@ -92,8 +93,8 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
             BestTempMove = move
         if BestSoFar >= beta:
             if not board_interface.is_capture(pos, move) and move not in killer_list:
-                killer_list[ply_counter-depth].insert(0, move)
-                killer_list[ply_counter-depth] = killer_list[ply_counter-depth][1:]
+                killer_list[ply_counter - depth].insert(0, move)
+                killer_list[ply_counter - depth] = killer_list[ply_counter - depth][1:]
             # Znaleziony ruch juz jest za dobry dla przeciwnika
             # Nie interesuje nas czy przeciwnik zagra potencjalnie jeszcze lepszy ruch, przerywamy - Typ CUT
             HASHES[hash] = (depth, BestSoFar, "CUT", BestTempMove)
@@ -108,17 +109,19 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
         HASHES[hash] = (depth, BestSoFar,  "PV", BestTempMove)
     return BestSoFar
 
+
 def Search(board, depth):
     global ply_counter
     # Iterative Deepening, domyslnie to powinno byc wolane przez main
     HASHES = {}
     posHash = zorba.hashInit(board)
-    #ts=time.time()
+    # ts=time.time()
     for i in range(1, depth + 1):
         ply_counter = i
-        print(AlphaBeta(board, i, -infinity, infinity, posHash, i), BestMove)
-        #print(time.time()-ts)
+        print(AlphaBeta(board, i, -infinity, infinity, posHash, i), BestMove, i)
+        # print(time.time() - ts)
+
 
 board = chess.Board()
-Search(board, 5)
-#print(Branches_Checkd)
+Search(board, 9)
+# print(Branches_Checkd)
