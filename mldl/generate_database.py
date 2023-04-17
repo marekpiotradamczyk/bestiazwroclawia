@@ -147,17 +147,27 @@ if __name__ == "__main__":
         default=_DEFAULT_DATABASE_REL_PATH,
         help=f"Directory to save generated CSV files. Default is '{_DEFAULT_DATABASE_REL_PATH}'",
     )
+    parser.add_argument(
+        "--stdin",
+        default=False,
+        action="store_true",
+        help="Read database from standard input. This option overrides -d flag.",
+    )
     args = parser.parse_args()
 
     # check if required files and directories exist
     _check_if_file_exists(args.stockfish)
-    _check_if_file_exists(args.database)
+    if not args.stdin:
+        _check_if_file_exists(args.database)
     if not os.path.exists(args.output):
         os.mkdir(args.output)
 
     # run Stockfish and open file with games
     engine = chess.engine.SimpleEngine.popen_uci(args.stockfish)
-    pgn = open(args.database)
+    if args.stdin:
+        pgn = sys.stdin
+    else:
+        pgn = open(args.database)
 
     # ignore games which already exist in database
     games_to_drop = _largest_number_of_available_game(args.output)
