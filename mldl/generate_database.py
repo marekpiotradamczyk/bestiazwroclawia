@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import time
 
 import chess
 import chess.engine
@@ -35,6 +36,23 @@ _DEFAULT_STOCKFISH_REL_PATH = os.path.relpath(
 )  # Default relative path to stockfish
 
 
+games_count = 0
+positions_count = 0
+
+
+def _print_statistics(seconds):
+    global games_count
+    global positions_count
+    print()
+    print("===STATS===")
+    print(f"total time:      {seconds:.2f}s")
+    print(f"total positions: {positions_count}")
+    print(f"total games:     {games_count}")
+    print(f"positions/s:     {positions_count / seconds:.2f}")
+    print(f"games/s:         {games_count / seconds:.2f}")
+    print()
+
+
 def board_score_and_best_move(board, engine):
     """Calculate the score and best move for a given chess board using given engine.
 
@@ -64,16 +82,19 @@ def _largest_number_of_available_game(directory):
     return largest_number
 
 
-def _generate_database(pgn, engine, start, size, directory):
+def _generate_database(pgn, engine, start_pos, size, directory):
     """Generate a part of the database by processing a set of games from given PGN file.
 
     Args:
         pgn: An open file object representing the PGN file to process.
         engine: A chess.engine.SimpleEngine object representing the Stockfish engine.
-        start: The number of the first game to process.
+        start_pos: The number of the first game to process.
         size: The number of games to process.
         directory: The directory path to save generated CSV files.
     """
+    global games_count
+    global positions_count
+
     white = []
     black = []
     for i in trange(size):
@@ -88,23 +109,25 @@ def _generate_database(pgn, engine, start, size, directory):
             row = encode_board(board)
             row.append(score)
             row.append(best_move)
-            row.append(start + i)
+            row.append(start_pos + i)
             if board.turn == chess.WHITE:
                 white.append(row)
             else:
                 black.append(row)
+            positions_count += 1
+        games_count += 1
 
     board_columns = get_columns_names()
     all_columns = board_columns + ["score", "best_move", "game_id"]
 
     if len(white) > 0:
-        white_filename = f"{directory}/white_{start}-{start+i}.csv"
+        white_filename = f"{directory}/white_{start_pos}-{start_pos+i}.csv"
         df = pd.DataFrame(white, columns=all_columns)
         df[board_columns] = df[board_columns].astype(int)
         df.to_csv(white_filename, header=True, index=False)
 
     if len(black) > 0:
-        black_filename = f"{directory}/black_{start}-{start+i}.csv"
+        black_filename = f"{directory}/black_{start_pos}-{start_pos+i}.csv"
         df = pd.DataFrame(black, columns=all_columns)
         df[board_columns] = df[board_columns].astype(int)
         df.to_csv(black_filename, header=True, index=False)
@@ -174,12 +197,17 @@ if __name__ == "__main__":
     for _ in range(games_to_drop):
         chess.pgn.skip_game(pgn)
 
-    start = games_to_drop + 1
+    start_time = time.time()
+
+    start_pos = games_to_drop + 1
     for part in range(args.parts):
         print(f"Generating part {part + 1}/{args.parts}")
-        _generate_database(pgn, engine, start, _PART_SIZE, args.output)
-        start += _PART_SIZE
+        _generate_database(pgn, engine, start_pos, _PART_SIZE, args.output)
+        start_pos += _PART_SIZE
 
     pgn.close()
     engine.close()
+
+    total_time = time.time() - start_time
+    _print_statistics(total_time)
     print("DONE!")
