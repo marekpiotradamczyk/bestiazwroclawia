@@ -35,8 +35,8 @@ _DEFAULT_STOCKFISH_REL_PATH = os.path.relpath(
 )  # Default relative path to stockfish
 
 
-def board_score(board, engine):
-    """Calculate the score for a given chess board using given engine.
+def board_score_and_best_move(board, engine):
+    """Calculate the score and best move for a given chess board using given engine.
 
     Args:
         board: A chess.Board object representing the current board position.
@@ -45,7 +45,10 @@ def board_score(board, engine):
     info = engine.analyse(board, _TIME_LIMIT)
     if info["depth"] < _MIN_DEPTH and not info["score"].is_mate():
         info = engine.analyse(board, _DEPTH_LIMIT)
-    return info["score"].relative.score(mate_score=_MATE_SCORE)
+    pv = info.get("pv")
+    best_move = pv[0].uci() if pv is not None and len(pv) > 0 else ""
+    score = info["score"].relative.score(mate_score=_MATE_SCORE)
+    return score, best_move
 
 
 def _largest_number_of_available_game(directory):
@@ -81,28 +84,30 @@ def _generate_database(pgn, engine, start, size, directory):
         board = game.board()
         for move in game.mainline_moves():
             board.push(move)
-            score = board_score(board, engine)
+            score, best_move = board_score_and_best_move(board, engine)
             row = encode_board(board)
             row.append(score)
+            row.append(best_move)
+            row.append(start + i)
             if board.turn == chess.WHITE:
                 white.append(row)
             else:
                 black.append(row)
 
-    columns = get_columns_names()
-    columns.append("score")
+    board_columns = get_columns_names()
+    all_columns = board_columns + ["score", "best_move", "game_id"]
 
     if len(white) > 0:
         white_filename = f"{directory}/white_{start}-{start+i}.csv"
-        pd.DataFrame(white, columns=columns, dtype=int).to_csv(
-            white_filename, header=True, index=False
-        )
+        df = pd.DataFrame(white, columns=all_columns)
+        df[board_columns] = df[board_columns].astype(int)
+        df.to_csv(white_filename, header=True, index=False)
 
     if len(black) > 0:
         black_filename = f"{directory}/black_{start}-{start+i}.csv"
-        pd.DataFrame(black, columns=columns, dtype=int).to_csv(
-            black_filename, header=True, index=False
-        )
+        df = pd.DataFrame(black, columns=all_columns)
+        df[board_columns] = df[board_columns].astype(int)
+        df.to_csv(black_filename, header=True, index=False)
 
 
 def _check_if_file_exists(filename):

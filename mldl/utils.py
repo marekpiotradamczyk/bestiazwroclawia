@@ -55,13 +55,20 @@ def get_columns_names():
 
 def _read_and_merge_files(files):
     """Read and merge multiple CSV files containing chess board positions and scores and remove duplicates."""
-    columns = get_columns_names()
-    types_dict = {col: np.bool for col in columns}
+    board_columns = get_columns_names()
+    columns_without_move = board_columns + ["score", "game_id"]
+    types_dict = {col: np.bool for col in board_columns}
     frames = []
     for filename in files:
         frames.append(pd.read_csv(filename, dtype=types_dict))
 
-    return pd.concat(frames).dropna().drop_duplicates(subset=columns).reset_index()
+    return (
+        pd.concat(frames)
+        .dropna(subset=columns_without_move)    # NaNs are possible in 'best_move' column (in checkmate positions)
+        .drop_duplicates(subset=board_columns)
+        .fillna("")     # fill NaN from 'best_move' with empty string
+        .reset_index()
+    )
 
 
 def read_database(directory="./database"):
