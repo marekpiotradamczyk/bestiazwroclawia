@@ -57,7 +57,7 @@ def _read_and_merge_files(files):
     """Read and merge multiple CSV files containing chess board positions and scores and remove duplicates."""
     board_columns = get_columns_names()
     columns_without_move = board_columns + ["score", "game_id"]
-    types_dict = {col: np.bool for col in board_columns}
+    types_dict = {col: bool for col in board_columns}
     frames = []
     for filename in files:
         frames.append(pd.read_csv(filename, dtype=types_dict))
