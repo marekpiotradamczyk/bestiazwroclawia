@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 
 import chess
+import random
 
 values = [0, 1, 3, 3, 5, 9, 0]
+infinity = int(1e6)
+CHECKMATE = infinity - 1
 
 
 def piecesVal(board, side):
@@ -96,13 +99,13 @@ tabs = {
 
 def endgame(board, piecesSum):
     return piecesSum < 22
-    
+
 
 def activity(board, piecesSum):
     res = 0
     for p in range(1, 6):
-        pieceW = list(board.pieces(p, True))
-        pieceB = list(board.pieces(p, False))
+        pieceW = board.pieces(p, True)
+        pieceB = board.pieces(p, False)
         for s in pieceW:
             x = s // 8
             y = s % 8
@@ -111,8 +114,8 @@ def activity(board, piecesSum):
             x = 7 - (s // 8)
             y = s % 8
             res -= tabs[p][x][y]
-    kingW = list(board.pieces(6, True))[0]
-    kingB = list(board.pieces(6, False))[0]
+    kingW = board.pieces(6, True).pop()
+    kingB = board.pieces(6, False).pop()
     if not endgame(board, piecesSum):
         usedTab = 6
     else:
@@ -126,8 +129,12 @@ def activity(board, piecesSum):
     return res
 
 
-
 def eval(board):
+    # return (random.random() - 0.5) * 60
+    if board.is_checkmate():
+        return CHECKMATE
+    if board.is_fifty_moves() or board.is_fivefold_repetition() or board.is_stalemate() or board.is_insufficient_material():
+        return 0
     whiteVal = piecesVal(board, True)
     blackVal = piecesVal(board, False)
     res = whiteVal - blackVal + (activity(board, whiteVal + blackVal) / 1000)
