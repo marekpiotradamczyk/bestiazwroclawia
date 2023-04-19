@@ -88,6 +88,22 @@ def filter_only_not_captures(board, moves):
     return res
 
 
+def has_queenside_castling_rights(board):
+    board.has_queenside_castling_rights(board.turn)
+
+
+def has_kingside_castling_rights(board):
+    board.has_kingside_castling_rights(board.turn)
+
+
+def list_en_passant(board):
+    res = []
+    for m in get_moves(board):
+        if is_en_passant(board, m):
+            res.append(m)
+    return res
+
+
 # MVV_LVA[victim][attacker]
 MVV_LVA = [
     [0, 0, 0, 0, 0, 0, 0],        # victim K, attacker K, Q, R, B, N, P, None

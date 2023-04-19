@@ -12,11 +12,29 @@ def hashGen():
     for c in range(2):  # Dla każdego koloru
         for p in range(1, 7):  # Dla każdego rodzaju bierki
             for s in range(64):  # Dla każdego pola szachownicy
-                number = random.randint(1, 2**64)
+                number = random.randint(1, 2 ** 64)
                 # Tworzymy liczbę dla hasha zobrista
                 zobristNumbers[(p, c, s)] = number
-    zobristNumbers[0] = random.randint(1, 2**64)
-    zobristNumbers[1] = random.randint(1, 2**64)
+    zobristNumbers["white_turn"] = random.randint(1, 2 ** 64)
+    zobristNumbers["black_turn"] = random.randint(1, 2 ** 64)
+    for color in [0, 1]:
+        for length in ["long", "short"]:
+            zobristNumbers[("castling", length, color)] = random.randint(1, 2 ** 64)
+    for fromSquare in range(24, 33):
+        toSquare1 = fromSquare - 9
+        toSquare2 =  fromSquare - 7
+        if fromSquare > 24:
+            zobristNumbers[("en_passant", fromSquare, toSquare1)] = random.randint(1, 2 ** 64)
+        if fromSquare < 31:
+            zobristNumbers[("en_passant", fromSquare, toSquare2)] = random.randint(1, 2 ** 64)
+    for fromSquare in range(32, 41):
+        toSquare1 = fromSquare + 7
+        toSquare2 = fromSquare + 9
+        if fromSquare > 32:
+            zobristNumbers[("en_passant", fromSquare, toSquare1)] = random.randint(1, 2 ** 64)
+        if fromSquare < 39:
+            zobristNumbers[("en_passant", fromSquare, toSquare2)] = random.randint(1, 2 ** 64)
+
 
 
 # To musimy odpalać na początku gry, żeby wygenerować liczby do hashów oraz
@@ -26,20 +44,42 @@ def hashInit(board):
     hash = 0
     for square in board_interface.piece_map(board):
         piece = board_interface.piece_at(board, square)
-        color = [1, 0][board_interface.color_at(board, square)]
+        color = int(board_interface.color_at(board, square))
         hash ^= zobristNumbers[(piece, color, square)]
-    hash ^= zobristNumbers[0]
+    hash ^= zobristNumbers["white_turn"]
+    return hash
+
+
+def hashEnPassRights(board, hash):
+    for en_pass in board_interface.list_en_passant(board):
+        fromSquare = board_interface.from_square(en_pass)
+        toSquare = board_interface.to_square(en_pass)
+        hash = hash ^ zobristNumbers[("en_passant", fromSquare, toSquare)]
+    return hash
+
+
+def hashCastlingRights(board, hash):
+    color = int(board.turn)
+    if board_interface.has_kingside_castling_rights(board):
+        hash = hash ^ zobristNumbers[("castling", "short", color)]
+    if board_interface.has_queenside_castling_rights(board):
+        hash = hash ^ zobristNumbers[("castling", "long", color)]
     return hash
 
 
 # To pewnie trzeba będzie napisać na nowo po dostaniu biblioteki rustowej
 def hash(board, prevHash, move, turn):
-    pieceColor = [1, 0][board.turn]
+    pieceColor = int(board.turn)
     # Nie chcemy, aby ten sam układ bierek, jednak dla różnych kolorów na ruchu
     # dawało tego samego hasha.
-    # Można by się zastanowić, czy prawa do roszad lub bić w przelocie też
-    # powinny to zmieniać (a być może powinny)
-    hash = prevHash ^ zobristNumbers[0] ^ zobristNumbers[1]
+    hash = prevHash ^ zobristNumbers["white_turn"] ^ zobristNumbers["black_turn"]
+    # Prawa do bić w przelocie i roszad
+    hash = hashEnPassRights(board, hash)
+    hash = hashCastlingRights(board, hash)
+    board_interface.make_move(board, move)
+    hash = hashEnPassRights(board, hash)
+    hash = hashCastlingRights(board, hash)
+    board_interface.reverse_move(board)
     # Ponieważ w szachach poza standardowymi ruchami są jeszcze roszady
     # i bicia w przelocie, musimy je wyifować, obawiam się
     if board_interface.promotion(move) is not None:

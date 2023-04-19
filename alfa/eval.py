@@ -130,14 +130,14 @@ def activity(board, piecesSum):
 
 
 def eval(board):
-    # return (random.random() - 0.5) * 60
     if board.is_checkmate():
         return CHECKMATE
     if board.is_fifty_moves() or board.is_fivefold_repetition() or board.is_stalemate() or board.is_insufficient_material():
         return 0
+    # return (random.random() - 0.5) * 60
     whiteVal = piecesVal(board, True)
     blackVal = piecesVal(board, False)
     res = whiteVal - blackVal + (activity(board, whiteVal + blackVal) / 1000)
-    # if not board.turn:
-    #     res = -res
+    if not board.turn:
+        res = -res
     return res
