@@ -84,3 +84,19 @@ def read_database(directory="./database"):
     black_files = map(full_name, filter(file_matcher("black_"), os.listdir(directory)))
 
     return _read_and_merge_files(white_files), _read_and_merge_files(black_files)
+
+
+def test_train_split_by_game_id(white, black, test_size=0.3, random_state=42):
+    """Split into test and train set using the 'game_id' column as the grouping variable."""
+    all_games = white["game_id"].unique()
+    test_games_size = int(test_size * len(all_games))
+    test_games = np.random.choice(all_games, size=test_games_size, replace=False)
+
+    white_indices_to_test = white["game_id"].isin(test_games)
+    black_indices_to_test = black["game_id"].isin(test_games)
+
+    white_test = white[white_indices_to_test]
+    white_train = white[~white_indices_to_test]
+    black_test = black[black_indices_to_test]
+    black_train = black[~black_indices_to_test]
+    return white_test, white_train, black_test, black_train
