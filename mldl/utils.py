@@ -29,7 +29,7 @@ def encode_board(board):
     return encoding
 
 
-def get_columns_names():
+def get_board_columns_names():
     """
     Returns a list of column names that can be used to label the encoded data from the `encode_board` function.
 
@@ -55,7 +55,7 @@ def get_columns_names():
 
 def _read_and_merge_files(files):
     """Read and merge multiple CSV files containing chess board positions and scores and remove duplicates."""
-    board_columns = get_columns_names()
+    board_columns = get_board_columns_names()
     columns_without_move = board_columns + ["score", "game_id"]
     types_dict = {col: bool for col in board_columns}
     frames = []
@@ -86,17 +86,27 @@ def read_database(directory="./database"):
     return _read_and_merge_files(white_files), _read_and_merge_files(black_files)
 
 
-def test_train_split_by_game_id(white, black, test_size=0.3, random_state=42):
-    """Split into test and train set using the 'game_id' column as the grouping variable."""
-    all_games = white["game_id"].unique()
-    test_games_size = int(test_size * len(all_games))
-    test_games = np.random.choice(all_games, size=test_games_size, replace=False)
+def train_test_split_by_game_id(white, black, test_size=0.3):
+    """Split dataframes into traininig and testing sets using the 'game_id' column as the grouping variable."""
+    unique_game_ids = white["game_id"].unique()
+    num_test_games = int(test_size * len(unique_game_ids))
+    selected_test_game_ids = np.random.choice(unique_game_ids, size=num_test_games, replace=False)
 
-    white_indices_to_test = white["game_id"].isin(test_games)
-    black_indices_to_test = black["game_id"].isin(test_games)
+    white_test_indices = white["game_id"].isin(selected_test_game_ids)
+    black_test_indices = black["game_id"].isin(selected_test_game_ids)
 
-    white_test = white[white_indices_to_test]
-    white_train = white[~white_indices_to_test]
-    black_test = black[black_indices_to_test]
-    black_train = black[~black_indices_to_test]
-    return white_test, white_train, black_test, black_train
+    white_test = white[white_test_indices]
+    white_train = white[~white_test_indices]
+    black_test = black[black_test_indices]
+    black_train = black[~black_test_indices]
+    return white_train, white_test, black_train, black_test
+
+
+def filter_dataset(df, score_threshold=50):
+    """Filter the input dataframe based on the score threshold."""
+    return df[(df["score"] >= score_threshold) | (df["score"] <= -score_threshold)]
+
+
+def get_features_and_labels(df):
+    """Get the features and labels from the input dataframe."""
+    return df[get_board_columns_names()], df["score"] > 0

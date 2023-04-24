@@ -12,7 +12,7 @@ import numpy as np
 
 from tqdm import trange
 
-from utils import encode_board, get_columns_names
+from utils import encode_board, get_board_columns_names
 
 
 _DATABASE_DIR = "./database"  # Directory for generated files
@@ -117,7 +117,7 @@ def _generate_database(pgn, engine, start_pos, size, directory):
             positions_count += 1
         games_count += 1
 
-    board_columns = get_columns_names()
+    board_columns = get_board_columns_names()
     all_columns = board_columns + ["score", "best_move", "game_id"]
 
     if len(white) > 0:
