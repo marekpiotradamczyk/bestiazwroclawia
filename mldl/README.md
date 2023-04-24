@@ -32,8 +32,8 @@ python3 generate_database.py -h
 ```python
 from utils import read_database, train_test_split_by_game_id, filter_dataset, get_features_and_labels
 
-directory = "./database"
-score_threshold = 50
+directory = "/home/database"
+score_threshold = 100
 
 white_df, black_df = read_database(directory)
 
