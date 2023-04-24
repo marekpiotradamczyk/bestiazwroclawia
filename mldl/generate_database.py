@@ -200,6 +200,7 @@ if __name__ == "__main__":
     start_time = time.time()
 
     start_pos = games_to_drop + 1
+    print("Starting from game:", start_pos)
     for part in range(args.parts):
         print(f"Generating part {part + 1}/{args.parts}")
         _generate_database(pgn, engine, start_pos, _PART_SIZE, args.output)
