@@ -106,18 +106,22 @@ def list_en_passant(board):
 
 # MVV_LVA[victim][attacker]
 MVV_LVA = [
-    [0, 0, 0, 0, 0, 0, 0],        # victim K, attacker K, Q, R, B, N, P, None
-    [50, 51, 52, 53, 54, 55, 0],  # victim Q, attacker K, Q, R, B, N, P, None
-    [40, 41, 42, 43, 44, 45, 0],  # victim R, attacker K, Q, R, B, N, P, None
-    [30, 31, 32, 33, 34, 35, 0],  # victim B, attacker K, Q, R, B, N, P, None
-    [20, 21, 22, 23, 24, 25, 0],  # victim N, attacker K, Q, R, B, N, P, None
-    [10, 11, 12, 13, 14, 15, 0],  # victim P, attacker K, Q, R, B, N, P, None
-    [0, 0, 0, 0, 0, 0, 0],        # victim None, attacker K, Q, R, B, N, P, None
+    [0, 0, 0, 0, 0, 0, 0],             # victim K, attacker K, Q, R, B, N, P, None
+    [-50, -51, -52, -53, -54, -55, 0], # victim Q, attacker K, Q, R, B, N, P, None
+    [-40, -41, -42, -43, -44, -45, 0], # victim R, attacker K, Q, R, B, N, P, None
+    [-30, -31, -32, -33, -34, -35, 0], # victim B, attacker K, Q, R, B, N, P, None
+    [-20, -21, -22, -23, -24, -25, 0], # victim N, attacker K, Q, R, B, N, P, None
+    [-10, -11, -12, -13, -14, -15, 0], # victim P, attacker K, Q, R, B, N, P, None
+    [0, 0, 0, 0, 0, 0, 0],          # victim None, attacker K, Q, R, B, N, P, None
 ]
 # Piece_Position= ["K","Q","R","B","N","P",None] # Pozycja w tabeli MVV_LVA
 
 
 def filter(board, moves, hashmove, killerlist):
+    # 1 HashMove
+    # 2 KillerMoves
+    # 3 Captures
+    # 4 Rest
     counter = 0
     Q = PriorityQueue()
     for move in moves:
@@ -132,7 +136,7 @@ def filter(board, moves, hashmove, killerlist):
         elif is_capture(board, move):
             victim = 6 - piece_at(board, to_square(move))  # Znajdujemy typ bitej bierki
             attacker = 6 - piece_at(board, from_square(move))
-            Q.put((-MVV_LVA[victim][attacker], counter, move))
+            Q.put((MVV_LVA[victim][attacker], counter, move))
         else:
             Q.put((0, counter, move))
         counter += 1

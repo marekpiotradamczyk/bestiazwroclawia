@@ -7,6 +7,7 @@ import zorba
 # import time
 from queue import PriorityQueue
 
+BestMove = ""
 infinity = int(1e6)
 CHECKMATE = infinity - 1
 DRAW = 0
@@ -15,28 +16,23 @@ Max_Depth = 125
 killer_list = []
 for i in range(Max_Depth):
     killer_list.append([])
-Branches_Checkd = 0  # Aby sprawdzić czy optymalizacje ucina głałęzie zliczamy uciętegałęzie
+Branches_Checkd = 0  # Aby sprawdzić czy optymalizacje ucina głałęzie zliczamy ucięte gałęzie
 ply_counter = 0
 
 
 def PriorityList(pos, hash, depth):  # TO DO: W tym miejscu kolejka priorytetowa
     global killer_list
-    global ply_counter_counter
+    global ply_counter
+    global HASHES
+
     moves = list(board_interface.get_moves(pos))
     move = ""
     if hash in HASHES:  # Najpierw sprawdzamy wierzchołek, który wcześniej uznaliśmy za najlepszy
         res = HASHES[hash]
         move = res[3]
-    moves = board_interface.filter(pos, moves, move, killer_list)  # only_captures - Przeszukanie w miejscu
-    # killer moves
-    # for move in killer_list[ply_counter-depth]:
-    # moves.remove(move)
-    # moves.insert(0, move)
+    moves = board_interface.filter(pos, moves, move, killer_list[ply_counter])
+    # only_captures - Przeszukanie w miejscu
 
-    # 1 HashMove
-    # 2 KillerMoves
-    # 3 Captures
-    # 4 Rest
     return moves
 
 
@@ -46,6 +42,8 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
     global killer_list
     global Branches_Checkd
     global ply_counter
+    global HASHES
+
     if hash in HASHES:  # odwiedziliśmy już tą pozycję wcześniej
         res = HASHES[hash]
         if res[0] >= depth:  # Interesują nas tylko wyniki znalezione na conajmniej takiej samej głębokości
@@ -112,16 +110,23 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
 
 def Search(board, depth):
     global ply_counter
+    global HASHES
     # Iterative Deepening, domyslnie to powinno byc wolane przez main
     HASHES = {}
     posHash = zorba.hashInit(board)
-    # ts=time.time()
+    # ts = time.time()
     for i in range(1, depth + 1):
         ply_counter = i
         print(AlphaBeta(board, i, -infinity, infinity, posHash, i), BestMove, i)
         # print(time.time() - ts)
 
 
-board = chess.Board()
-Search(board, 9)
+# Przykladowe pozycje - mozna podmienic do testow
+board = chess.Board() # 0)
+# board = chess.Board("2bk1b1r/p1pp1Qp1/2nq1n2/r1N3Bp/1pB1Pp1P/5NP1/PPPP4/R3K2R b KQ - 1 8") # 1)
+# board = chess.Board("r1bqkb1r/pp3ppp/2p1pn2/3p4/2nP4/P1N1PN1P/1PPB1PP1/R2QKB1R w KQkq - 2 8") # 2)
+# board = chess.Board("r2qkb1r/pp3ppp/2n5/3bp3/6Q1/7N/PPP2PPP/RNB1K2R b KQkq - 1 12") # 3)
+# board = chess.Board("r4rk1/3pb1pp/b2q1p2/R1p1N3/4PP2/2NP4/1PP3PP/3Q1RK1 w - - 0 17") # 4)
+# board = chess.Board("rnbqkbnr/ppp2ppp/8/3Pp3/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 4") # 5)
+Search(board, 6)
 # print(Branches_Checkd)
