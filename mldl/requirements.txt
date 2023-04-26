@@ -1,5 +1,7 @@
 argparse
 pandas
 numpy
+scikit-learn
+xgboost
 python-chess
 tqdm
