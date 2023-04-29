@@ -104,6 +104,11 @@ def list_en_passant(board):
     return res
 
 
+def afterpass(board):
+    make_move(board, chess.Move.null())
+    return board
+
+
 # MVV_LVA[victim][attacker]
 MVV_LVA = [
     [0, 0, 0, 0, 0, 0, 0],             # victim K, attacker K, Q, R, B, N, P, None

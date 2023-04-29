@@ -4,7 +4,7 @@ import chess
 import eval
 import board_interface
 import zorba
-# import time
+import time
 from queue import PriorityQueue
 
 BestMove = ""
@@ -18,6 +18,13 @@ for i in range(Max_Depth):
     killer_list.append([])
 Branches_Checkd = 0  # Aby sprawdzić czy optymalizacje ucina głałęzie zliczamy ucięte gałęzie
 ply_counter = 0
+Return_now = 0
+R = 2  # Parametr do Null Pruning
+
+
+def Stop():
+    global Return_now
+    Return_now = 1
 
 
 def PriorityList(pos, hash, depth):  # TO DO: W tym miejscu kolejka priorytetowa
@@ -32,7 +39,6 @@ def PriorityList(pos, hash, depth):  # TO DO: W tym miejscu kolejka priorytetowa
         move = res[3]
     moves = board_interface.filter(pos, moves, move, killer_list[ply_counter])
     # only_captures - Przeszukanie w miejscu
-
     return moves
 
 
@@ -43,6 +49,7 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
     global Branches_Checkd
     global ply_counter
     global HASHES
+    global Return_now
 
     if hash in HASHES:  # odwiedziliśmy już tą pozycję wcześniej
         res = HASHES[hash]
@@ -74,14 +81,49 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
         moves = PriorityList(pos, hash, depth)
     BestTempMove = ""
     BestSoFar = -infinity
+    # Null Move Pruning - Zakladamy ze istnieje lepszy ruch niz oddanie tury
+    # TODO - Sprawdzenie czy oddanie tury powoduje legalną pozycję
+    val = -AlphaBeta(board_interface.afterpass(pos), depth - 1 - R, -beta, -alpha, hash, StartDepth)
+    pos = board_interface.reverse_move(pos)
+    # Jezeli oddanie tury bylo wieksze niz beta, to nie przegladamy żadnych dzieci
+    if val >= beta:
+        return val
+    # PVS - Pierwszy ruch sprawdzamy normalnie, dopiero kolejne uwzględniają PVS
+    move = moves.get()[2]
+    newHash = zorba.hash(pos, hash, move, pos.turn)
+    board_interface.make_move(pos, move)
+    val = -AlphaBeta(pos, depth - 1, -beta, -alpha, newHash, StartDepth)
+    if val > BestSoFar:
+        if depth == StartDepth:
+            BestMove = move
+        BestSoFar = val
+        BestTempMove = move
+    if Return_now:
+        return BestSoFar
+    pos = board_interface.reverse_move(pos)
+    if BestSoFar >= beta:
+        if not board_interface.is_capture(pos, move) and move not in killer_list:
+            killer_list[ply_counter - depth].insert(0, move)
+            killer_list[ply_counter - depth] = killer_list[ply_counter - depth][1:]
+        HASHES[hash] = (depth, BestSoFar, "CUT", BestTempMove)
+        Branches_Checkd += 1
+        return BestSoFar
+    alpha = max(alpha, BestSoFar)
     while not moves.empty():
         # Wyznaczamy hash dla danej pozycji i dla danego ruchu
         move = moves.get()[2]
         newHash = zorba.hash(pos, hash, move, pos.turn)
-        pos = board_interface.make_move(pos, move)
-        # Rekurencyjnie wchodzimy glebiej w pozycje, zmiana gracza ktory wykonuje ruch
-        val = -AlphaBeta(pos, depth - 1, -beta, -alpha, newHash, StartDepth)
-        pos = board_interface.reverse_move(pos)
+        board_interface.make_move(pos, move)
+        # PVS - Zakładamy że ruch jest gorszy niż poprzedni, sprawdzamy założenie
+        val = -AlphaBeta(pos, depth - 1, -alpha, -alpha, newHash, StartDepth)
+        if val < BestSoFar:
+            pos = board_interface.reverse_move(pos)
+            continue
+        # Jeżeli hipoteza się nie potwierdziła to szukamy dokładniej
+        # Chyba że jesteśmy na głębokości 1, wtedy nie ma takiej potrzeby
+        if val < beta and depth > 2:
+            # Rekurencyjnie wchodzimy glebiej w pozycje, zmiana gracza ktory wykonuje ruch
+            val = -AlphaBeta(pos, depth - 1, -beta, -val, newHash, StartDepth)
         # Znaleziona pozycja jest lepsza niz najlepsza do tej pory
         if val > BestSoFar:
             # Jezeli jestesmy na glebokosci poczatkowej, to jednoczesnie jest to stan globalny ktory osobno chcemy zaktualizowac
@@ -89,6 +131,10 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
                 BestMove = move
             BestSoFar = val
             BestTempMove = move
+        # Warunek przerwania przeszukiwań, ustawiany z main
+        if Return_now:
+            return BestSoFar
+        pos = board_interface.reverse_move(pos)
         if BestSoFar >= beta:
             if not board_interface.is_capture(pos, move) and move not in killer_list:
                 killer_list[ply_counter - depth].insert(0, move)
@@ -111,22 +157,26 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
 def Search(board, depth):
     global ply_counter
     global HASHES
+    global Return_now
     # Iterative Deepening, domyslnie to powinno byc wolane przez main
     HASHES = {}
     posHash = zorba.hashInit(board)
-    # ts = time.time()
+    ts = time.time()
     for i in range(1, depth + 1):
         ply_counter = i
         print(AlphaBeta(board, i, -infinity, infinity, posHash, i), BestMove, i)
-        # print(time.time() - ts)
+        print(time.time() - ts)
+        # Warunek przerwania przeszukiwań, ustawiany z main
+        if Return_now:
+            break
 
 
 # Przykladowe pozycje - mozna podmienic do testow
-board = chess.Board() # 0)
-# board = chess.Board("2bk1b1r/p1pp1Qp1/2nq1n2/r1N3Bp/1pB1Pp1P/5NP1/PPPP4/R3K2R b KQ - 1 8") # 1)
-# board = chess.Board("r1bqkb1r/pp3ppp/2p1pn2/3p4/2nP4/P1N1PN1P/1PPB1PP1/R2QKB1R w KQkq - 2 8") # 2)
-# board = chess.Board("r2qkb1r/pp3ppp/2n5/3bp3/6Q1/7N/PPP2PPP/RNB1K2R b KQkq - 1 12") # 3)
-# board = chess.Board("r4rk1/3pb1pp/b2q1p2/R1p1N3/4PP2/2NP4/1PP3PP/3Q1RK1 w - - 0 17") # 4)
-# board = chess.Board("rnbqkbnr/ppp2ppp/8/3Pp3/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 4") # 5)
-Search(board, 6)
+board = chess.Board()  # 0)
+# board = chess.Board("2bk1b1r/p1pp1Qp1/2nq1n2/r1N3Bp/1pB1Pp1P/5NP1/PPPP4/R3K2R b KQ - 1 8")  # 1)
+# board = chess.Board("r1bqkb1r/pp3ppp/2p1pn2/3p4/2nP4/P1N1PN1P/1PPB1PP1/R2QKB1R w KQkq - 2 8")  # 2)
+# board = chess.Board("r2qkb1r/pp3ppp/2n5/3bp3/6Q1/7N/PPP2PPP/RNB1K2R b KQkq - 1 12")  # 3)
+# board = chess.Board("r4rk1/3pb1pp/b2q1p2/R1p1N3/4PP2/2NP4/1PP3PP/3Q1RK1 w - - 0 17")  # 4)
+# board = chess.Board("rnbqkbnr/ppp2ppp/8/3Pp3/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 4")  # 5)
+Search(board, 8)
 # print(Branches_Checkd)
