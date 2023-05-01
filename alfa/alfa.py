@@ -55,20 +55,27 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
         res = HASHES[hash]
         if res[0] >= depth:  # Interesują nas tylko wyniki znalezione na conajmniej takiej samej głębokości
             v = res[1]
+            BestTempMove = res[3]
             if res[2] == "CUT":
                 if beta <= v:  # Jeżeli best so far(BSF) wierzchołka typu cut jest mniejszy od naszej bety, to nie musimy szukac dalej
                     Branches_Checkd += 1
+                    if depth == StartDepth:
+                        BestMove = BestTempMove
                     return v
                 if alpha < v:  # Jeżeli jest większy od naszej alphy to analogicznie możemy tą alpha nadpisać, ale pozycję i tak trzeba przeszukać
                     alpha = v
             if res[2] == "ALL":  # Analogicznie dla wierzchołka typu "ALL"
                 if v <= alpha:
                     Branches_Checkd += 1
+                    if depth == StartDepth:
+                        BestMove = BestTempMove
                     return v
                 if v < beta:
                     beta = v
             if res[2] == "PV":  # Jeżeli wierzchołek jest typu "PV" to z zadaną dokładnością wyznazczyliśmy już BSF i możemy zwrócić
                 Branches_Checkd += 1
+                if depth == StartDepth:
+                    BestMove = BestTempMove
                 return v
 
     if depth <= 0:
