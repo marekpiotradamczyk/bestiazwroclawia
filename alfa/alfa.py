@@ -95,40 +95,24 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
     # Jezeli oddanie tury bylo wieksze niz beta, to nie przegladamy żadnych dzieci
     if val >= beta:
         return val
-    # PVS - Pierwszy ruch sprawdzamy normalnie, dopiero kolejne uwzględniają PVS
-    move = moves.get()[2]
-    newHash = zorba.hash(pos, hash, move, pos.turn)
-    board_interface.make_move(pos, move)
-    val = -AlphaBeta(pos, depth - 1, -beta, -alpha, newHash, StartDepth)
-    if val > BestSoFar:
-        if depth == StartDepth:
-            BestMove = move
-        BestSoFar = val
-        BestTempMove = move
-    if Return_now:
-        return BestSoFar
-    pos = board_interface.reverse_move(pos)
-    if BestSoFar >= beta:
-        if not board_interface.is_capture(pos, move) and move not in killer_list:
-            killer_list[ply_counter - depth].insert(0, move)
-            killer_list[ply_counter - depth] = killer_list[ply_counter - depth][1:]
-        HASHES[hash] = (depth, BestSoFar, "CUT", BestTempMove)
-        Branches_Checkd += 1
-        return BestSoFar
-    alpha = max(alpha, BestSoFar)
+    firstIter = True  # Jezeli przeglądamy pierwszy wierzchołek, to musimy wykonac pelne przeszukiwanie
     while not moves.empty():
         # Wyznaczamy hash dla danej pozycji i dla danego ruchu
         move = moves.get()[2]
         newHash = zorba.hash(pos, hash, move, pos.turn)
         board_interface.make_move(pos, move)
         # PVS - Zakładamy że ruch jest gorszy niż poprzedni, sprawdzamy założenie
-        val = -AlphaBeta(pos, depth - 1, -alpha, -alpha, newHash, StartDepth)
-        if val < BestSoFar:
-            pos = board_interface.reverse_move(pos)
-            continue
+        if not firstIter:
+            val = -AlphaBeta(pos, depth - 1, -alpha, -alpha, newHash, StartDepth)
+            if val < BestSoFar:
+                pos = board_interface.reverse_move(pos)
+                continue
         # Jeżeli hipoteza się nie potwierdziła to szukamy dokładniej
         # Chyba że jesteśmy na głębokości 1, wtedy nie ma takiej potrzeby
-        if val < beta and depth > 2:
+        if firstIter or (val < beta and depth > 2):
+            if firstIter:
+                val = alpha
+                firstIter = False
             # Rekurencyjnie wchodzimy glebiej w pozycje, zmiana gracza ktory wykonuje ruch
             val = -AlphaBeta(pos, depth - 1, -beta, -val, newHash, StartDepth)
         # Znaleziona pozycja jest lepsza niz najlepsza do tej pory
