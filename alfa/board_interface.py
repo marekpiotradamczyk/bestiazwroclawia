@@ -72,14 +72,6 @@ def has_captures(board):
     return False
 
 
-def filter_only_captures(board, moves):
-    res = []
-    for m in moves:
-        if is_capture(board, m):
-            res.append(m)
-    return res
-
-
 def filter_only_not_captures(board, moves):
     res = []
     for m in moves:
@@ -104,6 +96,10 @@ def list_en_passant(board):
     return res
 
 
+def king_is_checked(board):
+    return board.is_check()
+
+
 def afterpass(board):
     make_move(board, chess.Move.null())
     return board
@@ -111,15 +107,34 @@ def afterpass(board):
 
 # MVV_LVA[victim][attacker]
 MVV_LVA = [
-    [0, 0, 0, 0, 0, 0, 0],             # victim K, attacker K, Q, R, B, N, P, None
-    [-50, -51, -52, -53, -54, -55, 0], # victim Q, attacker K, Q, R, B, N, P, None
-    [-40, -41, -42, -43, -44, -45, 0], # victim R, attacker K, Q, R, B, N, P, None
-    [-30, -31, -32, -33, -34, -35, 0], # victim B, attacker K, Q, R, B, N, P, None
-    [-20, -21, -22, -23, -24, -25, 0], # victim N, attacker K, Q, R, B, N, P, None
-    [-10, -11, -12, -13, -14, -15, 0], # victim P, attacker K, Q, R, B, N, P, None
+    [0, 0, 0, 0, 0, 0, 0],              # victim K, attacker K, Q, R, B, N, P, None
+    [-50, -51, -52, -53, -54, -55, 0],  # victim Q, attacker K, Q, R, B, N, P, None
+    [-40, -41, -42, -43, -44, -45, 0],  # victim R, attacker K, Q, R, B, N, P, None
+    [-30, -31, -32, -33, -34, -35, 0],  # victim B, attacker K, Q, R, B, N, P, None
+    [-20, -21, -22, -23, -24, -25, 0],  # victim N, attacker K, Q, R, B, N, P, None
+    [-10, -11, -12, -13, -14, -15, 0],  # victim P, attacker K, Q, R, B, N, P, None
     [0, 0, 0, 0, 0, 0, 0],          # victim None, attacker K, Q, R, B, N, P, None
 ]
 # Piece_Position= ["K","Q","R","B","N","P",None] # Pozycja w tabeli MVV_LVA
+
+
+def filter_only_captures(board, moves):
+    Q = PriorityQueue()
+    counter = 0
+    for move in moves:
+        if is_en_passant(board, move):
+            victim = 6 - 1
+            attacker = 6 - 1
+            Q.put((-MVV_LVA[victim][attacker], counter, move))
+        elif is_capture(board, move):
+            pieceAt = piece_at(board, to_square(move))
+            if pieceAt == 6:
+                continue
+            victim = 6 - pieceAt  # Znajdujemy typ bitej bierki
+            attacker = 6 - piece_at(board, from_square(move))
+            Q.put((MVV_LVA[victim][attacker], counter, move))
+        counter += 1
+    return Q
 
 
 def filter(board, moves, hashmove, killerlist):
@@ -139,7 +154,8 @@ def filter(board, moves, hashmove, killerlist):
             attacker = 6 - 1
             Q.put((-MVV_LVA[victim][attacker], counter, move))
         elif is_capture(board, move):
-            victim = 6 - piece_at(board, to_square(move))  # Znajdujemy typ bitej bierki
+            pieceAt = piece_at(board, to_square(move))
+            victim = 6 - pieceAt  # Znajdujemy typ bitej bierki
             attacker = 6 - piece_at(board, from_square(move))
             Q.put((MVV_LVA[victim][attacker], counter, move))
         else:
