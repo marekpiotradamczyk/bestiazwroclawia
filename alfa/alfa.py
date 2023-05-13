@@ -35,6 +35,27 @@ def PriorityList(pos, hash, depth, killer_moves):
     moves = brdInf.filter(pos, moves, move, killer_moves)
     return moves
 
+
+def Qsearch(pos, alpha, beta):
+    # Czy implementujemy tutaj TT?
+    # Czy implementujemy tutaj PVS?
+    evaluation = eval.eval(pos)
+    if not brdInf.has_captures(pos) or evaluation > beta:  # Wszystkie bicia czy tylko na polu którym było wcześniej
+        return evaluation
+    BestSoFar = evaluation
+    moves = brdInf.filter_only_captures(pos, list(brdInf.get_moves(pos)))
+    while not moves.empty():
+        move = moves.get()[2]
+        brdInf.make_move(pos, move)
+        val = -Qsearch(pos, -beta, -alpha)
+        brdInf.reverse_move(pos)
+
+        BestSoFar = max(val, BestSoFar)
+        if BestSoFar > beta:
+            return BestSoFar
+        alpha = max(alpha, BestSoFar)
+    return BestSoFar
+
 # Alpha-Beta.
 # Alfa - wynik dla strony której jest ruch - maksymalizujemy
 # Beta - wynik dla przeciwnika - minimalizujemy
@@ -111,8 +132,9 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
     # (H.1) Wyznaczamy hash dla danej pozycji i dla danego ruchu
 
     if depth <= 0:
-        return eval.eval(pos)
-        # return Qsearch(pos, alpha, beta)
+        # Żeby wyłączyć QSearch należy zamienić zakomentowaną linijke
+        # return eval.eval(pos)
+        return Qsearch(pos, alpha, beta)
     BestTempMove = ""
     BestSoFar = -infinity
 
