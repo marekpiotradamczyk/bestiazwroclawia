@@ -139,8 +139,8 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
     BestSoFar = -infinity
 
     if not brdInf.king_is_checked(pos):  # (NMP.1)
-        # TODO: Co z przekazywanym hashem?
-        val = -AlphaBeta(brdInf.afterpass(pos), depth - 1 - R, -beta, -alpha, hash, StartDepth)
+        newHash = zorba.hash(pos, hash, chess.Move.null(), pos.turn)
+        val = -AlphaBeta(brdInf.afterpass(pos), depth - 1 - R, -beta, -alpha, newHash, StartDepth)
         pos = brdInf.reverse_move(pos)
         if val >= beta:  # (NMP.2)
             return val
@@ -218,6 +218,6 @@ board = chess.Board()  # 0)
 # board = chess.Board("r4rk1/3pb1pp/b2q1p2/R1p1N3/4PP2/2NP4/1PP3PP/3Q1RK1 w - - 0 17")  # 4)
 # board = chess.Board("rnbqkbnr/ppp2ppp/8/3Pp3/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 4")  # 5)
 # board = chess.Board("4Q3/p4ppk/2N3qp/8/1p3n2/PP6/1P3PPK/8 b - - 0 27")  # 6)
-# board = chess.Board("4r2k/1p3rbp/2p3p1/p7/P2pB1nq/1P3n1N/6P1/B1Q1RR1K b - - 1 30")  # 7)
+board = chess.Board("4r2k/1p3rbp/2p3p1/p7/P2pB1nq/1P3n1N/6P1/B1Q1RR1K b - - 1 30")  # 7)
 # board = chess.Board("6Q1/2pk1ppp/2p5/8/3P4/P1n1B3/1Rq2P1P/K7 b - - 8 29")
 Search(board, 8)

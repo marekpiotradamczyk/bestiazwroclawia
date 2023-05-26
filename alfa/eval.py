@@ -115,6 +115,7 @@ def activity(board, piecesSum):
             y = s % 8
             res -= tabs[p][x][y]
     kingW = board.pieces(6, True).pop()
+    # if len(board.pieces())
     kingB = board.pieces(6, False).pop()
     if not endgame(board, piecesSum):
         usedTab = 6
@@ -131,10 +132,11 @@ def activity(board, piecesSum):
 
 def eval(board):
     if board.is_checkmate():
+        if not board.turn:
+            return -CHECKMATE
         return CHECKMATE
     if board.is_fifty_moves() or board.is_fivefold_repetition() or board.is_stalemate() or board.is_insufficient_material():
         return 0
-    # return (random.random() - 0.5) * 60
     whiteVal = piecesVal(board, True)
     blackVal = piecesVal(board, False)
     res = whiteVal - blackVal + (activity(board, whiteVal + blackVal) / 1000)
