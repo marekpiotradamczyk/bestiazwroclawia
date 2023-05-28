@@ -20,8 +20,8 @@ R = 2  # Parametr do Null Pruning
 
 
 def Stop():
-    global Return_now
-    Return_now = 1
+    global time_to_move
+    time_to_move = 0
 
 
 def PriorityList(pos, hash, depth, killer_moves):
@@ -65,12 +65,14 @@ def Qsearch(pos, alpha, beta):
 # BestSoFar - Najlepszy wynik jaki znaleźliśmy
 
 
-def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
+def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move):
     global BestMove  # Przechowujemy najlepszy znaleziony do tej pory ruch (na poziomie)
     global killer_list
     global ply_counter
     global HASHES
     global Return_now
+    global tStart
+
 
     # Transposition Table:
     # (TT.0) LINE = {depth, BestSoFar,NODE TYPE- "ALL"|"CUT"|"PV", BestTempMove}
@@ -140,7 +142,7 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
 
     if not brdInf.king_is_checked(pos):  # (NMP.1)
         newHash = zorba.hash(pos, hash, chess.Move.null(), pos.turn)
-        val = -AlphaBeta(brdInf.afterpass(pos), depth - 1 - R, -beta, -alpha, newHash, StartDepth)
+        val = -AlphaBeta(brdInf.afterpass(pos), depth - 1 - R, -beta, -alpha, newHash, StartDepth, time_to_move)
         pos = brdInf.reverse_move(pos)
         if val >= beta:  # (NMP.2)
             return val
@@ -153,7 +155,7 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
         brdInf.make_move(pos, move)
 
         if not firstIter:
-            val = -AlphaBeta(pos, depth - 1, -alpha, -alpha, newHash, StartDepth)
+            val = -AlphaBeta(pos, depth - 1, -alpha, -alpha, newHash, StartDepth, time_to_move)
             if val < BestSoFar:  # (PVS.2)
                 pos = brdInf.reverse_move(pos)
                 continue
@@ -162,7 +164,7 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
             if firstIter:
                 val = alpha  # (PVS.5)
                 firstIter = False
-            val = -AlphaBeta(pos, depth - 1, -beta, -val, newHash, StartDepth)  # (AB.1)
+            val = -AlphaBeta(pos, depth - 1, -beta, -val, newHash, StartDepth, time_to_move)  # (AB.1)
 
         if val > BestSoFar:  # (AB.2)
             if depth == StartDepth:
@@ -170,7 +172,7 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
             BestSoFar = val
             BestTempMove = move
 
-        if Return_now:  # (AB.3)
+        if time.time() - tStart > time_to_move:
             return BestSoFar
 
         pos = brdInf.reverse_move(pos)
@@ -190,24 +192,28 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth):
     return BestSoFar  # (AB.4)
 
 
-def Search(board, depth):
+def Search(board, depth, time_to_move):
     global ply_counter
     global HASHES
     global Return_now
+    global tStart
     # Iterative Deepening, domyslnie to powinno byc wolane przez main
     HASHES = {}
     posHash = zorba.hashInit(board)
-    ts = time.time()
+    tStart = time.time()
+    if depth == -1:
+        depth = 100
     for i in range(1, depth + 1):
         ply_counter = i
-        res = AlphaBeta(board, i, -infinity, infinity, posHash, i)
+        res = AlphaBeta(board, i, -infinity, infinity, posHash, i, time_to_move)
         print(res, BestMove, i)
-        print(time.time() - ts)
+        print(time.time() - tStart)
+        if time.time() - tStart > time_to_move:
+            return BestMove
         if res == 1000000:  # Znalezlismy wymuszonego mata, nie trzeba dalej szukac
             break
         # Warunek przerwania przeszukiwań, ustawiany z main
-        if Return_now:
-            break
+    return BestMove
 
 
 # Przykladowe pozycje - mozna podmienic do testow
@@ -220,4 +226,3 @@ board = chess.Board()  # 0)
 # board = chess.Board("4Q3/p4ppk/2N3qp/8/1p3n2/PP6/1P3PPK/8 b - - 0 27")  # 6)
 board = chess.Board("4r2k/1p3rbp/2p3p1/p7/P2pB1nq/1P3n1N/6P1/B1Q1RR1K b - - 1 30")  # 7)
 # board = chess.Board("6Q1/2pk1ppp/2p5/8/3P4/P1n1B3/1Rq2P1P/K7 b - - 8 29")
-Search(board, 8)
