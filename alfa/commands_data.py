@@ -1,4 +1,9 @@
 from dataclasses import dataclass
+import chess
+
+@dataclass
+class StartSearchCommand:
+    board : chess.Board
 
 #########################################################
 # Input

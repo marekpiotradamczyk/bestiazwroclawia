@@ -1,6 +1,5 @@
 from threading import Thread
 from queue import Queue
-from queue import Queue
 from uci import UCI
 import commands_data as CD
 import chess
@@ -38,7 +37,7 @@ class Engine:
                     self.uci_message_queue.task_done()
                 # Search
                 if not self.search_message_queue.empty():
-                    command, args = self.uci_message_queue.get()
+                    command, args = self.search_message_queue.get()
                     if command == 'bestmove':
                         self._bestmove_command(args)
                     self.search_message_queue.task_done()
