@@ -3,12 +3,12 @@ from dataclasses import dataclass
 #########################################################
 # Input
 @dataclass
-class SetOptionCommand(object):
+class SetOptionCommand:
     name : str = ""
     value : str = ""
 
 @dataclass
-class PositionCommand(object):
+class PositionCommand:
     # The initial value of FEN is set to the standard starting position
     # and later the FEN string is modified to represent desired position
     fen : str =  "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
@@ -17,7 +17,7 @@ class PositionCommand(object):
 
 # Class below also represents the default search configuration
 @dataclass
-class GoCommand(object):
+class GoCommand:
     searchmoves : list[str] = None
     ponder : bool = False
     wtime : int = None
@@ -34,24 +34,24 @@ class GoCommand(object):
 #########################################################
 # Output
 @dataclass
-class IdCommand(object):
+class IdCommand:
     name : str = ""
     author : str = ""
 
 @dataclass
-class BestMoveCommand(object):
+class BestMoveCommand:
     bestmove : str = ""
     ponder : str = None
 
 @dataclass
-class InfoCommand(object):
+class InfoCommand:
     depth : int = None
     seldepth : int = None
     time : int = None
     nodes : int = None
     pv : list[str] = None
     multipv : int = 1
-    score : tuple[int, int, bool, bool] = None
+    score : tuple[int, int, bool, bool] = None #  cp, mate, lowerbound, upperbound
     currmove : str = None
     currmovenumber : int = 1 # or 0 
     hashfull : int = None

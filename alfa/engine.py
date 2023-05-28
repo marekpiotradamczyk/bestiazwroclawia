@@ -1,27 +1,29 @@
+from threading import Thread
+from queue import Queue
+from queue import Queue
 from uci import UCI
-from multiprocessing import Process, Pipe
 import commands_data as CD
 import chess
 
-class Engine(object):
+class Engine:
     def __init__(self):
         self.protocol = None
-        self.uci = None
-        self.uci_process = None
+        self.uci = None  
+        self.uci_message_queue = Queue()
+        self.search = None
+        self.search_message_queue = Queue()
         self.is_searching = False
-        self.search_process = None
         self.board = None
 
     def run(self):
-        self._init_protocol()
-        self._init_search()
+        self._init_threads()
         if self.protocol == 'uci':
             while True:
                 # UCI
                 # Check if there is anything to receive
-                if self.uci_process.poll():
+                if not self.uci_message_queue.empty():
                     # Receive command and args (or more accurately objects)
-                    command, args = self.uci_process.recv()
+                    command, args = self.uci_message_queue.get()
                     match command:
                         case 'isalive':
                             self._isalive_command()
@@ -33,26 +35,26 @@ class Engine(object):
                             self._stopsearch_command()
                         case 'quit':
                             break
+                    self.uci_message_queue.task_done()
                 # Search
-                if self.uci_process.poll():
-                    command, args = self.uci_process.recv()
+                if not self.search_message_queue.empty():
+                    command, args = self.uci_message_queue.get()
                     if command == 'bestmove':
                         self._bestmove_command(args)
+                    self.search_message_queue.task_done()
         self._exit()
                 
 
-    def _init_protocol(self):
+    def _init_threads(self):
         self.protocol = input.strip()
         if self.protocol == 'uci':
-            conn = Pipe()
-            self.uci = Process(target=UCI("mario", "test"), args=(conn, ))
+            self.uci = UCI(author="mario", name="test", message_queue=self.uci_message_queue)
             self.uci.start()
-    
-    def _init_search(self):
-        print("Search initialization...")
+        # self.search = Search(message_queue=self.search_message_queue)
+        # self.search.start()
 
     def _isalive_command(self):
-        self.uci_process.send('isalive', None)
+        self.uci_message_queue.put(['isalive', None])
 
     def _position_command(self, settings : CD.PositionCommand):
         board = chess.Board(settings.fen)
@@ -61,21 +63,24 @@ class Engine(object):
         self.board = board
     
     def _startsearch_command(self, settings : CD.GoCommand):
+        # SEARCH!
         self.is_searching = True
-        # TODO!
         print("Start searching...")
     
     def _bestmove_command(self, settings : CD.BestMoveCommand):
         new_bestmove = settings.bestmove
-        self.uci_process.send('bestmove', CD.BestMoveCommand(bestmove=new_bestmove))
+        self.uci_message_queue.put(['bestmove', CD.BestMoveCommand(bestmove=new_bestmove)])
 
     def _stopsearch_command(self):
+        # SEARCH!
         self.is_searching = False
-        self.search_process.send()
+        self.search_message_queue.put(['stop', None])
         print("Stop searching...")
 
     def _exit(self):
-        self.search_process.send('quit', None)
+        self.search_message_queue.put(['quit', None])
         if self.uci.is_alive():
-            self.uci_process.send('quit', None)
+            self.uci_message_queue.put(['quit', None])
         # Wait for all processes to finish
+        self.uci_message_queue.join()
+        self.search_message_queue.join()

@@ -1,5 +1,7 @@
-# Alfa
+# Chess Engine
 [TOC]
+
+## Alpha-Beta
 
 ## UCI
 Initial assumptions:
@@ -20,6 +22,21 @@ Handles UCI commands (input/output) described below.
 * **commands_data.py**
 Contains dataclasses used in UCI communication.
 Basicly holds data for specific commands.
+
+### Threads
+||Engine class|UCI class|
+|-|-|-|
+|Thread 1|UCI communication|UCI Input|
+|Thread 2|Search|UCI Output|
+*Only UCI derives from Thread.*
+
+Methods provided by the Thread class that are used:
+```=
+run() − entry point for a thread, modified to work the way we want it to
+start() − starts a thread by calling the modified run method
+join() − waits for threads to terminate
+isAlive() − checks if a thread is still running
+```
 
 ### How it currently works:
 $$GUI\\
@@ -46,13 +63,6 @@ This command is sent to check if the engine is ready to receive commands.
 Usage:
 ```=
 isready
-```
-
-#### setoption
-Command used to set specific engine options.
-Usage:
-```=
-setoption name <option_name> value <option_value>
 ```
 
 #### ucinewgame [NOT SURE IF IS NEEDED]
