@@ -36,7 +36,6 @@ def hashGen():
             zobristNumbers[("en_passant", fromSquare, toSquare2)] = random.randint(1, 2 ** 64)
 
 
-
 # To musimy odpalać na początku gry, żeby wygenerować liczby do hashów oraz
 # by policzyć hash pozycji początkowej
 def hashInit(board):
@@ -80,7 +79,13 @@ def hash(board, prevHash, move, turn):
     hash = hashEnPassRights(board, hash)
     hash = hashCastlingRights(board, hash)
     board_interface.reverse_move(board)
-    # Ponieważ w szachach poza standardowymi ruchami są jeszcze roszady
+
+    #Jeżeli nasz ruch był Nullem (ponieważ oddajemy turę przeciwnikowi),
+    # tu chcemy zakończyć liczenie hasha.
+    if not bool(move):
+        return hash
+
+    # Ponieważ w szachach poza standardowymi ruchami są jeszcze promocje, roszady
     # i bicia w przelocie, musimy je wyifować, obawiam się
     if board_interface.promotion(move) is not None:
         fromSquare = board_interface.from_square(move)
