@@ -5,35 +5,34 @@ import alfa
 
 
 class Search(Thread):
-    def __init__(self, message_queue: Queue):
-        self.message_queue = message_queue
+    def __init__(self, input_message_queue: Queue, output_message_queue: Queue):
+        super().__init__()
+        self.input_message_queue = input_message_queue
+        self.output_message_queue = output_message_queue
+        self.bestmove = None
+        # It's really not necessary here
+        # self.board
 
-    def run(self):  # 'quit', 'searchposition', 'stop' [str, obj]
+    def run(self):
         while True:
-            if not self.message_queue.empty():
-                message, args = self.message_queue.get()
+            if not self.input_message_queue.empty():
+                message, args = self.input_message_queue.get()
                 match message:
                     case 'quit':
                         break
-                    case 'SearchPosition':
-                        return self._handle_searchposition_command(args)
+                    case 'searchposition':
+                        self._searchposition_command(args)
                     case 'stop':
-                        self._handle_stopsearch_command()
+                        self._stopsearch_command()
+        self._quit_command()
 
-    def _handle_searchposition_command(self, command: CD.StartSearchCommand):
-        self.position = command.board
-        print("DO SEARCH")
-        print(self.position)
-        BestMove = alfa.Search(self.position, command.depth, command.time)
-        print(f"DONE: {BestMove}")
-        BMC = CD.BestMoveCommand()
-        BMC.bestmove = BestMove
-        return (["bestmove", BMC])
+    def _searchposition_command(self, settings: CD.StartSearchCommand):
+        self.bestmove = alfa.Search(settings.board, settings.depth, settings.movetime)
+        self.output_message_queue.put(['bestmove', CD.BestMoveCommand(bestmove=self.bestmove)])
 
-    def _handle_stopsearch_command(self):
-        # self.message_queue.put([str, obj])
+    def _stopsearch_command(self):
         alfa.Stop()
-        # self.connection.send(BestMoveCommand(move=self.best_move))
+        self.output_message_queue.put(['bestmove', CD.BestMoveCommand(bestmove=self.bestmove)])
 
-    def _QuitCommand():
-        print("ELO")
+    def _quit_command(self):
+        print("ELO", flush=True)

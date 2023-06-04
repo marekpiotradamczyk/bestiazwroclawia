@@ -1,0 +1,664 @@
+2023-05-28 16:11:58,239 Arena 3.5.1
+2023-05-28 16:11:58,262
+2023-05-28 16:11:58,857**----------New game---2023-05-28 16:11:58,857 niedz. -------------
+2023-05-28 16:11:58,981**screen: 1920x1080
+2023-05-28 16:11:58,981**Monitors: 1
+2023-05-28 16:11:58,981**Monitor0: 1920x1080
+2023-05-28 16:11:58,981**FormMonitor: 0
+2023-05-28 16:11:58,981**DesktopRect: 0/0 .. 1920/1080
+2023-05-28 16:11:59,171**Loading  1
+2023-05-28 16:12:17,455**----------New game---2023-05-28 16:12:17,455 niedz. -------------
+2023-05-28 16:12:20,322*1*---------------------------Starting engine 1 Mai----------------------------
+2023-05-28 16:12:20,323*1*Configured Engine 1 Type:  Auto
+2023-05-28 16:12:20,323*1*Mai: Invalid command line
+2023-05-28 16:12:55,637**----------New game---2023-05-28 16:12:55,637 niedz. -------------
+2023-05-28 16:13:26,566*1*--------------------Starting engine 1 Hermann 2.8 64 bit--------------------
+2023-05-28 16:13:26,571*1*Configured Engine 1 Type:   UCI
+2023-05-28 16:13:26,572*1*Engine 1 dir: C:\Users\Tomek\Downloads\arena_3.5.1\Engines\Hermann
+2023-05-28 16:13:26,572*1*Engine 1 commandline: C:\Users\Tomek\Downloads\arena_3.5.1\Engines\Hermann\Hermann28_64.exe 
+2023-05-28 16:13:27,309*1*Child Process Prio Adj:  PID 11036 conhost.exe
+2023-05-28 16:13:27,337*1*Engine 1 ProcessID: 10460
+2023-05-28 16:13:27,337*1*Engine 1 Prio:32 ThreadPrio:0
+2023-05-28 16:13:27,364-->1:uci
+2023-05-28 16:13:27,364<--1:id name Hermann 2.8
+2023-05-28 16:13:27,364<--1:id author Volker Annuss
+2023-05-28 16:13:27,364<--1:option name Hash type spin default 3 min 1 max 32767
+2023-05-28 16:13:27,364<--1:option name Ponder type check default true
+2023-05-28 16:13:27,364<--1:option name OwnBook type check default true
+2023-05-28 16:13:27,364<--1:option name Clear Hash type button
+2023-05-28 16:13:27,365<--1:option name MultiPV type spin default 1 min 1 max 255
+2023-05-28 16:13:27,365<--1:option name UCI_Chess960 type check default false
+2023-05-28 16:13:27,365<--1:option name BookFile type string default Hermann.opn
+2023-05-28 16:13:27,365<--1:option name Opponent type string default unknown
+2023-05-28 16:13:27,365<--1:option name NumberOfProcessors type spin default 1 min 1 max 8
+2023-05-28 16:13:27,365<--1:option name NeuroMaterial type spin default 40 min 0 max 100
+2023-05-28 16:13:27,365<--1:option name NeuroWidth type spin default 800 min 1 max 10000
+2023-05-28 16:13:27,365<--1:option name MaterialFile type string default (internal)
+2023-05-28 16:13:27,365<--1:option name TimeLogfile type string default nul:
+2023-05-28 16:13:27,365<--1:uciok
+2023-05-28 16:13:27,365-->1:setoption name Hash value 128
+2023-05-28 16:13:27,372*1*Child Process Prio Adj:  PID 11036 conhost.exe
+2023-05-28 16:13:27,377-->1:isready
+2023-05-28 16:13:27,441<--1:readyok
+2023-05-28 16:13:30,002*1*Start calc, move no: 1
+2023-05-28 16:13:30,010-->1:ucinewgame
+2023-05-28 16:13:30,010-->1:isready
+2023-05-28 16:13:30,119-->1:position startpos moves g2g4
+2023-05-28 16:13:30,119-->1:go wtime 300000 btime 300000 winc 0 binc 0
+2023-05-28 16:13:30,482<--1:readyok
+2023-05-28 16:13:30,947<--1:bestmove d7d5 ponder e2e3
+2023-05-28 16:13:30,947*1*Found move:d7-d5
+2023-05-28 16:13:36,462*1*Start calc, move no: 2
+2023-05-28 16:13:36,467-->1:position startpos moves g2g4 d7d5
+2023-05-28 16:13:36,467-->1:go wtime 300000 btime 299177 winc 0 binc 0
+2023-05-28 16:13:36,467<--1:bestmove e2e3 ponder e7e5
+2023-05-28 16:13:36,467*1*Found move:e2-e3
+2023-05-28 16:13:41,501*1*Start calc, move no: 3
+2023-05-28 16:13:41,502-->1:position startpos moves g2g4 d7d5 e2e3
+2023-05-28 16:13:41,502-->1:go wtime 300000 btime 299177 winc 0 binc 0
+2023-05-28 16:13:41,503<--1:bestmove e7e5
+2023-05-28 16:13:41,503*1*Found move:e7-e5
+2023-05-28 16:15:22,332*1*Start calc, move no: 3
+2023-05-28 16:15:22,333-->1:position startpos moves g2g4 d7d5 e2e3
+2023-05-28 16:15:22,333-->1:go wtime 300000 btime 299177 winc 0 binc 0 searchmoves g8h6 g8f6 e8d7 d8d7 d8d6 c8d7 c8e6 c8f5 c8g4 b8d7 b8c6 b8a6 h7h6 h7h5 g7g6 g7g5 f7f6 f7f5 e7e6 c7c6 c7c5 b7b6 b7b5 a7a6 a7a5 d5d4
+2023-05-28 16:15:22,336<--1:info depth 1 seldepth 6 time 3 nodes 55 pv e7e6 score cp 13 hashfull 0 nps 18333
+2023-05-28 16:15:22,339<--1:info depth 2 seldepth 7 time 3 nodes 98 pv e7e6 d2d4 score cp -1 hashfull 0 nps 32667
+2023-05-28 16:15:22,340<--1:info depth 2 seldepth 7 time 3 nodes 132 pv g8f6 f2f4 score cp 2 lowerbound hashfull 0 nps 44000
+2023-05-28 16:15:22,343<--1:info depth 2 seldepth 10 time 4 nodes 218 pv g8f6 f2f3 score cp 6 hashfull 0 nps 54500
+2023-05-28 16:15:22,344<--1:info depth 3 seldepth 12 time 4 nodes 775 pv g8f6 f1b5 c7c6 score cp 17 hashfull 0 nps 193750
+2023-05-28 16:15:22,346<--1:info depth 4 seldepth 15 time 6 nodes 3465 pv g8f6 f2f3 h7h5 g4g5 score cp 7 hashfull 0 nps 577500
+2023-05-28 16:15:22,348<--1:info depth 4 seldepth 15 time 8 nodes 4492 pv d5d4 e3d4 d8d5 e1e2 score cp 8 lowerbound hashfull 0 nps 561500
+2023-05-28 16:15:22,351<--1:info depth 4 seldepth 15 time 9 nodes 5812 pv d5d4 f1b5 c7c6 b5c4 score cp 13 hashfull 0 nps 645778
+2023-05-28 16:15:22,356<--1:info depth 5 seldepth 18 time 16 nodes 14813 pv d5d4 d1f3 e7e5 e3d4 e5d4 f3e4 f8e7 score cp 18 hashfull 0 nps 925813
+2023-05-28 16:15:22,374<--1:info depth 6 seldepth 21 time 41 nodes 46540 pv d5d4 c2c3 d8d5 f2f3 d4d3 d1b3 score cp 13 hashfull 2 nps 1135122
+2023-05-28 16:15:22,417<--1:info depth 7 seldepth 25 time 84 nodes 105600 pv d5d4 c2c3 d4d3 d1a4 c8d7 a4f4 d7c6 g1f3 score cp 16 hashfull 6 nps 1257143
+2023-05-28 16:15:22,563<--1:info depth 8 seldepth 29 time 230 nodes 321424 pv d5d4 g4g5 e7e5 e3d4 e5d4 d2d3 c7c5 f2f4 score cp 18 hashfull 18 nps 1397496
+2023-05-28 16:15:23,063<--1:info depth 9 seldepth 29 time 730 nodes 1047318 pv d5d4 f1g2 e7e5 e3d4 e5d4 d1e2 d8e7 g4g5 h7h6 h2h4 h6g5 h4g5 h8h1 g2h1 score cp 18 hashfull 61 nps 1434682
+2023-05-28 16:15:24,024<--1:info depth 10 seldepth 32 time 1691 nodes 2401328 pv d5d4 f1g2 e7e5 e3d4 e5d4 d1e2 d8e7 g4g5 f7f6 f2f4 f6g5 f4g5 score cp 19 hashfull 144 nps 1420064
+2023-05-28 16:15:24,027<--1:info currmove b8c6 currmovenumber 2
+2023-05-28 16:15:24,087<--1:info currmove c7c5 currmovenumber 3
+2023-05-28 16:15:24,115<--1:info currmove c7c6 currmovenumber 4
+2023-05-28 16:15:24,127<--1:info currmove g8f6 currmovenumber 5
+2023-05-28 16:15:24,138<--1:info currmove d8d7 currmovenumber 6
+2023-05-28 16:15:24,142<--1:info currmove f7f6 currmovenumber 7
+2023-05-28 16:15:24,152<--1:info currmove h7h5 currmovenumber 8
+2023-05-28 16:15:24,164<--1:info currmove e7e6 currmovenumber 9
+2023-05-28 16:15:24,169<--1:info currmove f7f5 currmovenumber 10
+2023-05-28 16:15:24,173<--1:info currmove g8h6 currmovenumber 11
+2023-05-28 16:15:24,179<--1:info currmove g7g5 currmovenumber 12
+2023-05-28 16:15:24,183<--1:info currmove d8d6 currmovenumber 13
+2023-05-28 16:15:24,185<--1:info currmove g7g6 currmovenumber 14
+2023-05-28 16:15:24,200<--1:info currmove c8f5 currmovenumber 15
+2023-05-28 16:15:24,201<--1:info currmove h7h6 currmovenumber 16
+2023-05-28 16:15:24,202<--1:info currmove b7b6 currmovenumber 17
+2023-05-28 16:15:24,220<--1:info currmove a7a6 currmovenumber 18
+2023-05-28 16:15:24,243<--1:info currmove c8e6 currmovenumber 19
+2023-05-28 16:15:24,243<--1:info currmove c8d7 currmovenumber 20
+2023-05-28 16:15:24,268<--1:info currmove b8a6 currmovenumber 21
+2023-05-28 16:15:24,269<--1:info currmove a7a5 currmovenumber 22
+2023-05-28 16:15:24,282<--1:info currmove b8d7 currmovenumber 23
+2023-05-28 16:15:24,283<--1:info currmove b7b5 currmovenumber 24
+2023-05-28 16:15:24,284<--1:info currmove c8g4 currmovenumber 25
+2023-05-28 16:15:24,285<--1:info currmove e8d7 currmovenumber 26
+2023-05-28 16:15:24,285<--1:info currmove d5d4 currmovenumber 1
+2023-05-28 16:15:26,707<--1:info depth 11 seldepth 34 time 4374 nodes 6323274 pv d5d4 f1g2 c7c5 d1e2 b8c6 f2f4 e7e6 b1a3 d8h4 e1d1 g8f6 g4g5 score cp 18 hashfull 367 nps 1445650
+2023-05-28 16:15:26,710<--1:info currmove b8c6 currmovenumber 2
+2023-05-28 16:15:26,954<--1:info currmove c7c5 currmovenumber 3
+2023-05-28 16:15:27,025<--1:info currmove c8d7 currmovenumber 4
+2023-05-28 16:15:27,094<--1:info currmove a7a6 currmovenumber 5
+2023-05-28 16:15:27,098<--1:info currmove b7b6 currmovenumber 6
+2023-05-28 16:15:27,217<--1:info currmove g7g6 currmovenumber 7
+2023-05-28 16:15:27,232<--1:info currmove a7a5 currmovenumber 8
+2023-05-28 16:15:27,238<--1:info currmove c7c6 currmovenumber 9
+2023-05-28 16:15:27,269<--1:info currmove h7h5 currmovenumber 10
+2023-05-28 16:15:27,304<--1:info currmove g8f6 currmovenumber 11
+2023-05-28 16:15:27,325<--1:info currmove f7f6 currmovenumber 12
+2023-05-28 16:15:27,400<--1:info currmove g8h6 currmovenumber 13
+2023-05-28 16:15:27,407<--1:info currmove e7e6 currmovenumber 14
+2023-05-28 16:15:27,420<--1:info currmove f7f5 currmovenumber 15
+2023-05-28 16:15:27,473<--1:info currmove d8d7 currmovenumber 16
+2023-05-28 16:15:27,530<--1:info currmove d8d6 currmovenumber 17
+2023-05-28 16:15:27,539<--1:info currmove b7b5 currmovenumber 18
+2023-05-28 16:15:27,547<--1:info currmove h7h6 currmovenumber 19
+2023-05-28 16:15:27,550<--1:info currmove c8e6 currmovenumber 20
+2023-05-28 16:15:27,554<--1:info currmove b8d7 currmovenumber 21
+2023-05-28 16:15:27,556<--1:info currmove b8a6 currmovenumber 22
+2023-05-28 16:15:27,560<--1:info currmove e8d7 currmovenumber 23
+2023-05-28 16:15:27,560<--1:info currmove c8f5 currmovenumber 24
+2023-05-28 16:15:27,560<--1:info currmove g7g5 currmovenumber 25
+2023-05-28 16:15:27,565<--1:info currmove c8g4 currmovenumber 26
+2023-05-28 16:15:27,567<--1:info currmove d5d4 currmovenumber 1
+2023-05-28 16:15:34,787<--1:info depth 12 seldepth 37 time 12454 nodes 18093674 pv d5d4 d1e2 c7c5 f2f4 b8c6 f1g2 e7e6 b1a3 c8d7 g4g5 h7h6 h2h4 f8d6 score cp 17 hashfull 816 nps 1452840
+2023-05-28 16:15:34,790<--1:info currmove b8c6 currmovenumber 2
+2023-05-28 16:15:34,975<--1:info currmove b7b6 currmovenumber 3
+2023-05-28 16:15:35,529<--1:info currmove c7c5 currmovenumber 4
+2023-05-28 16:15:36,021<--1:info currmove c8d7 currmovenumber 5
+2023-05-28 16:15:36,208<--1:info currmove f7f6 currmovenumber 6
+2023-05-28 16:15:36,361<--1:info currmove f7f5 currmovenumber 7
+2023-05-28 16:15:36,420<--1:info currmove h7h5 currmovenumber 8
+2023-05-28 16:15:37,655<--1:info currmove d8d7 currmovenumber 9
+2023-05-28 16:15:37,757<--1:info currmove c7c6 currmovenumber 10
+2023-05-28 16:15:37,835<--1:info currmove g8f6 currmovenumber 11
+2023-05-28 16:15:37,914<--1:info currmove g7g6 currmovenumber 12
+2023-05-28 16:15:37,952<--1:info currmove e7e6 currmovenumber 13
+2023-05-28 16:15:37,979<--1:info currmove d8d6 currmovenumber 14
+2023-05-28 16:15:38,146<--1:info currmove a7a5 currmovenumber 15
+2023-05-28 16:15:38,147<--1:info currmove g7g5 currmovenumber 16
+2023-05-28 16:15:38,149<--1:info currmove g8h6 currmovenumber 17
+2023-05-28 16:15:38,194<--1:info currmove a7a6 currmovenumber 18
+2023-05-28 16:15:38,926<--1:info currmove c8e6 currmovenumber 19
+2023-05-28 16:15:38,927<--1:info currmove b8a6 currmovenumber 20
+2023-05-28 16:15:38,929<--1:info currmove h7h6 currmovenumber 21
+2023-05-28 16:15:39,060<--1:info currmove b8d7 currmovenumber 22
+2023-05-28 16:15:39,061<--1:info currmove b7b5 currmovenumber 23
+2023-05-28 16:15:39,061<--1:info currmove c8f5 currmovenumber 24
+2023-05-28 16:15:39,062<--1:info currmove c8g4 currmovenumber 25
+2023-05-28 16:15:39,064<--1:info currmove e8d7 currmovenumber 26
+2023-05-28 16:15:39,064<--1:info depth 12 seldepth 38 time 16731 nodes 24426378 hashfull 922 nps 1459947 score cp 17
+2023-05-28 16:15:39,065<--1:bestmove d5d4 ponder d1e2
+2023-05-28 16:15:39,065*1*Found move:d5-d4
+2023-05-28 16:16:14,757*1*Child Process Prio Adj:  PID 11036 conhost.exe
+2023-05-28 16:16:14,757-->1:setoption name Hash value 128
+2023-05-28 16:16:14,757-->1:setoption name NumberOfProcessors value 1
+2023-05-28 16:16:15,009-->1:setoption name OwnBook value true
+2023-05-28 16:16:20,252**----------New game---2023-05-28 16:16:20,252 niedz. -------------
+2023-05-28 16:16:53,825-->1:isready
+2023-05-28 16:16:53,826<--1:readyok
+2023-05-28 16:16:53,837-->1:ucinewgame
+2023-05-28 16:16:53,837-->1:isready
+2023-05-28 16:16:53,947-->1:position startpos
+2023-05-28 16:16:53,947-->1:go infinite
+2023-05-28 16:16:54,300<--1:readyok
+2023-05-28 16:16:54,744<--1:bestmove e2e4 ponder e7e5
+2023-05-28 16:17:04,715**Time for starting engines for analysis:0 ms
+2023-05-28 16:17:04,715-->1:isready
+2023-05-28 16:17:04,716<--1:readyok
+2023-05-28 16:17:04,729-->1:position startpos
+2023-05-28 16:17:04,729-->1:go infinite
+2023-05-28 16:17:04,729**Time for starting analysis:16
+2023-05-28 16:17:05,177<--1:bestmove e2e4 ponder e7e5
+2023-05-28 16:18:03,861**----------New game---2023-05-28 16:18:03,861 niedz. -------------
+2023-05-28 16:18:14,047*1*Start calc, move no: 1
+2023-05-28 16:18:14,049-->1:ucinewgame
+2023-05-28 16:18:14,050-->1:isready
+2023-05-28 16:18:14,152-->1:position startpos moves d2d4
+2023-05-28 16:18:14,152-->1:go wtime 300000 btime 300000 winc 0 binc 0
+2023-05-28 16:18:14,592<--1:readyok
+2023-05-28 16:18:15,047<--1:bestmove d7d5 ponder c2c4
+2023-05-28 16:18:15,048*1*Found move:d7-d5
+2023-05-28 16:18:47,469*1*Start calc, move no: 3
+2023-05-28 16:18:47,472-->1:position startpos moves d2d4 d7d5 c1f4
+2023-05-28 16:18:47,473-->1:go wtime 268046 btime 299114 winc 0 binc 0
+2023-05-28 16:18:47,474<--1:bestmove c7c5 ponder e2e4
+2023-05-28 16:18:47,475*1*Found move:c7-c5
+2023-05-28 16:19:03,604*1*Start calc, move no: 5
+2023-05-28 16:19:03,606-->1:position startpos moves d2d4 d7d5 c1f4 c7c5 b1a3
+2023-05-28 16:19:03,608-->1:go wtime 252374 btime 299114 winc 0 binc 0
+2023-05-28 16:19:03,608<--1:info depth 1 seldepth 9 time 0 nodes 113 pv d8b6 score cp 7 hashfull 0 nps 113000
+2023-05-28 16:19:03,610<--1:info depth 2 seldepth 11 time 0 nodes 404 pv d8b6 d4c5 b6b4 d1d2 b4b2 score cp 40 hashfull 0 nps 404000
+2023-05-28 16:19:03,613<--1:info depth 4 seldepth 19 time 5 nodes 6352 pv d8b6 e2e4 b6b4 d1d2 d5e4 f1b5 b8c6 d2b4 c5b4 score cp 39 hashfull 0 nps 1270400
+2023-05-28 16:19:03,616<--1:info depth 5 seldepth 19 time 8 nodes 10988 pv d8b6 e2e4 b6b4 d1d2 d5e4 c2c3 score cp 39 hashfull 0 nps 1373500
+2023-05-28 16:19:03,646<--1:info depth 6 seldepth 30 time 38 nodes 54155 pv d8b6 e2e4 c5d4 e4d5 b6b4 f4d2 b4b2 f1b5 b8d7 score cp 48 hashfull 3 nps 1425132
+2023-05-28 16:19:03,724<--1:info depth 7 seldepth 30 time 116 nodes 150345 pv d8b6 e2e4 c8d7 f4b8 b6b4 c2c3 b4b2 d1c1 b2c1 a1c1 a8b8 e4d5 c5d4 c3d4 score cp 39 hashfull 9 nps 1296078
+2023-05-28 16:19:03,845<--1:info depth 8 seldepth 30 time 237 nodes 314083 pv d8b6 e2e4 c8d7 d1c1 c5d4 e4d5 b6a5 c2c3 a5d5 c3d4 d5d4 score cp 54 hashfull 18 nps 1325245
+2023-05-28 16:19:03,878<--1:info depth 8 seldepth 30 time 269 nodes 361805 pv b8c6 e2e3 d8a5 c2c3 c5d4 e3d4 e7e5 d1e2 f8a3 b2a3 score cp 54 lowerbound hashfull 20 nps 1345000
+2023-05-28 16:19:03,925<--1:info depth 8 seldepth 30 time 317 nodes 433398 pv b8c6 d1d2 c6d4 e2e3 d4c6 g1f3 c5c4 e1c1 score cp 57 hashfull 23 nps 1367186
+2023-05-28 16:19:04,337<--1:info depth 9 seldepth 30 time 729 nodes 1065768 pv b8c6 g1f3 d8b6 e2e4 d5e4 a3b5 e7e5 f4e5 c6e5 f3e5 c5d4 d1d4 b6d4 b5d4 score cp 58 hashfull 55 nps 1461959
+2023-05-28 16:19:04,713<--1:info depth 10 seldepth 30 time 1104 nodes 1619846 pv b8c6 g1f3 d8b6 e2e4 c6d4 f3d4 c5d4 a3b5 b6a5 f4d2 a5d8 score cp 52 hashfull 85 nps 1467252
+2023-05-28 16:19:04,716<--1:info currmove d8b6 currmovenumber 2
+2023-05-28 16:19:04,982<--1:info depth 10 seldepth 30 time 1374 nodes 2009211 pv d8b6 e2e4 c8d7 d4c5 b6b2 f1e2 b2a3 d1b1 score cp 52 lowerbound hashfull 108 nps 1462308
+2023-05-28 16:19:05,983<--1:info depth 10 seldepth 33 time 2374 nodes 3471036 pv b8c6 g1f3 d8b6 e2e4 c6d4 f3d4 c5d4 a3b5 b6a5 f4d2 a5d8 score cp 52 hashfull 188 nps 1462104
+2023-05-28 16:19:05,989<--1:info currmove e7e6 currmovenumber 3
+2023-05-28 16:19:06,032<--1:info currmove c8d7 currmovenumber 4
+2023-05-28 16:19:06,041<--1:info currmove d8a5 currmovenumber 5
+2023-05-28 16:19:06,052<--1:info currmove g8f6 currmovenumber 6
+2023-05-28 16:19:06,061<--1:info currmove b8d7 currmovenumber 7
+2023-05-28 16:19:06,068<--1:info currmove c8g4 currmovenumber 8
+2023-05-28 16:19:06,078<--1:info currmove g7g5 currmovenumber 9
+2023-05-28 16:19:06,082<--1:info currmove c8e6 currmovenumber 10
+2023-05-28 16:19:06,083<--1:info currmove f7f5 currmovenumber 11
+2023-05-28 16:19:06,088<--1:info currmove a7a6 currmovenumber 12
+2023-05-28 16:19:06,095<--1:info currmove e7e5 currmovenumber 13
+2023-05-28 16:19:06,098<--1:info currmove a7a5 currmovenumber 14
+2023-05-28 16:19:06,099<--1:info currmove h7h5 currmovenumber 15
+2023-05-28 16:19:06,100<--1:info currmove c8h3 currmovenumber 16
+2023-05-28 16:19:06,102<--1:info currmove c5d4 currmovenumber 17
+2023-05-28 16:19:06,107<--1:info currmove f7f6 currmovenumber 18
+2023-05-28 16:19:06,108<--1:info currmove c8f5 currmovenumber 19
+2023-05-28 16:19:06,117<--1:info currmove b7b5 currmovenumber 20
+2023-05-28 16:19:06,119<--1:info currmove b7b6 currmovenumber 21
+2023-05-28 16:19:06,121<--1:info currmove g7g6 currmovenumber 22
+2023-05-28 16:19:06,122<--1:info currmove c5c4 currmovenumber 23
+2023-05-28 16:19:06,122<--1:info currmove h7h6 currmovenumber 24
+2023-05-28 16:19:06,123<--1:info currmove g8h6 currmovenumber 25
+2023-05-28 16:19:06,124<--1:info currmove d8d7 currmovenumber 26
+2023-05-28 16:19:06,125<--1:info currmove b8a6 currmovenumber 27
+2023-05-28 16:19:06,125<--1:info currmove e8d7 currmovenumber 28
+2023-05-28 16:19:06,126<--1:info currmove d8d6 currmovenumber 29
+2023-05-28 16:19:06,127<--1:info currmove d8c7 currmovenumber 30
+2023-05-28 16:19:06,127<--1:info currmove b8c6 currmovenumber 1
+2023-05-28 16:19:08,082<--1:info depth 11 seldepth 40 time 4474 nodes 6370350 pv b8c6 e2e3 c5d4 e3d4 d8a5 f4d2 a5b6 d2c3 e7e6 f2f4 f8a3 b2a3 score cp 14 hashfull 350 nps 1423860
+2023-05-28 16:19:08,087<--1:info currmove d8b6 currmovenumber 2
+2023-05-28 16:19:08,255<--1:info depth 11 seldepth 40 time 4647 nodes 6615517 pv d8b6 e2e4 d5e4 f1b5 c8d7 b5c6 score cp 14 lowerbound hashfull 362 nps 1423610
+2023-05-28 16:19:10,001<--1:info depth 11 seldepth 41 time 6393 nodes 9083708 pv d8b6 e2e4 b6b4 c2c3 b4b2 a3b5 b8a6 e4d5 c5d4 a1c1 d4c3 b5c3 c8d7 f1a6 b7a6 score cp 47 hashfull 480 nps 1420883
+2023-05-28 16:19:10,004<--1:info currmove e7e6 currmovenumber 3
+2023-05-28 16:19:10,331<--1:info currmove d8a5 currmovenumber 4
+2023-05-28 16:19:10,352<--1:info currmove c8g4 currmovenumber 5
+2023-05-28 16:19:10,375<--1:info currmove c8f5 currmovenumber 6
+2023-05-28 16:19:10,394<--1:info currmove c8d7 currmovenumber 7
+2023-05-28 16:19:10,438<--1:info currmove g8f6 currmovenumber 8
+2023-05-28 16:19:10,489<--1:info currmove b8d7 currmovenumber 9
+2023-05-28 16:19:10,521<--1:info currmove a7a6 currmovenumber 10
+2023-05-28 16:19:10,542<--1:info currmove c5d4 currmovenumber 11
+2023-05-28 16:19:10,557<--1:info currmove e7e5 currmovenumber 12
+2023-05-28 16:19:10,568<--1:info currmove c8e6 currmovenumber 13
+2023-05-28 16:19:10,575<--1:info currmove g7g5 currmovenumber 14
+2023-05-28 16:19:10,583<--1:info currmove h7h5 currmovenumber 15
+2023-05-28 16:19:10,584<--1:info currmove b7b5 currmovenumber 16
+2023-05-28 16:19:10,586<--1:info currmove g8h6 currmovenumber 17
+2023-05-28 16:19:10,586<--1:info currmove d8d7 currmovenumber 18
+2023-05-28 16:19:10,587<--1:info currmove c8h3 currmovenumber 19
+2023-05-28 16:19:10,588<--1:info currmove g7g6 currmovenumber 20
+2023-05-28 16:19:10,589<--1:info currmove f7f6 currmovenumber 21
+2023-05-28 16:19:10,589<--1:info currmove b8a6 currmovenumber 22
+2023-05-28 16:19:10,617<--1:info currmove b7b6 currmovenumber 23
+2023-05-28 16:19:10,618<--1:info currmove f7f5 currmovenumber 24
+2023-05-28 16:19:10,629<--1:info currmove h7h6 currmovenumber 25
+2023-05-28 16:19:10,630<--1:info currmove a7a5 currmovenumber 26
+2023-05-28 16:19:10,631<--1:info currmove e8d7 currmovenumber 27
+2023-05-28 16:19:10,631<--1:info currmove c5c4 currmovenumber 28
+2023-05-28 16:19:10,632<--1:info currmove d8d6 currmovenumber 29
+2023-05-28 16:19:10,633<--1:info currmove d8c7 currmovenumber 30
+2023-05-28 16:19:10,634<--1:info currmove d8b6 currmovenumber 1
+2023-05-28 16:19:16,355<--1:info depth 12 seldepth 41 time 12746 nodes 17873226 pv d8b6 e2e4 a7a6 e4d5 b6b2 a3c4 b2c3 f4d2 c3d4 c4b6 c8g4 g1e2 a8a7 e2d4 g4d1 a1d1 c5d4 score cp 31 hashfull 810 nps 1402262
+2023-05-28 16:19:16,358<--1:info currmove b8c6 currmovenumber 2
+2023-05-28 16:19:16,487<--1:info currmove e7e6 currmovenumber 3
+2023-05-28 16:19:16,820<--1:info currmove g8f6 currmovenumber 4
+2023-05-28 16:19:16,951<--1:info currmove c8d7 currmovenumber 5
+2023-05-28 16:19:17,016<--1:info currmove b8d7 currmovenumber 6
+2023-05-28 16:19:17,154<--1:info currmove c8g4 currmovenumber 7
+2023-05-28 16:19:17,282<--1:info currmove d8a5 currmovenumber 8
+2023-05-28 16:19:17,549<--1:info currmove a7a6 currmovenumber 9
+2023-05-28 16:19:17,608<--1:info currmove b8a6 currmovenumber 10
+2023-05-28 16:19:17,670<--1:info currmove c8f5 currmovenumber 11
+2023-05-28 16:19:17,783<--1:info currmove c5d4 currmovenumber 12
+2023-05-28 16:19:18,217<--1:info depth 12 seldepth 41 time 14609 nodes 20477586 pv c5d4 d1d4 b8c6 d4a4 c8d7 e2e3 e7e5 f4g3 f7f6 a1d1 c6d4 f1b5 score cp 31 lowerbound hashfull 862 nps 1401710
+2023-05-28 16:19:19,093<--1:info depth 12 seldepth 41 time 15485 nodes 21757070 pv c5d4 d1d4 b8c6 d4a4 c8d7 f4d2 e7e5 e2e3 g8f6 f2f3 f8c5 a4b3 b7b6 score cp 37 hashfull 879 nps 1405042
+2023-05-28 16:19:19,096<--1:info currmove e7e5 currmovenumber 13
+2023-05-28 16:19:19,253<--1:info currmove g7g5 currmovenumber 14
+2023-05-28 16:19:19,290<--1:info currmove c8e6 currmovenumber 15
+2023-05-28 16:19:19,299<--1:info currmove f7f5 currmovenumber 16
+2023-05-28 16:19:19,446<--1:info currmove g7g6 currmovenumber 17
+2023-05-28 16:19:19,575<--1:info currmove b7b5 currmovenumber 18
+2023-05-28 16:19:19,577<--1:info currmove c8h3 currmovenumber 19
+2023-05-28 16:19:19,578<--1:info currmove b7b6 currmovenumber 20
+2023-05-28 16:19:19,579<--1:info currmove d8d7 currmovenumber 21
+2023-05-28 16:19:19,581<--1:info currmove g8h6 currmovenumber 22
+2023-05-28 16:19:19,616<--1:info currmove f7f6 currmovenumber 23
+2023-05-28 16:19:19,799<--1:info currmove h7h6 currmovenumber 24
+2023-05-28 16:19:19,865<--1:info currmove c5c4 currmovenumber 25
+2023-05-28 16:19:19,993<--1:info currmove a7a5 currmovenumber 26
+2023-05-28 16:19:20,021<--1:info currmove e8d7 currmovenumber 27
+2023-05-28 16:19:20,021<--1:info currmove h7h5 currmovenumber 28
+2023-05-28 16:19:20,102<--1:info currmove d8d6 currmovenumber 29
+2023-05-28 16:19:20,102<--1:info currmove d8c7 currmovenumber 30
+2023-05-28 16:19:20,103<--1:info depth 12 seldepth 41 time 16495 nodes 23158621 hashfull 900 nps 1403978 score cp 37
+2023-05-28 16:19:20,104<--1:bestmove c5d4 ponder d1d4
+2023-05-28 16:19:20,105*1*Found move:c5xd4
+2023-05-28 16:19:48,915*1*Start calc, move no: 7
+2023-05-28 16:19:48,917-->1:position startpos moves d2d4 d7d5 c1f4 c7c5 b1a3 c5d4 a3b5
+2023-05-28 16:19:48,920-->1:go wtime 224062 btime 282619 winc 0 binc 0
+2023-05-28 16:19:48,921<--1:info depth 1 seldepth 9 time 0 nodes 118 pv d8a5 f4d2 a5b5 e2e3 b5b2 a1b1 b2a2 b1b7 score cp 244 hashfull 0 nps 118000
+2023-05-28 16:19:48,925<--1:info depth 4 seldepth 15 time 3 nodes 4377 pv d8a5 f4d2 a5b5 e2e3 b5b2 a1b1 b2a2 b1b7 score cp 259 hashfull 0 nps 1459000
+2023-05-28 16:19:48,937<--1:info depth 6 seldepth 19 time 16 nodes 22762 pv d8a5 f4d2 a5b5 e2e3 b5b2 a1b1 b2a2 b1b7 score cp 274 hashfull 1 nps 1422625
+2023-05-28 16:19:48,972<--1:info depth 7 seldepth 21 time 51 nodes 73679 pv d8a5 f4d2 a5b5 e2e3 b5b2 a1b1 b2a2 b1b7 score cp 290 hashfull 3 nps 1444686
+2023-05-28 16:19:49,058<--1:info depth 8 seldepth 24 time 137 nodes 198944 pv d8a5 f4d2 a5b5 e2e3 b5b2 a1b1 b2a2 b1b7 score cp 295 hashfull 9 nps 1452146
+2023-05-28 16:19:49,336<--1:info depth 9 seldepth 31 time 415 nodes 613900 pv d8a5 f4d2 a5b5 e2e3 b5b2 a1b1 b2a2 score cp 301 hashfull 29 nps 1479277
+2023-05-28 16:19:50,019<--1:info depth 10 seldepth 31 time 1098 nodes 1669740 pv d8a5 f4d2 a5b5 b2b3 e7e5 e2e3 b5c5 e3d4 c5d4 f1b5 c8d7 g1e2 score cp 301 hashfull 77 nps 1520710
+2023-05-28 16:19:50,022<--1:info currmove d8b6 currmovenumber 2
+2023-05-28 16:19:50,026<--1:info currmove a7a6 currmovenumber 3
+2023-05-28 16:19:50,027<--1:info currmove c8d7 currmovenumber 4
+2023-05-28 16:19:50,028<--1:info currmove b8c6 currmovenumber 5
+2023-05-28 16:19:50,030<--1:info currmove b8a6 currmovenumber 6
+2023-05-28 16:19:50,031<--1:info currmove e7e5 currmovenumber 7
+2023-05-28 16:19:50,032<--1:info currmove g7g5 currmovenumber 8
+2023-05-28 16:19:50,032<--1:info currmove c8h3 currmovenumber 9
+2023-05-28 16:19:50,034<--1:info currmove d4d3 currmovenumber 10
+2023-05-28 16:19:50,037<--1:info currmove c8g4 currmovenumber 11
+2023-05-28 16:19:50,038<--1:info currmove g8h6 currmovenumber 12
+2023-05-28 16:19:50,039<--1:info currmove c8f5 currmovenumber 13
+2023-05-28 16:19:50,040<--1:info currmove d8d7 currmovenumber 14
+2023-05-28 16:19:50,040<--1:info currmove e8d7 currmovenumber 15
+2023-05-28 16:19:50,041<--1:info currmove e7e6 currmovenumber 16
+2023-05-28 16:19:50,042<--1:info currmove g7g6 currmovenumber 17
+2023-05-28 16:19:50,043<--1:info currmove b7b6 currmovenumber 18
+2023-05-28 16:19:50,044<--1:info currmove f7f5 currmovenumber 19
+2023-05-28 16:19:50,044<--1:info currmove c8e6 currmovenumber 20
+2023-05-28 16:19:50,045<--1:info currmove b8d7 currmovenumber 21
+2023-05-28 16:19:50,046<--1:info currmove g8f6 currmovenumber 22
+2023-05-28 16:19:50,047<--1:info currmove h7h5 currmovenumber 23
+2023-05-28 16:19:50,047<--1:info currmove a7a5 currmovenumber 24
+2023-05-28 16:19:50,048<--1:info currmove h7h6 currmovenumber 25
+2023-05-28 16:19:50,049<--1:info currmove f7f6 currmovenumber 26
+2023-05-28 16:19:50,049<--1:info currmove d8d6 currmovenumber 27
+2023-05-28 16:19:50,051<--1:info currmove d8c7 currmovenumber 28
+2023-05-28 16:19:50,054<--1:info currmove d8a5 currmovenumber 1
+2023-05-28 16:19:51,067<--1:info depth 11 seldepth 31 time 2145 nodes 3294781 pv d8a5 d1d2 a5b5 e1c1 b8c6 g1f3 b5c4 f3d4 c4a2 d4b3 g8f6 e2e3 e7e5 score cp 309 hashfull 151 nps 1536028
+2023-05-28 16:19:51,072<--1:info currmove d8b6 currmovenumber 2
+2023-05-28 16:19:51,076<--1:info currmove e7e6 currmovenumber 3
+2023-05-28 16:19:51,077<--1:info currmove a7a6 currmovenumber 4
+2023-05-28 16:19:51,078<--1:info currmove d8d6 currmovenumber 5
+2023-05-28 16:19:51,079<--1:info currmove d8c7 currmovenumber 6
+2023-05-28 16:19:51,080<--1:info currmove b8c6 currmovenumber 7
+2023-05-28 16:19:51,082<--1:info currmove c8d7 currmovenumber 8
+2023-05-28 16:19:51,084<--1:info currmove e7e5 currmovenumber 9
+2023-05-28 16:19:51,086<--1:info currmove h7h5 currmovenumber 10
+2023-05-28 16:19:51,087<--1:info currmove c8f5 currmovenumber 11
+2023-05-28 16:19:51,088<--1:info currmove c8g4 currmovenumber 12
+2023-05-28 16:19:51,089<--1:info currmove c8h3 currmovenumber 13
+2023-05-28 16:19:51,090<--1:info currmove c8e6 currmovenumber 14
+2023-05-28 16:19:51,091<--1:info currmove g7g5 currmovenumber 15
+2023-05-28 16:19:51,092<--1:info currmove d8d7 currmovenumber 16
+2023-05-28 16:19:51,092<--1:info currmove f7f6 currmovenumber 17
+2023-05-28 16:19:51,093<--1:info currmove e8d7 currmovenumber 18
+2023-05-28 16:19:51,094<--1:info currmove d4d3 currmovenumber 19
+2023-05-28 16:19:51,094<--1:info currmove g8f6 currmovenumber 20
+2023-05-28 16:19:51,095<--1:info currmove b8a6 currmovenumber 21
+2023-05-28 16:19:51,096<--1:info currmove h7h6 currmovenumber 22
+2023-05-28 16:19:51,096<--1:info currmove g7g6 currmovenumber 23
+2023-05-28 16:19:51,097<--1:info currmove f7f5 currmovenumber 24
+2023-05-28 16:19:51,098<--1:info currmove g8h6 currmovenumber 25
+2023-05-28 16:19:51,099<--1:info currmove b8d7 currmovenumber 26
+2023-05-28 16:19:51,101<--1:info currmove b7b6 currmovenumber 27
+2023-05-28 16:19:51,103<--1:info currmove a7a5 currmovenumber 28
+2023-05-28 16:19:51,104<--1:info currmove d8a5 currmovenumber 1
+2023-05-28 16:19:51,721<--1:info depth 12 seldepth 33 time 2800 nodes 4222020 pv d8a5 d1d2 a5b5 e1c1 b8c6 g1f3 b5a4 f3d4 c6d4 d2d4 a4d4 d1d4 g8f6 f2f3 score cp 307 hashfull 193 nps 1507864
+2023-05-28 16:19:51,724<--1:info currmove d8b6 currmovenumber 2
+2023-05-28 16:19:51,738<--1:info currmove b8a6 currmovenumber 3
+2023-05-28 16:19:51,741<--1:info currmove d8d6 currmovenumber 4
+2023-05-28 16:19:51,742<--1:info currmove d8c7 currmovenumber 5
+2023-05-28 16:19:51,744<--1:info currmove g7g5 currmovenumber 6
+2023-05-28 16:19:51,745<--1:info currmove g8f6 currmovenumber 7
+2023-05-28 16:19:51,746<--1:info currmove c8f5 currmovenumber 8
+2023-05-28 16:19:51,748<--1:info currmove c8d7 currmovenumber 9
+2023-05-28 16:19:51,751<--1:info currmove a7a6 currmovenumber 10
+2023-05-28 16:19:51,752<--1:info currmove b8c6 currmovenumber 11
+2023-05-28 16:19:51,756<--1:info currmove e8d7 currmovenumber 12
+2023-05-28 16:19:51,757<--1:info currmove e7e6 currmovenumber 13
+2023-05-28 16:19:51,759<--1:info currmove c8g4 currmovenumber 14
+2023-05-28 16:19:51,760<--1:info currmove c8h3 currmovenumber 15
+2023-05-28 16:19:51,761<--1:info currmove c8e6 currmovenumber 16
+2023-05-28 16:19:51,761<--1:info currmove g7g6 currmovenumber 17
+2023-05-28 16:19:51,762<--1:info currmove h7h6 currmovenumber 18
+2023-05-28 16:19:51,763<--1:info currmove g8h6 currmovenumber 19
+2023-05-28 16:19:51,764<--1:info currmove d4d3 currmovenumber 20
+2023-05-28 16:19:51,764<--1:info currmove b8d7 currmovenumber 21
+2023-05-28 16:19:51,765<--1:info currmove e7e5 currmovenumber 22
+2023-05-28 16:19:51,767<--1:info currmove h7h5 currmovenumber 23
+2023-05-28 16:19:51,768<--1:info currmove a7a5 currmovenumber 24
+2023-05-28 16:19:51,770<--1:info currmove f7f6 currmovenumber 25
+2023-05-28 16:19:51,770<--1:info currmove f7f5 currmovenumber 26
+2023-05-28 16:19:51,771<--1:info currmove b7b6 currmovenumber 27
+2023-05-28 16:19:51,772<--1:info currmove d8d7 currmovenumber 28
+2023-05-28 16:19:51,772<--1:info currmove d8a5 currmovenumber 1
+2023-05-28 16:19:53,078<--1:info depth 13 seldepth 36 time 4156 nodes 6173258 pv d8a5 d1d2 a5b5 e1c1 b8c6 g1f3 b5a4 f3d4 c6d4 d2d4 a4d4 d1d4 g8f6 f2f3 e7e6 score cp 309 hashfull 282 nps 1485385
+2023-05-28 16:19:53,081<--1:info currmove d8b6 currmovenumber 2
+2023-05-28 16:19:53,107<--1:info currmove b8c6 currmovenumber 3
+2023-05-28 16:19:53,113<--1:info currmove e7e6 currmovenumber 4
+2023-05-28 16:19:53,128<--1:info currmove b8a6 currmovenumber 5
+2023-05-28 16:19:53,131<--1:info currmove e7e5 currmovenumber 6
+2023-05-28 16:19:53,136<--1:info currmove g7g5 currmovenumber 7
+2023-05-28 16:19:53,138<--1:info currmove d8d6 currmovenumber 8
+2023-05-28 16:19:53,140<--1:info currmove g7g6 currmovenumber 9
+2023-05-28 16:19:53,141<--1:info currmove a7a6 currmovenumber 10
+2023-05-28 16:19:53,143<--1:info currmove c8f5 currmovenumber 11
+2023-05-28 16:19:53,149<--1:info currmove f7f6 currmovenumber 12
+2023-05-28 16:19:53,157<--1:info currmove d8c7 currmovenumber 13
+2023-05-28 16:19:53,158<--1:info currmove c8d7 currmovenumber 14
+2023-05-28 16:19:53,164<--1:info currmove d8d7 currmovenumber 15
+2023-05-28 16:19:53,166<--1:info currmove d4d3 currmovenumber 16
+2023-05-28 16:19:53,169<--1:info currmove c8g4 currmovenumber 17
+2023-05-28 16:19:53,170<--1:info currmove g8h6 currmovenumber 18
+2023-05-28 16:19:53,172<--1:info currmove c8e6 currmovenumber 19
+2023-05-28 16:19:53,177<--1:info currmove c8h3 currmovenumber 20
+2023-05-28 16:19:53,178<--1:info currmove g8f6 currmovenumber 21
+2023-05-28 16:19:53,180<--1:info currmove h7h5 currmovenumber 22
+2023-05-28 16:19:53,181<--1:info currmove f7f5 currmovenumber 23
+2023-05-28 16:19:53,182<--1:info currmove h7h6 currmovenumber 24
+2023-05-28 16:19:53,183<--1:info currmove a7a5 currmovenumber 25
+2023-05-28 16:19:53,184<--1:info currmove b8d7 currmovenumber 26
+2023-05-28 16:19:53,185<--1:info currmove b7b6 currmovenumber 27
+2023-05-28 16:19:53,186<--1:info currmove e8d7 currmovenumber 28
+2023-05-28 16:19:53,186<--1:info depth 13 seldepth 36 time 4262 nodes 6318609 hashfull 288 nps 1482546 score cp 309
+2023-05-28 16:19:53,187<--1:bestmove d8a5 ponder d1d2
+2023-05-28 16:19:53,188*1*Found move:Qd8-a5
+2023-05-28 16:19:54,395*1*Start calc, move no: 9
+2023-05-28 16:19:54,397-->1:position startpos moves d2d4 d7d5 c1f4 c7c5 b1a3 c5d4 a3b5 d8a5 b5c3
+2023-05-28 16:19:54,398-->1:go wtime 223344 btime 278358 winc 0 binc 0
+2023-05-28 16:19:54,399<--1:info depth 1 seldepth 6 time 0 nodes 47 pv d4c3 f2f3 score cp 330 hashfull 0 nps 47000
+2023-05-28 16:19:54,402<--1:info depth 2 seldepth 12 time 0 nodes 133 pv d4c3 f2f3 score cp 325 hashfull 0 nps 133000
+2023-05-28 16:19:54,405<--1:info depth 3 seldepth 12 time 1 nodes 500 pv d4c3 f2f3 score cp 334 hashfull 0 nps 500000
+2023-05-28 16:19:54,407<--1:info depth 4 seldepth 12 time 2 nodes 2077 pv d4c3 f2f3 score cp 324 hashfull 0 nps 1038500
+2023-05-28 16:19:54,409<--1:info depth 5 seldepth 13 time 5 nodes 6026 pv d4c3 f2f3 score cp 328 hashfull 0 nps 1205200
+2023-05-28 16:19:54,414<--1:info depth 6 seldepth 18 time 15 nodes 19510 pv d4c3 f2f3 score cp 332 hashfull 1 nps 1300667
+2023-05-28 16:19:54,434<--1:info depth 7 seldepth 21 time 33 nodes 45872 pv d4c3 f2f3 score cp 343 hashfull 2 nps 1390061
+2023-05-28 16:19:54,554<--1:info depth 9 seldepth 25 time 155 nodes 226250 pv d4c3 f2f3 score cp 348 hashfull 10 nps 1459677
+2023-05-28 16:19:55,071<--1:info depth 11 seldepth 29 time 672 nodes 1000736 pv d4c3 f2f3 score cp 350 hashfull 46 nps 1489190
+2023-05-28 16:19:55,581<--1:info depth 12 seldepth 33 time 1182 nodes 1757631 pv d4c3 b2c3 a5c3 f4d2 c3b2 g1f3 e7e6 e2e3 g8f6 a2a4 f8b4 f1b5 c8d7 a1b1 b4d2 f3d2 score cp 351 hashfull 80 nps 1486997
+2023-05-28 16:19:55,585<--1:info currmove a5b4 currmovenumber 2
+2023-05-28 16:19:55,616<--1:info currmove c8f5 currmovenumber 3
+2023-05-28 16:19:55,618<--1:info currmove e7e5 currmovenumber 4
+2023-05-28 16:19:55,628<--1:info currmove g7g5 currmovenumber 5
+2023-05-28 16:19:55,631<--1:info currmove b8c6 currmovenumber 6
+2023-05-28 16:19:55,634<--1:info currmove e7e6 currmovenumber 7
+2023-05-28 16:19:55,636<--1:info currmove f7f6 currmovenumber 8
+2023-05-28 16:19:55,637<--1:info currmove g7g6 currmovenumber 9
+2023-05-28 16:19:55,638<--1:info currmove c8g4 currmovenumber 10
+2023-05-28 16:19:55,639<--1:info currmove d4d3 currmovenumber 11
+2023-05-28 16:19:55,640<--1:info currmove g8h6 currmovenumber 12
+2023-05-28 16:19:55,641<--1:info currmove c8e6 currmovenumber 13
+2023-05-28 16:19:55,642<--1:info currmove b8a6 currmovenumber 14
+2023-05-28 16:19:55,642<--1:info currmove c8h3 currmovenumber 15
+2023-05-28 16:19:55,643<--1:info currmove f7f5 currmovenumber 16
+2023-05-28 16:19:55,643<--1:info currmove a5c5 currmovenumber 17
+2023-05-28 16:19:55,644<--1:info currmove a5c7 currmovenumber 18
+2023-05-28 16:19:55,644<--1:info currmove a5a3 currmovenumber 19
+2023-05-28 16:19:55,645<--1:info currmove a5b5 currmovenumber 20
+2023-05-28 16:19:55,645<--1:info currmove b8d7 currmovenumber 21
+2023-05-28 16:19:55,646<--1:info currmove a5b6 currmovenumber 22
+2023-05-28 16:19:55,646<--1:info currmove a5a6 currmovenumber 23
+2023-05-28 16:19:55,647<--1:info currmove a5d8 currmovenumber 24
+2023-05-28 16:19:55,647<--1:info currmove c8d7 currmovenumber 25
+2023-05-28 16:19:55,648<--1:info currmove b7b6 currmovenumber 26
+2023-05-28 16:19:55,648<--1:info currmove g8f6 currmovenumber 27
+2023-05-28 16:19:55,649<--1:info currmove a5a2 currmovenumber 28
+2023-05-28 16:19:55,649<--1:info currmove b7b5 currmovenumber 29
+2023-05-28 16:19:55,650<--1:info currmove e8d8 currmovenumber 30
+2023-05-28 16:19:55,651<--1:info currmove e8d7 currmovenumber 31
+2023-05-28 16:19:55,652<--1:info currmove h7h6 currmovenumber 32
+2023-05-28 16:19:55,652<--1:info currmove h7h5 currmovenumber 33
+2023-05-28 16:19:55,653<--1:info currmove a7a6 currmovenumber 34
+2023-05-28 16:19:55,653<--1:info currmove a5c3 currmovenumber 35
+2023-05-28 16:19:55,654<--1:info currmove a5a4 currmovenumber 36
+2023-05-28 16:19:55,656<--1:info currmove d4c3 currmovenumber 1
+2023-05-28 16:19:57,655<--1:info depth 13 seldepth 33 time 3256 nodes 4819280 pv d4c3 b2c3 a5c3 f4d2 c3b2 a2a4 c8f5 a1c1 e7e5 e2e3 g8f6 f1b5 b8c6 c2c4 d5d4 e3d4 e5d4 score cp 359 hashfull 228 nps 1480123
+2023-05-28 16:19:57,658<--1:info currmove a5b4 currmovenumber 2
+2023-05-28 16:19:57,706<--1:info currmove e7e5 currmovenumber 3
+2023-05-28 16:19:57,742<--1:info currmove b8c6 currmovenumber 4
+2023-05-28 16:19:57,750<--1:info currmove c8f5 currmovenumber 5
+2023-05-28 16:19:57,805<--1:info currmove e7e6 currmovenumber 6
+2023-05-28 16:19:57,811<--1:info currmove g8f6 currmovenumber 7
+2023-05-28 16:19:57,815<--1:info currmove c8g4 currmovenumber 8
+2023-05-28 16:19:57,818<--1:info currmove a5c7 currmovenumber 9
+2023-05-28 16:19:57,818<--1:info currmove g7g5 currmovenumber 10
+2023-05-28 16:19:57,834<--1:info currmove c8h3 currmovenumber 11
+2023-05-28 16:19:57,835<--1:info currmove a5a3 currmovenumber 12
+2023-05-28 16:19:57,836<--1:info currmove c8d7 currmovenumber 13
+2023-05-28 16:19:57,837<--1:info currmove a5b5 currmovenumber 14
+2023-05-28 16:19:57,837<--1:info currmove b7b5 currmovenumber 15
+2023-05-28 16:19:57,838<--1:info currmove b8d7 currmovenumber 16
+2023-05-28 16:19:57,839<--1:info currmove a5a6 currmovenumber 17
+2023-05-28 16:19:57,839<--1:info currmove a5b6 currmovenumber 18
+2023-05-28 16:19:57,840<--1:info currmove a5d8 currmovenumber 19
+2023-05-28 16:19:57,840<--1:info currmove a5c5 currmovenumber 20
+2023-05-28 16:19:57,841<--1:info currmove g8h6 currmovenumber 21
+2023-05-28 16:19:57,841<--1:info currmove b8a6 currmovenumber 22
+2023-05-28 16:19:57,842<--1:info currmove h7h5 currmovenumber 23
+2023-05-28 16:19:57,842<--1:info currmove g7g6 currmovenumber 24
+2023-05-28 16:19:57,844<--1:info currmove f7f6 currmovenumber 25
+2023-05-28 16:19:57,845<--1:info currmove h7h6 currmovenumber 26
+2023-05-28 16:19:57,846<--1:info currmove c8e6 currmovenumber 27
+2023-05-28 16:19:57,846<--1:info currmove e8d7 currmovenumber 28
+2023-05-28 16:19:57,847<--1:info currmove e8d8 currmovenumber 29
+2023-05-28 16:19:57,848<--1:info currmove d4d3 currmovenumber 30
+2023-05-28 16:19:57,848<--1:info currmove f7f5 currmovenumber 31
+2023-05-28 16:19:57,849<--1:info currmove b7b6 currmovenumber 32
+2023-05-28 16:19:57,850<--1:info currmove a5a2 currmovenumber 33
+2023-05-28 16:19:57,852<--1:info currmove a7a6 currmovenumber 34
+2023-05-28 16:19:57,853<--1:info currmove a5c3 currmovenumber 35
+2023-05-28 16:19:57,854<--1:info currmove a5a4 currmovenumber 36
+2023-05-28 16:19:57,854<--1:info depth 13 seldepth 33 time 3454 nodes 5083281 hashfull 240 nps 1471708 score cp 359
+2023-05-28 16:19:57,855<--1:bestmove d4c3 ponder b2c3
+2023-05-28 16:19:57,855*1*Found move:d4xc3
+2023-05-28 16:20:17,492**----------New game---2023-05-28 16:20:17,492 niedz. -------------
+2023-05-28 16:20:23,486*1*Start calc, move no: 1
+2023-05-28 16:20:23,488-->1:ucinewgame
+2023-05-28 16:20:23,489-->1:isready
+2023-05-28 16:20:23,587-->1:position startpos moves f2f4
+2023-05-28 16:20:23,587-->1:go wtime 300000 btime 300000 winc 0 binc 0
+2023-05-28 16:20:23,945<--1:readyok
+2023-05-28 16:20:24,396<--1:bestmove c7c5 ponder e2e4
+2023-05-28 16:20:24,396*1*Found move:c7-c5
+2023-05-28 16:20:46,329**----------New game---2023-05-28 16:20:46,329 niedz. -------------
+2023-05-28 16:20:51,491*1*Start calc, move no: 1
+2023-05-28 16:20:51,493-->1:ucinewgame
+2023-05-28 16:20:51,494-->1:isready
+2023-05-28 16:20:51,604-->1:position startpos moves d2d4
+2023-05-28 16:20:51,605-->1:go wtime 300000 btime 300000 winc 0 binc 0
+2023-05-28 16:20:51,952<--1:readyok
+2023-05-28 16:20:52,399<--1:bestmove d7d5 ponder c2c4
+2023-05-28 16:20:52,400*1*Found move:d7-d5
+2023-05-28 17:04:09,858**----------New game---2023-05-28 17:04:09,858 niedz. -------------
+2023-05-28 17:04:13,959*1*Start calc, move no: 1
+2023-05-28 17:04:13,962-->1:ucinewgame
+2023-05-28 17:04:13,963-->1:isready
+2023-05-28 17:04:14,072-->1:position startpos moves d2d4
+2023-05-28 17:04:14,072-->1:go wtime 300000 btime 300000 winc 0 binc 0
+2023-05-28 17:04:14,417<--1:readyok
+2023-05-28 17:04:14,868<--1:bestmove d7d5 ponder c2c4
+2023-05-28 17:04:14,869*1*Found move:d7-d5
+2023-05-28 17:04:39,813*1*Start calc, move no: 3
+2023-05-28 17:04:39,816-->1:position startpos moves d2d4 d7d5 b2b4
+2023-05-28 17:04:39,819-->1:go wtime 275532 btime 299208 winc 0 binc 0
+2023-05-28 17:04:39,819<--1:info depth 1 seldepth 5 time 0 nodes 46 pv e7e5 score cp 20 hashfull 0 nps 46000
+2023-05-28 17:04:39,821<--1:info depth 2 seldepth 9 time 0 nodes 109 pv e7e5 b4b5 score cp 10 hashfull 0 nps 109000
+2023-05-28 17:04:39,823<--1:info depth 3 seldepth 10 time 0 nodes 477 pv e7e5 b4b5 e5e4 score cp 23 hashfull 0 nps 477000
+2023-05-28 17:04:39,826<--1:info depth 4 seldepth 13 time 2 nodes 1995 pv e7e5 c2c3 e5d4 d1d4 score cp 14 hashfull 0 nps 997500
+2023-05-28 17:04:39,828<--1:info depth 5 seldepth 15 time 5 nodes 5459 pv e7e5 c2c3 e5d4 d1d4 b8c6 score cp 17 hashfull 0 nps 1091800
+2023-05-28 17:04:39,842<--1:info depth 6 seldepth 19 time 22 nodes 26505 pv e7e5 c2c3 e5d4 d1d4 b8c6 d4d3 score cp 21 hashfull 1 nps 1204773
+2023-05-28 17:04:39,863<--1:info depth 7 seldepth 21 time 44 nodes 55873 pv e7e5 c2c3 e5e4 e2e3 c7c6 c1b2 f7f5 score cp 19 hashfull 2 nps 1269841
+2023-05-28 17:04:39,935<--1:info depth 8 seldepth 24 time 115 nodes 161979 pv e7e5 c2c3 e5d4 d1d4 b8c6 d4d3 d8f6 d3f3 score cp 21 hashfull 8 nps 1408513
+2023-05-28 17:04:40,111<--1:info depth 9 seldepth 25 time 292 nodes 426994 pv e7e5 c2c3 e5d4 d1d4 b8c6 d4e3 c8e6 g1f3 f8e7 e3d3 score cp 19 hashfull 22 nps 1462308
+2023-05-28 17:04:40,609<--1:info depth 10 seldepth 28 time 790 nodes 1165506 pv e7e5 c2c3 e5d4 d1d4 b8c6 d4e3 c8e6 g1f3 g8h6 f3e5 d5d4 e5c6 d4e3 c6d8 e3f2 e1f2 a8d8 c1h6 g7h6 score cp 19 hashfull 61 nps 1475324
+2023-05-28 17:04:40,820<--1:info currmove g7g6 currmovenumber 19
+2023-05-28 17:04:40,821<--1:info currmove d8d7 currmovenumber 20
+2023-05-28 17:04:40,822<--1:info currmove h7h6 currmovenumber 21
+2023-05-28 17:04:40,822<--1:info currmove g7g5 currmovenumber 22
+2023-05-28 17:04:40,824<--1:info currmove c8h3 currmovenumber 23
+2023-05-28 17:04:40,825<--1:info currmove b8d7 currmovenumber 24
+2023-05-28 17:04:40,826<--1:info currmove c8e6 currmovenumber 25
+2023-05-28 17:04:40,826<--1:info currmove e8d7 currmovenumber 26
+2023-05-28 17:04:40,827<--1:info currmove g8h6 currmovenumber 27
+2023-05-28 17:04:40,828<--1:info currmove e7e5 currmovenumber 1
+2023-05-28 17:04:41,816<--1:info depth 11 seldepth 33 time 1997 nodes 2991084 pv e7e5 c2c3 e5e4 g2g3 a7a5 b4b5 c7c6 e2e3 c8d7 b5c6 b8c6 d1b3 score cp 19 hashfull 154 nps 1497789
+2023-05-28 17:04:41,819<--1:info currmove c8f5 currmovenumber 2
+2023-05-28 17:04:41,865<--1:info currmove c8g4 currmovenumber 3
+2023-05-28 17:04:41,876<--1:info currmove e7e6 currmovenumber 4
+2023-05-28 17:04:41,947<--1:info currmove d8d6 currmovenumber 5
+2023-05-28 17:04:41,983<--1:info currmove f7f6 currmovenumber 6
+2023-05-28 17:04:42,029<--1:info currmove f7f5 currmovenumber 7
+2023-05-28 17:04:42,048<--1:info currmove a7a5 currmovenumber 8
+2023-05-28 17:04:42,082<--1:info currmove c7c6 currmovenumber 9
+2023-05-28 17:04:42,103<--1:info currmove c8d7 currmovenumber 10
+2023-05-28 17:04:42,121<--1:info currmove b7b6 currmovenumber 11
+2023-05-28 17:04:42,139<--1:info currmove g8f6 currmovenumber 12
+2023-05-28 17:04:42,143<--1:info currmove b8c6 currmovenumber 13
+2023-05-28 17:04:42,148<--1:info currmove c7c5 currmovenumber 14
+2023-05-28 17:04:42,155<--1:info currmove b8a6 currmovenumber 15
+2023-05-28 17:04:42,159<--1:info currmove b7b5 currmovenumber 16
+2023-05-28 17:04:42,164<--1:info currmove g7g5 currmovenumber 17
+2023-05-28 17:04:42,164<--1:info currmove g7g6 currmovenumber 18
+2023-05-28 17:04:42,206<--1:info currmove h7h5 currmovenumber 19
+2023-05-28 17:04:42,206<--1:info currmove d8d7 currmovenumber 20
+2023-05-28 17:04:42,207<--1:info currmove c8e6 currmovenumber 21
+2023-05-28 17:04:42,208<--1:info currmove e8d7 currmovenumber 22
+2023-05-28 17:04:42,209<--1:info currmove a7a6 currmovenumber 23
+2023-05-28 17:04:42,210<--1:info currmove c8h3 currmovenumber 24
+2023-05-28 17:04:42,210<--1:info currmove b8d7 currmovenumber 25
+2023-05-28 17:04:42,211<--1:info currmove h7h6 currmovenumber 26
+2023-05-28 17:04:42,212<--1:info currmove g8h6 currmovenumber 27
+2023-05-28 17:04:42,213<--1:info currmove e7e5 currmovenumber 1
+2023-05-28 17:04:45,538<--1:info depth 12 seldepth 38 time 5719 nodes 8567881 pv e7e5 d4e5 f8b4 c2c3 b4e7 g1f3 f7f6 e2e4 d5e4 d1a4 b8c6 a4e4 f6e5 f3e5 score cp 18 hashfull 427 nps 1498143
+2023-05-28 17:04:45,542<--1:info currmove e7e6 currmovenumber 2
+2023-05-28 17:04:45,635<--1:info currmove c8f5 currmovenumber 3
+2023-05-28 17:04:45,726<--1:info currmove g7g6 currmovenumber 4
+2023-05-28 17:04:45,803<--1:info currmove f7f6 currmovenumber 5
+2023-05-28 17:04:45,891<--1:info currmove d8d6 currmovenumber 6
+2023-05-28 17:04:45,991<--1:info currmove a7a5 currmovenumber 7
+2023-05-28 17:04:46,090<--1:info currmove c7c6 currmovenumber 8
+2023-05-28 17:04:46,112<--1:info currmove c8d7 currmovenumber 9
+2023-05-28 17:04:46,166<--1:info currmove f7f5 currmovenumber 10
+2023-05-28 17:04:46,194<--1:info currmove b7b6 currmovenumber 11
+2023-05-28 17:04:46,213<--1:info currmove c8g4 currmovenumber 12
+2023-05-28 17:04:46,216<--1:info currmove c7c5 currmovenumber 13
+2023-05-28 17:04:46,233<--1:info currmove b7b5 currmovenumber 14
+2023-05-28 17:04:46,233<--1:info currmove b8c6 currmovenumber 15
+2023-05-28 17:04:46,249<--1:info currmove g8f6 currmovenumber 16
+2023-05-28 17:04:46,251<--1:info currmove b8a6 currmovenumber 17
+2023-05-28 17:04:46,266<--1:info currmove g8h6 currmovenumber 18
+2023-05-28 17:04:46,267<--1:info currmove c8e6 currmovenumber 19
+2023-05-28 17:04:46,267<--1:info currmove h7h5 currmovenumber 20
+2023-05-28 17:04:46,318<--1:info currmove a7a6 currmovenumber 21
+2023-05-28 17:04:46,370<--1:info currmove g7g5 currmovenumber 22
+2023-05-28 17:04:46,372<--1:info currmove d8d7 currmovenumber 23
+2023-05-28 17:04:46,374<--1:info currmove e8d7 currmovenumber 24
+2023-05-28 17:04:46,375<--1:info currmove c8h3 currmovenumber 25
+2023-05-28 17:04:46,376<--1:info currmove b8d7 currmovenumber 26
+2023-05-28 17:04:46,377<--1:info currmove h7h6 currmovenumber 27
+2023-05-28 17:04:46,415<--1:info currmove e7e5 currmovenumber 1
+2023-05-28 17:04:50,228<--1:info depth 13 seldepth 38 time 10409 nodes 15414473 pv e7e5 d4e5 f8b4 c2c3 b4c5 e2e3 b8c6 f1b5 d8d7 c1a3 c5a3 b1a3 a7a6 d1a4 g8e7 score cp 15 hashfull 685 nps 1480879
+2023-05-28 17:04:50,232<--1:info currmove d8d6 currmovenumber 2
+2023-05-28 17:04:50,794<--1:info currmove e7e6 currmovenumber 3
+2023-05-28 17:04:51,260<--1:info currmove a7a5 currmovenumber 4
+2023-05-28 17:04:51,527<--1:info currmove c8f5 currmovenumber 5
+2023-05-28 17:04:52,118<--1:info currmove f7f6 currmovenumber 6
+2023-05-28 17:04:52,742<--1:info currmove g7g6 currmovenumber 7
+2023-05-28 17:04:53,165<--1:info currmove a7a6 currmovenumber 8
+2023-05-28 17:04:53,458<--1:info currmove c8d7 currmovenumber 9
+2023-05-28 17:04:53,615<--1:info currmove h7h5 currmovenumber 10
+2023-05-28 17:04:53,741<--1:info currmove h7h6 currmovenumber 11
+2023-05-28 17:04:53,841<--1:info currmove f7f5 currmovenumber 12
+2023-05-28 17:04:53,904<--1:info currmove c7c6 currmovenumber 13
+2023-05-28 17:04:54,211<--1:info currmove b7b6 currmovenumber 14
+2023-05-28 17:04:54,279<--1:info currmove c7c5 currmovenumber 15
+2023-05-28 17:04:54,337<--1:info currmove b8c6 currmovenumber 16
+2023-05-28 17:04:54,373<--1:info currmove b8a6 currmovenumber 17
+2023-05-28 17:04:54,432<--1:info currmove g8f6 currmovenumber 18
+2023-05-28 17:04:55,976<--1:info currmove d8d7 currmovenumber 19
+2023-05-28 17:04:56,253<--1:info currmove g7g5 currmovenumber 20
+2023-05-28 17:04:56,257<--1:info currmove b8d7 currmovenumber 21
+2023-05-28 17:04:56,465<--1:info currmove c8g4 currmovenumber 22
+2023-05-28 17:04:57,945<--1:info currmove g8h6 currmovenumber 23
+2023-05-28 17:04:57,947<--1:info currmove c8h3 currmovenumber 24
+2023-05-28 17:04:57,949<--1:info currmove b7b5 currmovenumber 25
+2023-05-28 17:04:57,952<--1:info currmove e8d7 currmovenumber 26
+2023-05-28 17:04:57,953<--1:info currmove c8e6 currmovenumber 27
+2023-05-28 17:04:57,953<--1:info depth 13 seldepth 44 time 18134 nodes 27004812 hashfull 923 nps 1489181 score cp 15
+2023-05-28 17:04:57,954<--1:bestmove e7e5 ponder d4e5
+2023-05-28 17:04:57,955*1*Found move:e7-e5
+2023-05-28 17:59:09,844**Suspend Mode begins...
+2023-05-28 19:53:11,819**Resume from Suspend Mode, 6841969 ms saved.
+2023-05-28 21:13:06,169**Suspend Mode begins...
+2023-05-28 22:38:35,208**Resume from Suspend Mode, 5129031 ms saved.
+2023-05-28 23:56:36,295**Suspend Mode begins...
+2023-05-29 01:04:51,205**Resume from Suspend Mode, 4094906 ms saved.
