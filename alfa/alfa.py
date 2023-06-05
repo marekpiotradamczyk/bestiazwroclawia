@@ -201,13 +201,15 @@ def Search(board, depth, time_to_move):
     HASHES = {}
     posHash = zorba.hashInit(board)
     tStart = time.time()
-    if depth == -1:
+    if depth is None:
         depth = 100
+    if time_to_move is None:
+        time_to_move = 10
     for i in range(1, depth + 1):
         ply_counter = i
         res = AlphaBeta(board, i, -infinity, infinity, posHash, i, time_to_move)
-        print(res, BestMove, i)
-        print(time.time() - tStart)
+        # print(res, BestMove, i)
+        # print(time.time() - tStart)
         if time.time() - tStart > time_to_move:
             return BestMove
         if res == 1000000:  # Znalezlismy wymuszonego mata, nie trzeba dalej szukac
