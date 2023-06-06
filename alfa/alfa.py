@@ -14,7 +14,6 @@ Max_Depth = 125
 killer_list = []
 for i in range(Max_Depth):
     killer_list.append([])
-ply_counter = 0
 Return_now = 0
 R = 2  # Parametr do Null Pruning
 
@@ -26,7 +25,6 @@ def Stop():
 
 def PriorityList(pos, hash, depth, killer_moves):
     global HASHES
-
     moves = list(brdInf.get_moves(pos))
     move = ""
     if hash in HASHES:  # Najpierw sprawdzamy wierzchołek, który wcześniej uznaliśmy za najlepszy
@@ -65,14 +63,12 @@ def Qsearch(pos, alpha, beta):
 # BestSoFar - Najlepszy wynik jaki znaleźliśmy
 
 
-def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move):
+def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move, ply_number):
     global BestMove  # Przechowujemy najlepszy znaleziony do tej pory ruch (na poziomie)
     global killer_list
-    global ply_counter
     global HASHES
     global Return_now
     global tStart
-
 
     # Transposition Table:
     # (TT.0) LINE = {depth, BestSoFar,NODE TYPE- "ALL"|"CUT"|"PV", BestTempMove}
@@ -142,12 +138,12 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move):
 
     if not brdInf.king_is_checked(pos):  # (NMP.1)
         newHash = zorba.hash(pos, hash, chess.Move.null(), pos.turn)
-        val = -AlphaBeta(brdInf.afterpass(pos), depth - 1 - R, -beta, -alpha, newHash, StartDepth, time_to_move)
+        val = -AlphaBeta(brdInf.afterpass(pos), depth - 1 - R, -beta, -alpha, newHash, StartDepth, time_to_move, ply_number+1)
         pos = brdInf.reverse_move(pos)
         if val >= beta:  # (NMP.2)
             return val
 
-    moves = PriorityList(pos, hash, depth, killer_list[ply_counter])
+    moves = PriorityList(pos, hash, depth, killer_list[ply_number])
     firstIter = True  # (PVS.1)
     while not moves.empty():
         move = moves.get()[2]
@@ -155,7 +151,7 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move):
         brdInf.make_move(pos, move)
 
         if not firstIter:
-            val = -AlphaBeta(pos, depth - 1, -alpha, -alpha, newHash, StartDepth, time_to_move)
+            val = -AlphaBeta(pos, depth - 1, -alpha, -alpha, newHash, StartDepth, time_to_move, ply_number+1)
             if val < BestSoFar:  # (PVS.2)
                 pos = brdInf.reverse_move(pos)
                 continue
@@ -164,7 +160,7 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move):
             if firstIter:
                 val = alpha  # (PVS.5)
                 firstIter = False
-            val = -AlphaBeta(pos, depth - 1, -beta, -val, newHash, StartDepth, time_to_move)  # (AB.1)
+            val = -AlphaBeta(pos, depth - 1, -beta, -val, newHash, StartDepth, time_to_move, ply_number+1)  # (AB.1)
 
         if val > BestSoFar:  # (AB.2)
             if depth == StartDepth:
@@ -173,15 +169,15 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move):
             BestTempMove = move
 
         if time.time() - tStart > time_to_move:
+            pos = brdInf.reverse_move(pos)
             return BestSoFar
 
         pos = brdInf.reverse_move(pos)
         if BestSoFar >= beta:
             HASHES[hash] = (depth, BestSoFar, "CUT", BestTempMove)  # (TT.6)
-            ply_number = ply_counter - depth
             if not brdInf.is_capture(pos, move) and move not in killer_list[ply_number]:  # (KM.1)
                 killer_list[ply_number].insert(0, move)
-                killer_list[ply_number] = killer_list[ply_number][1:]
+                killer_list[ply_number] = killer_list[ply_number][:2]
             return BestSoFar
         alpha = max(alpha, BestSoFar)
 
@@ -193,12 +189,12 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move):
 
 
 def Search(board, depth, time_to_move):
-    global ply_counter
     global HASHES
     global Return_now
     global tStart
     # Iterative Deepening, domyslnie to powinno byc wolane przez main
     HASHES = {}
+    ply_counter = 0  # Ile rozegrano ruchow, trzeba aktualizowac
     posHash = zorba.hashInit(board)
     tStart = time.time()
     if depth is None:
@@ -206,8 +202,7 @@ def Search(board, depth, time_to_move):
     if time_to_move is None:
         time_to_move = 10
     for i in range(1, depth + 1):
-        ply_counter = i
-        res = AlphaBeta(board, i, -infinity, infinity, posHash, i, time_to_move)
+        res = AlphaBeta(board, i, -infinity, infinity, posHash, i, time_to_move, ply_counter)
         # print(res, BestMove, i)
         # print(time.time() - tStart)
         if time.time() - tStart > time_to_move:
