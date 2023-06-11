@@ -41,7 +41,7 @@ class Engine:
                     if command == 'bestmove':
                         self._bestmove_command(args)
                     # self.search_message_queue.task_done()
-        self._exit()
+            self._exit()
 
     def _init_threads(self):
         self.protocol = input().strip()
@@ -60,15 +60,12 @@ class Engine:
 
         # self._startsearch_command(GO)
 
-    # def _isalive_command(self):
-    #     self.uci_message_queue.put(['isalive', None])
-
     def _position_command(self, settings: CD.PositionCommand):
-        print(settings.fen)
         board = chess.Board(settings.fen)
         for move in settings.moves:
             board.push(chess.Move.from_uci(move))
         self.board = board
+        # print(self.board)
 
     def _startsearch_command(self, settings: CD.GoCommand):
         self.is_searching = True
@@ -85,12 +82,14 @@ class Engine:
 
     def _stopsearch_command(self):
         self.is_searching = False
+        self.search.stopsearch_command()
         self.search_input_message_queue.put(['stop', None])
 
     def _exit(self):
-        self.search_input_message_queue.put(['quit', None])
-        if self.uci_input.is_alive():
-            self.uci_input_message_queue.put(['quit', None])
+        if self.search.is_alive():
+            print("Checking if is_alive: ")
+            self.search_input_message_queue.put(['quit', None])
+        if self.uci_output.is_alive():
             self.uci_output_message_queue.put(['quit', None])
         # Wait for all processes to finish
         self.uci_input_message_queue.join()

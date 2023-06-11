@@ -23,16 +23,12 @@ class Search(Thread):
                     case 'searchposition':
                         self._searchposition_command(args)
                     case 'stop':
-                        self._stopsearch_command()
-        self._quit_command()
+                        self.stopsearch_command()
 
     def _searchposition_command(self, settings: CD.StartSearchCommand):
         self.bestmove = alfa.Search(settings.board, settings.depth, settings.movetime)
         self.output_message_queue.put(['bestmove', CD.BestMoveCommand(bestmove=self.bestmove)])
 
-    def _stopsearch_command(self):
+    def stopsearch_command(self):
         alfa.Stop()
         self.output_message_queue.put(['bestmove', CD.BestMoveCommand(bestmove=self.bestmove)])
-
-    def _quit_command(self):
-        print("ELO", flush=True)

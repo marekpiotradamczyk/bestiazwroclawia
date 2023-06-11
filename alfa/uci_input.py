@@ -11,7 +11,7 @@ def _handle_input(line : str) -> tuple[str, str]:
         return [line, '']
     word = line[:where_whitespace]
     if line != '' and _is_command(word):
-        return [word, line[where_whitespace+1:].strip()]
+        return [word, line[where_whitespace:].strip()]
     return ['', '']
 
 # Honestly, I considered using deque, instead of two queues, but decided against it.
@@ -49,7 +49,7 @@ class UCI_Input(Thread):
         self.output_message_queue.put(['uciok', None])
 
     def _uci_command(self, args : str):
-        # Ultimately, I belive 'pass' is correct response for this command
+        # I belive 'pass' is correct response for this command
         # because in during the game there is no place or time for it,
         # it's simply unnecessary.
         pass
@@ -67,13 +67,12 @@ class UCI_Input(Thread):
         pass
 
     def _position_command(self, args : str):
-        arguments = args.split()
         fen = args
         moves = list()
-        if 'moves' in arguments:
-            i = arguments.index('moves')
-            fen = arguments[i-1] # TO BE CHANGED!
-            moves = arguments[i+1:]
+        if 'moves' in args:
+            i = args.index('moves')
+            fen = args[:i] # TO BE CHANGED!
+            moves = args[i+5:].split()
         
         if fen == 'startpos':
             self.input_message_queue.put(['position', CD.PositionCommand(moves=moves)])
@@ -125,5 +124,4 @@ class UCI_Input(Thread):
         pass
         
     def _quit_command(self):
-        self.input_message_queue.put(['quit', None])
         self.output_message_queue.put(['quit', None])
