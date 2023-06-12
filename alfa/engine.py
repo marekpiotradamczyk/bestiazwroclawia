@@ -14,7 +14,6 @@ class Engine:
         self.search = None
         self.uci_input_message_queue = Queue()
         self.uci_output_message_queue = Queue()
-        # self.search_message_queue = Queue()
         self.search_input_message_queue = Queue()
         self.search_output_message_queue = Queue()
         self.is_searching = False
@@ -51,14 +50,9 @@ class Engine:
             self.uci_output = UCI_Output(message_queue=self.uci_output_message_queue)
             self.uci_input.start()
             self.uci_output.start()
-        self.search = Search(input_message_queue=self.search_input_message_queue, output_message_queue=self.search_output_message_queue)
-        self.search.start()
-        # === 
-        # GO = CD.GoCommand()
-        # GO.depth = 7
-        # GO.movetime = 20
 
-        # self._startsearch_command(GO)
+            self.search = Search(input_message_queue=self.search_input_message_queue, output_message_queue=self.search_output_message_queue)
+            self.search.start()
 
     def _position_command(self, settings: CD.PositionCommand):
         board = chess.Board(settings.fen)
@@ -83,21 +77,24 @@ class Engine:
     def _stopsearch_command(self):
         self.is_searching = False
         self.search.stopsearch_command()
-        self.search_input_message_queue.put(['stop', None])
+        # self.search_input_message_queue.put(['stop', None])
 
     def _exit(self):
-        if self.search.is_alive():
-            print("Checking if is_alive: ")
-            self.search_input_message_queue.put(['quit', None])
+        if self.uci_input.is_alive():
+            self.uci_input_message_queue.put(['quit', None])
         if self.uci_output.is_alive():
             self.uci_output_message_queue.put(['quit', None])
-        # Wait for all processes to finish
-        self.uci_input_message_queue.join()
-        self.uci_output_message_queue.join()
-        # self.search_message_queue.join()
-        self.search_input_message_queue.join()
-        self.search_output_message_queue.join()
-
+        if self.search.is_alive():
+            self.search_input_message_queue.put(['quit', None])
+        
         self.uci_input.join()
         self.uci_output.join()
         self.search.join()
+
+        # Wait for all processes to finish
+        # self.uci_input_message_queue.join()
+        # self.uci_output_message_queue.join()
+        # # self.search_message_queue.join()
+        # self.search_input_message_queue.join()
+        # self.search_output_message_queue.join()
+        # print("Works just fine!")

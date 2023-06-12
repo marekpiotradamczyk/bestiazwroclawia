@@ -31,4 +31,4 @@ class Search(Thread):
 
     def stopsearch_command(self):
         alfa.Stop()
-        self.output_message_queue.put(['bestmove', CD.BestMoveCommand(bestmove=self.bestmove)])
+        # self.output_message_queue.put(['bestmove', CD.BestMoveCommand(bestmove=self.bestmove)])

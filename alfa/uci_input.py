@@ -39,7 +39,6 @@ class UCI_Input(Thread):
                 continue
                 # self.message_queue.task_done()
             elif command == 'quit':
-                self._quit_command()
                 break
             getattr(self, '_'+command+'_command')(args)
         self._quit_command()
@@ -124,4 +123,5 @@ class UCI_Input(Thread):
         pass
         
     def _quit_command(self):
+        self.input_message_queue.put(['quit', None])
         self.output_message_queue.put(['quit', None])
