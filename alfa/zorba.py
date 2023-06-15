@@ -39,7 +39,6 @@ def hashGen():
 # To musimy odpalać na początku gry, żeby wygenerować liczby do hashów oraz
 # by policzyć hash pozycji początkowej
 def hashInit(board):
-    hashGen()
     hash = 0
     for square in board_interface.piece_map(board):
         piece = board_interface.piece_at(board, square)

@@ -5,6 +5,7 @@ from uci_output import UCI_Output
 from search import Search
 import commands_data as CD
 import chess
+import zorba
 
 class Engine:
     def __init__(self):
@@ -18,6 +19,8 @@ class Engine:
         self.search_output_message_queue = Queue()
         self.is_searching = False
         self.board = None
+        self.posHash = None
+        zorba.hashGen()
 
     def run(self):
         self._init_threads()
@@ -59,6 +62,7 @@ class Engine:
         for move in settings.moves:
             board.push(chess.Move.from_uci(move))
         self.board = board
+        self.posHash = zorba.hashInit(self.board)
         # print(self.board)
 
     def _startsearch_command(self, settings: CD.GoCommand):
@@ -68,6 +72,7 @@ class Engine:
                        'depth', 'nodes', 'mate', 'movetime', 'infinite']:
             setattr(startsearch, subcommand, getattr(settings, subcommand))
         startsearch.board = self.board
+        startsearch.posHash = self.posHash
         self.search_input_message_queue.put(['searchposition', startsearch])
 
     def _bestmove_command(self, settings: CD.BestMoveCommand):

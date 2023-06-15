@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import chess
+import zorba
 
 #########################################################
 # Search
@@ -21,6 +22,7 @@ class StartSearchCommand:
     infinite : bool = False
     ##
     board : chess.Board = None
+    posHash : int = None
 
 #########################################################
 # UCI Input
@@ -33,7 +35,7 @@ class SetOptionCommand:
 class PositionCommand:
     # The initial value of FEN is set to the standard starting position
     # and later the FEN string is modified to represent desired position
-    fen : str =  "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    fen : str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     # Sequence of moves played on the chessboard
     moves : list[str] = None
 

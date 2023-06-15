@@ -26,7 +26,7 @@ class Search(Thread):
                         self.stopsearch_command()
 
     def _searchposition_command(self, settings: CD.StartSearchCommand):
-        self.bestmove = alfa.Search(settings.board, settings.depth, settings.movetime)
+        self.bestmove = alfa.Search(settings.board, settings.depth, settings.movetime, settings.posHash)
         self.output_message_queue.put(['bestmove', CD.BestMoveCommand(bestmove=self.bestmove)])
 
     def stopsearch_command(self):

@@ -188,14 +188,12 @@ def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move, ply_numbe
     return BestSoFar  # (AB.4)
 
 
-def Search(board, depth, time_to_move):
+def Search(board, depth, time_to_move, posHash):
     global HASHES
     global Return_now
     global tStart
     # Iterative Deepening, domyslnie to powinno byc wolane przez main
-    HASHES = {}
     ply_counter = 0  # Ile rozegrano ruchow, trzeba aktualizowac
-    posHash = zorba.hashInit(board)
     tStart = time.time()
     if depth is None:
         depth = 100
@@ -214,12 +212,12 @@ def Search(board, depth, time_to_move):
 
 
 # Przykladowe pozycje - mozna podmienic do testow
-board = chess.Board()  # 0)
+# board = chess.Board()  # 0)
 # board = chess.Board("2bk1b1r/p1pp1Qp1/2nq1n2/r1N3Bp/1pB1Pp1P/5NP1/PPPP4/R3K2R b KQ - 1 8")  # 1)
 # board = chess.Board("r1bqkb1r/pp3ppp/2p1pn2/3p4/2nP4/P1N1PN1P/1PPB1PP1/R2QKB1R w KQkq - 2 8")  # 2)
 # board = chess.Board("r2qkb1r/pp3ppp/2n5/3bp3/6Q1/7N/PPP2PPP/RNB1K2R b KQkq - 1 12")  # 3)
 # board = chess.Board("r4rk1/3pb1pp/b2q1p2/R1p1N3/4PP2/2NP4/1PP3PP/3Q1RK1 w - - 0 17")  # 4)
 # board = chess.Board("rnbqkbnr/ppp2ppp/8/3Pp3/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 4")  # 5)
 # board = chess.Board("4Q3/p4ppk/2N3qp/8/1p3n2/PP6/1P3PPK/8 b - - 0 27")  # 6)
-board = chess.Board("4r2k/1p3rbp/2p3p1/p7/P2pB1nq/1P3n1N/6P1/B1Q1RR1K b - - 1 30")  # 7)
+# board = chess.Board("4r2k/1p3rbp/2p3p1/p7/P2pB1nq/1P3n1N/6P1/B1Q1RR1K b - - 1 30")  # 7)
 # board = chess.Board("6Q1/2pk1ppp/2p5/8/3P4/P1n1B3/1Rq2P1P/K7 b - - 8 29")
