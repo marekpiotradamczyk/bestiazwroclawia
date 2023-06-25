@@ -6,6 +6,7 @@ from search import Search
 import commands_data as CD
 import chess
 import zorba
+import sys
 
 class Engine:
     def __init__(self):
@@ -48,7 +49,7 @@ class Engine:
     def _init_threads(self):
         self.protocol = input().strip()
         if self.protocol == 'uci':
-            self.uci_input = UCI_Input(author="mario", name="test", input_message_queue=self.uci_input_message_queue, 
+            self.uci_input = UCI_Input(author="mario", name="test", input_message_queue=self.uci_input_message_queue,
                                        output_message_queue=self.uci_output_message_queue)
             self.uci_output = UCI_Output(message_queue=self.uci_output_message_queue)
             self.uci_input.start()
@@ -58,6 +59,8 @@ class Engine:
             self.search.start()
 
     def _position_command(self, settings: CD.PositionCommand):
+        if settings.fen.strip() == "startpos":
+            settings.fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
         board = chess.Board(settings.fen)
         for move in settings.moves:
             board.push(chess.Move.from_uci(move))
@@ -91,7 +94,7 @@ class Engine:
             self.uci_output_message_queue.put(['quit', None])
         if self.search.is_alive():
             self.search_input_message_queue.put(['quit', None])
-        
+
         self.uci_input.join()
         self.uci_output.join()
         self.search.join()
