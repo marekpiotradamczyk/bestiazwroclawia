@@ -9,6 +9,7 @@ from queue import PriorityQueue
 
 BestMove = ""
 infinity = int(1e6)
+CHECKMATE = infinity - 1
 HASHES = {}
 Max_Depth = 125
 killer_list = []
@@ -54,6 +55,7 @@ def Qsearch(pos, alpha, beta):
         alpha = max(alpha, BestSoFar)
     return BestSoFar
 
+
 # Alpha-Beta.
 # Alfa - wynik dla strony której jest ruch - maksymalizujemy
 # Beta - wynik dla przeciwnika - minimalizujemy
@@ -61,7 +63,6 @@ def Qsearch(pos, alpha, beta):
 # BestMove - Najlepszy ruch znaleziony na początkowej głębokości
 # BestTempMove - Najlepszy ruch znaleziony na aktualnej głębokości
 # BestSoFar - Najlepszy wynik jaki znaleźliśmy
-
 
 def AlphaBeta(pos, depth, alpha, beta, hash, StartDepth, time_to_move, ply_number):
     global BestMove  # Przechowujemy najlepszy znaleziony do tej pory ruch (na poziomie)
@@ -198,15 +199,16 @@ def Search(board, depth, time_to_move, posHash):
     if depth is None:
         depth = 100
     if time_to_move is None:
-        time_to_move = 10
+        time_to_move = 15
+
     for i in range(1, depth + 1):
         res = AlphaBeta(board, i, -infinity, infinity, posHash, i, time_to_move, ply_counter)
         # print(res, BestMove, i)
         # print(time.time() - tStart)
         if time.time() - tStart > time_to_move:
             return BestMove
-        if res == 1000000:  # Znalezlismy wymuszonego mata, nie trzeba dalej szukac
-            break
+        if res == CHECKMATE or res == -CHECKMATE:  # Znalezlismy wymuszonego mata, nie trzeba dalej szukac
+            return BestMove
         # Warunek przerwania przeszukiwań, ustawiany z main
     return BestMove
 
