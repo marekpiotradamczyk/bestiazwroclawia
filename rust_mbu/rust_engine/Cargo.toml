@@ -1,0 +1,9 @@
+[workspace]
+
+members = [
+    "sdk",
+    "move-gen",
+    "magic",
+    "engine",
+    "examples/selfplay"
+]

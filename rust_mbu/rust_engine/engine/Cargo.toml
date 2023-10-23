@@ -1,0 +1,19 @@
+[package]
+name = "engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+itertools = "0.11.0"
+move_gen = { path = "../move-gen" }
+sdk = { path = "../sdk" }
+smallvec = "1.11.1"
+timeit = "0.1.2"
+
+[lib]
+name = "engine"
+path = "src/main.rs"
+
+[[bin]]
+name = "engine"
+path = "src/main.rs"
