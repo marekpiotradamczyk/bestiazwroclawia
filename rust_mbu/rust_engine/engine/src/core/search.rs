@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use move_gen::r#move::{MakeMove, Move};
-use sdk::position::{Color, Position};
+use sdk::{position::{Color, Position}, fen::Fen};
 
 use super::{evaluate::Evaluate, Engine};
 
@@ -73,7 +73,14 @@ fn minmax(
             let mut pos = position.clone();
             engine.move_list.push(mv.clone());
 
-            pos.make_move(&mv).unwrap();
+            pos.make_move(&mv).unwrap_or_else(|e| {
+                let kind = mv.kind();
+                println!("Invalid move: {mv} {kind:?} {e}");
+                println!("{position}");
+                println!("FEN: {}", position.to_fen());
+
+                panic!();
+            });
             let (score, _) = if engine.move_list.count_occurrences(&mv) >= 2 {
                 (0.0, None)
             } else {

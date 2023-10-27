@@ -97,10 +97,10 @@ impl CastlingKind {
     #[must_use]
     pub fn target_squares(&self) -> (Square, Square) {
         match self {
-            CastlingKind::WhiteKingside => (Square::E1, Square::G1),
-            CastlingKind::WhiteQueenside => (Square::E1, Square::C1),
-            CastlingKind::BlackKingside => (Square::E8, Square::G8),
-            CastlingKind::BlackQueenside => (Square::E8, Square::C8),
+            CastlingKind::WhiteKingside => (Square::F1, Square::G1),
+            CastlingKind::WhiteQueenside => (Square::D1, Square::C1),
+            CastlingKind::BlackKingside => (Square::F8, Square::G8),
+            CastlingKind::BlackQueenside => (Square::D8, Square::C8),
         }
     }
 

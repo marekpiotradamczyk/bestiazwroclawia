@@ -6,7 +6,7 @@ use sdk::{
         in_between::generate_in_between_squares,
         king::gen_king_attacks,
         knights::gen_knight_attacks,
-        pawns::{gen_double_pawn_moves, gen_pawn_attacks, gen_single_pawn_moves},
+        pawns::{gen_double_pawn_moves, gen_pawn_attacks, gen_single_pawn_moves}, rays::generate_rays_attacks,
     },
 };
 
@@ -23,6 +23,7 @@ pub struct LookupTables {
     pub pawn_single_moves: [[Bitboard; 64]; 2],
     pub pawn_double_moves: [[Bitboard; 64]; 2],
     pub in_between: [[Bitboard; 64]; 64],
+    pub ray_attacks: [[Bitboard; 64]; 8],
 }
 
 #[derive(Clone, Copy)]
@@ -43,6 +44,7 @@ pub fn load_lookup_tables() -> Result<LookupTables> {
     let knight_attacks = gen_knight_attacks();
     let king_attacks = gen_king_attacks();
     let in_between = generate_in_between_squares();
+    let ray_attacks = generate_rays_attacks();
 
     Ok(LookupTables {
         rook_magics,
@@ -55,6 +57,7 @@ pub fn load_lookup_tables() -> Result<LookupTables> {
         pawn_single_moves,
         pawn_double_moves,
         in_between,
+        ray_attacks,
     })
 }
 

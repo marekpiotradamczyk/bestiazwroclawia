@@ -17,7 +17,7 @@ pub struct Bitboard(pub u64);
 
 pub const EMPTY: Bitboard = Bitboard(0);
 
-#[derive(IntoPrimitive, TryFromPrimitive)]
+#[derive(IntoPrimitive, TryFromPrimitive, Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum Direction {
     #[num_enum(default)]
@@ -40,6 +40,11 @@ impl Bitboard {
     #[must_use]
     pub const fn empty() -> Bitboard {
         Bitboard(0)
+    }
+
+    #[must_use]
+    pub const fn full() -> Bitboard {
+        Bitboard(0xFFFF_FFFF_FFFF_FFFF)
     }
 
     #[must_use]
@@ -103,6 +108,51 @@ impl Bitboard {
             subset: Bitboard(0),
             set: *self,
             finished: false,
+        }
+    }
+}
+
+impl Direction {
+    /// Returns tuple (file_offset, rank_offset)
+    #[must_use]
+    pub const fn offsets(&self) -> (i8, i8) {
+        match self {
+            Direction::North => (0, 1),
+            Direction::South => (0, -1),
+            Direction::East => (1, 0),
+            Direction::West => (-1, 0),
+            Direction::NorthEast => (1, 1),
+            Direction::NorthWest => (-1, 1),
+            Direction::SouthEast => (1, -1),
+            Direction::SouthWest => (-1, -1),
+        }
+    }
+
+    #[must_use]
+    pub const fn all() -> [Direction; 8] {
+        [
+            Direction::North,
+            Direction::South,
+            Direction::East,
+            Direction::West,
+            Direction::NorthEast,
+            Direction::NorthWest,
+            Direction::SouthEast,
+            Direction::SouthWest,
+        ]
+    }
+
+    #[must_use]
+    pub const fn opposite(&self) -> Direction {
+        match self {
+            Direction::North => Direction::South,
+            Direction::South => Direction::North,
+            Direction::East => Direction::West,
+            Direction::West => Direction::East,
+            Direction::NorthEast => Direction::SouthWest,
+            Direction::NorthWest => Direction::SouthEast,
+            Direction::SouthEast => Direction::NorthWest,
+            Direction::SouthWest => Direction::NorthEast,
         }
     }
 }

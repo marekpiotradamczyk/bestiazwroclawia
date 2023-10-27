@@ -123,11 +123,11 @@ impl MoveGen {
         let king_square = pos.pieces[pos.turn as usize][Piece::King as usize].msb();
 
         let pawn_quiet_moves =
-            self.generate_pawn_moves(pos, friendly_occ, enemy_occ, pinned_pieces);
+            self.generate_pawn_moves(pos, friendly_occ, enemy_occ, pinned_pieces, king_square);
         let pawn_capturing_moves =
-            self.generate_pawn_attacks(pos, friendly_occ, enemy_occ, pinned_pieces);
+            self.generate_pawn_attacks(pos, friendly_occ, enemy_occ, pinned_pieces, king_square);
         let knight_moves = self.generate_knight_moves(pos, friendly_occ, enemy_occ, pinned_pieces);
-        let slider_moves = self.generate_slider_moves(pos, friendly_occ, enemy_occ, pinned_pieces);
+        let slider_moves = self.generate_slider_moves(pos, friendly_occ, enemy_occ, pinned_pieces, king_square);
         let king_moves = self.generate_king_moves(pos, friendly_occ, enemy_occ, pinned_pieces);
         let castling_moves =
             self.generate_all_castlings(pos, friendly_occ, enemy_occ, pinned_pieces);

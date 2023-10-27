@@ -1,7 +1,7 @@
 use sdk::{
     bitboard::Bitboard,
     position::{CastlingKind, Color, Piece, Position},
-    square::Square,
+    square::{File, Rank, Square},
 };
 
 use crate::{
@@ -134,9 +134,13 @@ impl KingMoveGenerator for MoveGen {
 
         let between_bb = match castling_kind {
             CastlingKind::WhiteKingside => Square::F1.bitboard() | Square::G1.bitboard(),
-            CastlingKind::WhiteQueenside => Square::C1.bitboard() | Square::D1.bitboard(),
+            CastlingKind::WhiteQueenside => {
+                Square::B1.bitboard() | Square::C1.bitboard() | Square::D1.bitboard()
+            }
             CastlingKind::BlackKingside => Square::F8.bitboard() | Square::G8.bitboard(),
-            CastlingKind::BlackQueenside => Square::C8.bitboard() | Square::D8.bitboard(),
+            CastlingKind::BlackQueenside => {
+                Square::B8.bitboard() | Square::C8.bitboard() | Square::D8.bitboard()
+            }
         };
 
         if !(between_bb & occ).is_empty() {
@@ -154,8 +158,7 @@ impl KingMoveGenerator for MoveGen {
 
         if pos.castling.has_castling_kind(castling_kind)
             && pos.turn == color
-            && (occ & between_bb).is_empty()
-            && between_bb.into_iter().all(|sq| {
+            && (between_bb & !File::B.bitboard()).into_iter().all(|sq| {
                 self.attacks_to_square(pos, sq, pos.enemy(), pos.occupied)
                     .is_empty()
             })

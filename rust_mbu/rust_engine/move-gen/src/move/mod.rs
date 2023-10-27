@@ -2,6 +2,7 @@ use core::fmt;
 use std::{collections::HashSet, fmt::Formatter};
 
 use sdk::{
+    fen::Fen,
     position::{CastlingKind, Color, Piece, Position},
     square::{File, Square},
 };
@@ -35,7 +36,7 @@ impl fmt::Debug for Move {
 impl fmt::Display for Move {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let promotion = if let Some(promotion) = self.promotion() {
-            format!("={}", promotion)
+            format!("{promotion}")
         } else {
             "".to_string()
         };
@@ -49,7 +50,7 @@ impl MakeMove for Position {
         let to = mv.to();
         let color = self.turn;
 
-        for (rook_sq, kind) in [
+       for (rook_sq, kind) in [
             (Square::A1, CastlingKind::WhiteQueenside),
             (Square::H1, CastlingKind::WhiteKingside),
             (Square::A8, CastlingKind::BlackQueenside),
@@ -65,6 +66,10 @@ impl MakeMove for Position {
         let (from_piece, from_color) = self
             .remove_piece_at(&from)
             .expect("BUG: No piece at from square");
+
+        if matches!(mv.kind(), MoveKind::Castling) {
+            self.castling.remove_color_castling(&color);
+        }
 
         let captured = match mv.kind() {
             MoveKind::Capture | MoveKind::Quiet => {
@@ -96,9 +101,12 @@ impl MakeMove for Position {
                 let (rook_from, _) = castling.from_squares();
                 let (rook_to, king_to) = castling.target_squares();
 
-                let (rook, _) = self
-                    .remove_piece_at(&rook_from)
-                    .expect("BUG: No piece at rook from square");
+                let (rook, _) = self.remove_piece_at(&rook_from).unwrap_or_else(|| {
+                    panic!(
+                        "BUG: No piece at {rook_from} from square\n{self}, FEN: {}",
+                        self.to_fen()
+                    )
+                });
 
                 self.add_piece_at(king_to, from_piece, from_color)?;
                 self.add_piece_at(rook_to, rook, from_color)?;
@@ -120,7 +128,7 @@ impl MakeMove for Position {
 
                 let enpass_sq = mv
                     .to()
-                    .offset(0, if color == Color::White { -1 } else { 1 })
+                    .offset(if color == Color::White { -1 } else { 1 }, 0)
                     .expect("BUG: Invalid en passant square");
 
                 self.en_passant = Some(enpass_sq);
@@ -131,7 +139,9 @@ impl MakeMove for Position {
         .map(|(piece, _)| piece);
 
         self.occupied = self.occupation(&Color::White) | self.occupation(&Color::Black);
-        self.en_passant = None;
+        if !matches!(mv.kind(), MoveKind::DoublePawnPush) {
+            self.en_passant = None;
+        }
         self.halfmove_clock = if captured.is_some() || from_piece == Piece::Pawn {
             0
         } else {
@@ -233,7 +243,7 @@ impl MakeMove for Position {
             }
         }
 
-        self.turn = self.swap_turn();
+        let _ = self.swap_turn();
         if self.turn == Color::Black {
             self.fullmove_number -= 1;
         }
@@ -310,6 +320,9 @@ impl Move {
             MoveKind::PromotionCapture => {
                 mv.set_promotion_capture(promotion.expect("BUG: No promotion piece"));
             }
+            MoveKind::DoublePawnPush => {
+                mv.set_double_pawn_push();
+            }
             _ => {}
         }
 
@@ -367,7 +380,7 @@ impl Move {
     }
 
     pub fn is_double_pawn_push(&self) -> bool {
-        self.inner & 0b1111000000000000 != 0
+        self.inner & 0b0001000000000000 != 0
     }
 
     pub fn is_king_castle(&self) -> bool {
@@ -435,5 +448,9 @@ impl Move {
 
     fn set_queen_castle(&mut self) {
         self.inner |= 0b0011000000000000;
+    }
+
+    fn set_double_pawn_push(&mut self) {
+        self.inner |= 0b0001000000000000;
     }
 }

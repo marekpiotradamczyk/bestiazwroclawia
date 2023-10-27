@@ -9,7 +9,7 @@ use crate::{
     r#move::{Move, MoveKind},
 };
 
-use super::simple_move_generator::SimpleMoveGenerator;
+use super::{simple_move_generator::SimpleMoveGenerator, PinnerGenerator};
 
 pub trait PawnMoveGenerator {
     fn generate_pawn_moves<'a>(
@@ -18,6 +18,7 @@ pub trait PawnMoveGenerator {
         friendly_occ: Bitboard,
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
+        king_sq: Square,
     ) -> Box<dyn Iterator<Item = Move> + '_>;
 
     fn generate_pawn_attacks<'a>(
@@ -26,6 +27,7 @@ pub trait PawnMoveGenerator {
         friendly_occ: Bitboard,
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
+        king_sq: Square,
     ) -> Box<dyn Iterator<Item = Move> + '_>;
 }
 
@@ -36,9 +38,10 @@ impl PawnMoveGenerator for MoveGen {
         friendly_occ: Bitboard,
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
+        king_sq: Square,
     ) -> Box<dyn Iterator<Item = Move> + '_> {
         let color = pos.turn;
-        let bb = pos.pieces[color as usize][Piece::Pawn as usize] & !pinned_pieces;
+        let bb = pos.pieces[color as usize][Piece::Pawn as usize];
         let forward = match color {
             Color::White => Direction::North,
             Color::Black => Direction::South,
@@ -47,8 +50,17 @@ impl PawnMoveGenerator for MoveGen {
         let double_push_blockers = blockers | blockers.shift(&forward);
 
         let iter = bb.into_iter().flat_map(move |from_square| {
-            let single_moves = self.pawn_single_moves(color, from_square) & !blockers;
-            let double_moves = self.pawn_double_moves(color, from_square) & !double_push_blockers;
+            let maybe_pinner_ray = if pinned_pieces.has(from_square) {
+                self.between_pinner_inclusive(from_square, king_sq, blockers)
+            } else {
+                Bitboard::full()
+            };
+
+            let single_moves =
+                self.pawn_single_moves(color, from_square) & !blockers & maybe_pinner_ray;
+            let double_moves = self.pawn_double_moves(color, from_square)
+                & !double_push_blockers
+                & maybe_pinner_ray;
 
             single_moves
                 .into_iter()
@@ -62,11 +74,17 @@ impl PawnMoveGenerator for MoveGen {
                     if target_square.rank() == promotion_rank {
                         generate_promotions_vec(from_square, target_square, MoveKind::Promotion)
                     } else {
+                        let kind = if double_moves.has(target_square) {
+                            MoveKind::DoublePawnPush
+                        } else {
+                            MoveKind::Quiet
+                        };
+
                         vec![Move::new(
                             from_square,
                             target_square,
                             None,
-                            &MoveKind::Quiet,
+                            &kind,
                         )]
                     }
                     .into_iter()
@@ -79,18 +97,26 @@ impl PawnMoveGenerator for MoveGen {
     fn generate_pawn_attacks<'a>(
         &'a self,
         pos: &'a Position,
-        _friendly_occ: Bitboard,
+        friendly_occ: Bitboard,
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
+        king_sq: Square,
     ) -> Box<dyn Iterator<Item = Move> + '_> {
+        let blockers = friendly_occ | enemy_occ;
         let color = pos.turn;
-        let bb = pos.pieces[color as usize][Piece::Pawn as usize] & !pinned_pieces;
+        let bb = pos.pieces[color as usize][Piece::Pawn as usize];
 
         let iter = bb.into_iter().flat_map(move |from_square| {
-            let attacks = if let Some(en_passant) = pos.en_passant {
-                self.pawn_attacks(color, from_square) & (enemy_occ | en_passant)
+            let maybe_pinner_ray = if pinned_pieces.has(from_square) {
+                self.between_pinner_inclusive(from_square, king_sq, blockers)
             } else {
-                self.pawn_attacks(color, from_square) & enemy_occ
+                Bitboard::full()
+            };
+
+            let attacks = if let Some(en_passant) = pos.en_passant {
+                self.pawn_attacks(color, from_square) & (enemy_occ | en_passant) & maybe_pinner_ray
+            } else {
+                self.pawn_attacks(color, from_square) & enemy_occ & maybe_pinner_ray
             };
 
             attacks.into_iter().flat_map(move |target_square| {

@@ -3,6 +3,7 @@ use std::io;
 use itertools::Itertools;
 use move_gen::r#move::{MakeMove, Move};
 use sdk::{fen::Fen, position::Position};
+use timeit::timeit_loops;
 
 use crate::core::{search::Search, Engine};
 
@@ -22,21 +23,22 @@ pub fn start_uci() {
         let (command, args) = split
             .split_first()
             .map(|(cmd, args)| (cmd, args.to_vec()))
-            .unwrap();
+            .unwrap_or((&"", vec![]));
 
         match command.to_lowercase().as_str() {
             "quit" => return,
             "isready" => println!("readyok"),
             "uci" => uci(),
-            "ucinewgame" => {}
+            "ucinewgame" => position(vec!["startpos"], &mut engine),
             "position" => position(args, &mut engine),
-            "go" => go(&mut engine),
+            "go" => go(args, &mut engine),
             "setoption" => {}
             "perft" => {}
             "profile" => {}
             "stop" => {}
             "ponderhit" => {}
             "printfen" => {}
+            "bench" => bench(),
             _ => println!("Unknown command: {}", command),
         }
     }
@@ -48,50 +50,94 @@ fn uci() {
     println!("uciok");
 }
 
+fn bench() {
+    let mut engine = Engine::default();
+    let mut pos = Position::default();
+    let time = timeit_loops!(1, {
+        while let Some((_, mv)) = engine.search(&pos, 3) {
+            let _ = pos.make_move(&mv).unwrap();
+        }
+    });
+
+    let nps = engine.nodes_evaluated as f64 / time;
+
+    println!("{nps:.2} nps");
+}
+
 fn position(args: Vec<&str>, engine: &mut Engine) {
     if args.is_empty() {
         println!("{}", engine.pos);
         return;
     }
-    let fen = args.first().unwrap();
+    let input = args.first().unwrap();
 
-    engine.pos = if *fen == "startpos" {
-        Position::default()
+    let (mut pos, idx) = if *input == "startpos" {
+        (Position::default(), 1)
     } else {
-        Position::from_fen(fen.to_string()).expect("Couldn't parse FEN")
+        let mut iter = args.iter().skip(1).take_while(|s| **s != "moves");
+        let idx = iter.clone().count() + 1;
+        let fen = iter.join(" ");
+
+        if let Ok(pos) = Position::from_fen(fen) {
+            (pos, idx)
+        } else {
+            println!("Invalid fen: {input}");
+            return;
+        }
     };
 
-    let second = args.get(1);
-    let mut pos = engine.pos.clone();
+    let moves = &args[idx..];
 
-    if let Some(second) = second {
-        if *second == "moves" {
-            for (idx, mv) in args.iter().skip(2).enumerate() {
-                if let Some(mv) = parse_move(mv.to_string(), engine) {
+    if let Some(first) = moves.first() {
+        if *first == "moves" {
+            for mv in moves.iter().skip(1) {
+                if let Some(mv) = parse_move(mv.to_string(), engine, &pos) {
                     let _ = pos.make_move(&mv);
                 } else {
-                    println!("Invalid move: {}.{mv}", { idx + 1 });
+                    println!("Invalid move {mv}");
+                    return;
                 }
             }
         } else {
-            println!("Expected 'moves', found '{second}'");
+            println!("Unexpected token {first}");
+            return;
+        }
+    }
+    // position fen rnbqkbnr/1ppp1ppp/p7/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 1 3 moves g8f6 h5f3
+
+    engine.pos = pos;
+}
+
+fn go(args: Vec<&str>, engine: &mut Engine) {
+    let depth = if let Some(first) = args.first() {
+        if *first != "depth" {
+            println!("Unexpected token {first}, expected: depth");
+            return;
         }
 
-        engine.pos = pos;
-    }
+        if let Some(depth_str) = args.get(1) {
+            if let Ok(depth) = depth_str.parse::<usize>() {
+                depth
+            } else {
+                println!("Invalid depth {depth_str}");
+                return;
+            }
+        } else {
+            println!("Missing depth");
+            return;
+        }
+    } else {
+        4
+    };
+
+    let (_, mv) = engine.search(&engine.pos.clone(), depth).unwrap();
+
+    println!("bestmove {mv}");
 }
 
-fn go(engine: &mut Engine) {
-    let result = engine.search(&engine.pos.clone(), 3);
-
-    if let Some((_score, mv)) = result {
-        println!("bestmove {}", mv);
-    }
-}
-
-fn parse_move(mv: String, engine: &Engine) -> Option<Move> {
+fn parse_move(mv: String, engine: &Engine, pos: &Position) -> Option<Move> {
     engine
         .move_gen
-        .generate_legal_moves(&engine.pos)
+        .generate_legal_moves(pos)
         .find(|m| m.to_string() == mv)
 }
