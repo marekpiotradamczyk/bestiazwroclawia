@@ -1,99 +1,149 @@
 use itertools::Itertools;
-use move_gen::r#move::{MakeMove, Move};
-use sdk::{position::{Color, Position}, fen::Fen};
+use move_gen::{
+    generators::movegen::MoveGen,
+    r#move::{MakeMove, Move, MoveKind},
+};
+use sdk::position::{self, Color, Position};
 
-use super::{evaluate::Evaluate, Engine};
+use crate::core::evaluate::evaluate;
 
-pub trait Search {
-    fn search(&mut self, position: &Position, depth: usize) -> Option<(f64, Move)>;
+use super::Engine;
+
+pub trait SearchEngine {
+    fn search(&mut self, position: &Position, depth: usize) -> Option<BestMove>;
 }
 
-impl Search for Engine {
-    fn search(&mut self, position: &Position, depth: usize) -> Option<(f64, Move)> {
-        let maximizing_player = position.turn == Color::White;
-        let (score, mv) = minmax(self, position, depth, maximizing_player);
-
-        Some((score, mv?))
-    }
+#[derive(Clone, Debug)]
+pub struct BestMove {
+    pub score: f64,
+    pub mv: Move,
 }
 
-fn minmax(
-    engine: &mut Engine,
-    position: &Position,
-    depth: usize,
-    maximizing_player: bool,
-) -> (f64, Option<Move>) {
-    if depth == 0 {
-        engine.nodes_evaluated += 1;
-        return (engine.evaluate(position), None);
-    }
+pub struct Search<'a> {
+    pub nodes_evaluated: usize,
+    pub quiesce_nodes_evaluated: usize,
+    pub ply: usize,
+    pub move_gen: &'a MoveGen,
+    pub best: Option<BestMove>,
+}
 
-    let moves = engine.move_gen.generate_legal_moves(position).collect_vec();
-
-    if position.halfmove_clock >= 100 {
-        return (0.0, None);
-    }
-
-    if moves.is_empty() {
-        if engine.move_gen.is_check(position) {
-            return (if maximizing_player { -1000.0 } else { 1000.0 }, None);
-        } else {
-            return (0.0, None);
+impl<'a> Search<'a> {
+    pub fn new(move_gen: &'a MoveGen) -> Self {
+        Self {
+            nodes_evaluated: 0,
+            quiesce_nodes_evaluated: 0,
+            ply: 0,
+            move_gen,
+            best: None,
         }
     }
+}
 
-    if maximizing_player {
-        let mut best_move = None;
-        let mut best_score = f64::MIN;
+impl SearchEngine for Engine {
+    fn search(&mut self, position: &Position, depth: usize) -> Option<BestMove> {
+        let mut search = Search::new(&self.move_gen);
 
-        for mv in moves {
-            let mut pos = position.clone();
-            engine.move_list.push(mv.clone());
+        let (alpha, beta) = (f64::MIN, f64::MAX);
 
-            pos.make_move(&mv).unwrap();
-            let (score, _) = if engine.move_list.count_occurrences(&mv) >= 2 {
-                (0.0, None)
+        search.negamax(position, alpha, beta, depth);
+
+        let current_total = search.nodes_evaluated + search.quiesce_nodes_evaluated;
+        self.total_nodes_evaluated += current_total;
+        self.nodes_evaluated = current_total;
+
+        search.best
+    }
+}
+
+impl<'a> Search<'a> {
+    fn negamax(&mut self, node: &Position, mut alpha: f64, beta: f64, depth: usize) -> f64 {
+        self.nodes_evaluated += 1;
+
+        if depth == 0 {
+            return self.quiesce(node, alpha, beta);
+        }
+
+        let mut best_so_far = None;
+        let old_alpha = alpha;
+        let child_nodes = self.move_gen.generate_legal_moves(node).collect_vec();
+
+        if child_nodes.is_empty() {
+            if self.move_gen.is_check(node) {
+                return -10000.0 + self.ply as f64;
             } else {
-                minmax(engine, &pos, depth - 1, false)
-            };
-            engine.move_list.pop();
-
-            if score > best_score {
-                best_score = score;
-                best_move = Some(mv);
+                return 0.0;
             }
         }
 
-        (best_score, best_move)
-    } else {
-        let mut best_move = None;
-        let mut best_score = f64::MAX;
-
-        for mv in moves {
-            let mut pos = position.clone();
-            engine.move_list.push(mv.clone());
-
-            pos.make_move(&mv).unwrap_or_else(|e| {
-                let kind = mv.kind();
-                println!("Invalid move: {mv} {kind:?} {e}");
-                println!("{position}");
-                println!("FEN: {}", position.to_fen());
-
-                panic!();
-            });
-            let (score, _) = if engine.move_list.count_occurrences(&mv) >= 2 {
-                (0.0, None)
-            } else {
-                minmax(engine, &pos, depth - 1, true)
+        for child in child_nodes {
+            let child_pos = {
+                let mut child_pos = node.clone();
+                let _ = child_pos.make_move(&child);
+                child_pos
             };
-            engine.move_list.pop();
 
-            if score < best_score {
-                best_score = score;
-                best_move = Some(mv);
+            self.ply += 1;
+            let score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
+            self.ply -= 1;
+
+            if score >= beta {
+                return beta;
+            }
+
+            if score > alpha {
+                alpha = score;
+
+                if self.ply == 0 {
+                    best_so_far = Some(child);
+                }
             }
         }
 
-        (best_score, best_move)
+        if old_alpha != alpha {
+            self.best = best_so_far.map(|mv| BestMove { score: alpha, mv });
+        }
+
+        alpha
+    }
+
+    fn quiesce(&mut self, node: &Position, mut alpha: f64, beta: f64) -> f64 {
+        self.quiesce_nodes_evaluated += 1;
+        let stand_pat = evaluate(node);
+
+        if stand_pat >= beta {
+            return beta;
+        }
+
+        if stand_pat > alpha {
+            alpha = stand_pat;
+        }
+
+        let moves = self
+            .move_gen
+            .generate_legal_moves(node);
+            //.filter(Move::is_capture);
+
+        for mv in moves {
+            if mv.is_capture() {
+                continue;
+            }
+            let child = {
+                let mut child = node.clone();
+                let _ = child.make_move(&mv);
+                child
+            };
+
+            let score = -self.quiesce(&child, -beta, -alpha);
+
+            if score >= beta {
+                return beta;
+            }
+
+            if score > alpha {
+                alpha = score;
+            }
+        }
+
+        alpha
     }
 }

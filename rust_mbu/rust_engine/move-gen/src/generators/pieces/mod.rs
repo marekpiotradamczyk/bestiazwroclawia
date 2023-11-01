@@ -42,9 +42,9 @@ pub fn ray_direction(sq: Square, target: Square) -> Option<Direction> {
         }
     } else if file_diff == rank_diff {
         if file_diff > 0 {
-            Some(Direction::NorthEast)
-        } else {
             Some(Direction::SouthWest)
+        } else {
+            Some(Direction::NorthEast)
         }
     } else if file_diff == -rank_diff {
         if file_diff > 0 {

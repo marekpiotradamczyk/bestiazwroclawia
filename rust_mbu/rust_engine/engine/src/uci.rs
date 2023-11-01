@@ -5,7 +5,10 @@ use move_gen::r#move::{MakeMove, Move};
 use sdk::{fen::Fen, position::Position};
 use timeit::timeit_loops;
 
-use crate::core::{search::Search, Engine};
+use crate::core::{
+    search::{BestMove, SearchEngine},
+    Engine, evaluate::evaluate,
+};
 
 pub fn start_uci() {
     println!("ready");
@@ -38,7 +41,8 @@ pub fn start_uci() {
             "stop" => {}
             "ponderhit" => {}
             "printfen" => {}
-            "bench" => bench(),
+            "bench" => bench(args),
+            "dump" => dump(&engine),
             _ => println!("Unknown command: {}", command),
         }
     }
@@ -50,16 +54,21 @@ fn uci() {
     println!("uciok");
 }
 
-fn bench() {
+fn bench(args: Vec<&str>) {
     let mut engine = Engine::default();
-    let mut pos = Position::default();
+    let pos = Position::default();
+
+    let depth = if let Some(depth_str) = args.first() {
+        depth_str.parse().unwrap()
+    } else {
+        5
+    };
+
     let time = timeit_loops!(1, {
-        while let Some((_, mv)) = engine.search(&pos, 3) {
-            let _ = pos.make_move(&mv).unwrap();
-        }
+        engine.search(&pos, depth);
     });
 
-    let nps = engine.nodes_evaluated as f64 / time;
+    let nps = engine.total_nodes_evaluated as f64 / time;
 
     println!("{nps:.2} nps");
 }
@@ -130,9 +139,25 @@ fn go(args: Vec<&str>, engine: &mut Engine) {
         4
     };
 
-    let (_, mv) = engine.search(&engine.pos.clone(), depth).unwrap();
+    let BestMove { score, mv } = engine
+        .search(&engine.pos.clone(), depth)
+        .expect("Engine failed to find a best move");
+
+    dbg!(score);
+    println!("info score cp {score} depth {depth} nodes {}", engine.nodes_evaluated);
 
     println!("bestmove {mv}");
+}
+
+fn dump(engine: &Engine) {
+    println!("{}", engine.pos);
+    let moves = engine.move_gen.generate_legal_moves(&engine.pos);
+
+    for mv in moves {
+        println!("{}", mv);
+    }
+
+    println!("Eval: {}", evaluate(&engine.pos));
 }
 
 fn parse_move(mv: String, engine: &Engine, pos: &Position) -> Option<Move> {

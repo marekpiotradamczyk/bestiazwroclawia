@@ -16,8 +16,6 @@ pub struct Move {
 
 pub trait MakeMove {
     fn make_move(&mut self, mv: &Move) -> Result<Option<Piece>>;
-    fn undo_move(&mut self, mv: &Move, captured: Option<Piece>) -> Result<()>;
-    fn validate_move(&self, mv: &Move) -> Result<()>;
 }
 
 impl fmt::Debug for Move {
@@ -50,7 +48,7 @@ impl MakeMove for Position {
         let to = mv.to();
         let color = self.turn;
 
-       for (rook_sq, kind) in [
+        for (rook_sq, kind) in [
             (Square::A1, CastlingKind::WhiteQueenside),
             (Square::H1, CastlingKind::WhiteKingside),
             (Square::A8, CastlingKind::BlackQueenside),
@@ -153,128 +151,6 @@ impl MakeMove for Position {
         }
 
         Ok(captured)
-    }
-
-    fn undo_move(&mut self, mv: &Move, captured: Option<Piece>) -> Result<()> {
-        let from = mv.from();
-        let to = mv.to();
-
-        match mv.kind() {
-            MoveKind::Quiet | MoveKind::DoublePawnPush => {
-                let (piece, color) = self
-                    .remove_piece_at(&to)
-                    .expect("BUG: No piece at to square");
-
-                self.add_piece_at(from, piece, color)?;
-            }
-            MoveKind::Capture => {
-                let (piece, color) = self
-                    .remove_piece_at(&to)
-                    .expect("BUG: No piece at to square");
-
-                self.add_piece_at(from, piece, color)?;
-
-                let captured_color = self.turn;
-                let captured_piece = captured.expect("BUG: No captured piece in Capture move");
-
-                self.add_piece_at(to, captured_piece, captured_color)?;
-            }
-            MoveKind::EnPassant => {
-                let (piece, color) = self
-                    .remove_piece_at(&to)
-                    .expect("BUG: No piece at to square");
-
-                self.add_piece_at(from, piece, color)?;
-
-                let captured_color = self.turn;
-                let captured_piece = captured.expect("BUG: No captured piece in EnPassant move");
-
-                let enpass_sq = mv
-                    .to()
-                    .offset(
-                        0,
-                        if captured_color == Color::White {
-                            -8
-                        } else {
-                            8
-                        },
-                    )
-                    .expect("BUG: Invalid en passant square");
-
-                self.add_piece_at(enpass_sq, captured_piece, captured_color)?;
-            }
-            MoveKind::Castling => {
-                let castling = CastlingKind::from(to);
-                let (rook_to, king_to) = castling.target_squares();
-                let (rook_from, king_from) = castling.from_squares();
-
-                let (rook, rook_color) = self
-                    .remove_piece_at(&rook_to)
-                    .expect("BUG: No piece at rook square");
-
-                let (king, color) = self
-                    .remove_piece_at(&king_to)
-                    .expect("BUG: No piece at king square");
-
-                self.add_piece_at(rook_from, rook, rook_color)?;
-                self.add_piece_at(king_from, king, color)?;
-
-                self.castling.add_castling_kind(&castling);
-            }
-            MoveKind::Promotion => {
-                let (piece, color) = self
-                    .remove_piece_at(&to)
-                    .expect("BUG: No piece at to square");
-
-                self.add_piece_at(from, piece, color)?;
-            }
-            MoveKind::PromotionCapture => {
-                let (_, color) = self
-                    .remove_piece_at(&to)
-                    .expect("BUG: No piece at to square");
-
-                self.add_piece_at(from, Piece::Pawn, color)?;
-
-                let captured_color = self.turn;
-                let captured_piece =
-                    captured.expect("BUG: No captured piece in PromotionCapture move");
-
-                self.add_piece_at(to, captured_piece, captured_color)?;
-            }
-        }
-
-        let _ = self.swap_turn();
-        if self.turn == Color::Black {
-            self.fullmove_number -= 1;
-        }
-
-        self.halfmove_clock -= 1;
-
-        Ok(())
-    }
-
-    fn validate_move(&self, mv: &Move) -> Result<()> {
-        let (_, from_color) = self
-            .piece_at(&mv.from())
-            .ok_or(anyhow::anyhow!("No piece at from square: {}", mv.from()))?;
-
-        if from_color != self.turn {
-            return Err(anyhow::anyhow!(
-                "Cannot move piece of opposite color: {}",
-                mv.from()
-            ));
-        }
-
-        if let Some((_, to_color)) = self.piece_at(&mv.to()) {
-            if from_color == to_color {
-                return Err(anyhow::anyhow!(
-                    "Cannot capture piece of same color: {}",
-                    mv.to()
-                ));
-            }
-        }
-
-        Ok(())
     }
 }
 

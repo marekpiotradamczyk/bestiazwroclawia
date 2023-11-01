@@ -11,6 +11,7 @@ mod move_list;
 
 #[derive(Default)]
 pub struct Engine {
+    pub total_nodes_evaluated: usize,
     pub nodes_evaluated: usize,
     pub move_gen: MoveGen,
     pub move_list: MoveList,
