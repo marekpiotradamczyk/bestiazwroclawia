@@ -6,11 +6,13 @@ use sdk::position::Position;
 pub mod evaluate;
 pub mod search;
 pub mod move_order;
+pub mod principal_variation;
 
 #[derive(Default)]
 pub struct Engine {
     pub total_nodes_evaluated: usize,
     pub nodes_evaluated: usize,
+    pub pv: String,
     pub move_gen: MoveGen,
     pub pos: Position,
 }

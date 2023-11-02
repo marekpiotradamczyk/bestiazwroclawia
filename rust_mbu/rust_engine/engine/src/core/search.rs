@@ -7,7 +7,7 @@ use sdk::position::Position;
 
 use crate::core::evaluate::evaluate;
 
-use super::{move_order::MoveUtils, Engine};
+use super::{move_order::MoveUtils, principal_variation::PrincipalVariation, Engine};
 
 pub const MAX_PLY: usize = 128;
 
@@ -29,6 +29,7 @@ pub struct Search<'a> {
     pub best: Option<BestMove>,
     pub killer_moves: [[Option<Move>; MAX_PLY]; 2],
     pub history_moves: [[[isize; 64]; 6]; 2],
+    pub pv: PrincipalVariation,
 }
 
 impl<'a> Search<'a> {
@@ -41,23 +42,40 @@ impl<'a> Search<'a> {
             best: None,
             killer_moves: [[None; MAX_PLY]; 2],
             history_moves: [[[0; 64]; 6]; 2],
+            pv: PrincipalVariation::default(),
         }
     }
 }
 
 impl SearchEngine for Engine {
     fn search(&mut self, position: &Position, depth: usize) -> Option<BestMove> {
-        let mut search = Search::new(&self.move_gen);
-
         let (alpha, beta) = (-1_000_000, 1_000_000);
 
-        search.negamax(position, alpha, beta, depth);
+        for i in 1..=depth {
+            let mut search = Search::new(&self.move_gen);
+            let best_score = search.negamax(position, alpha, beta, i);
+            let current_nodes_count = search.nodes_evaluated + search.quiesce_nodes_evaluated;
 
-        let current_total = search.nodes_evaluated + search.quiesce_nodes_evaluated;
-        self.total_nodes_evaluated += current_total;
-        self.nodes_evaluated = current_total;
+            println!(
+                "info score cp {} depth {} nodes {} pv {}",
+                best_score,
+                i,
+                current_nodes_count,
+                search.pv.to_string()
+            );
 
-        search.best
+            if i == depth {
+                self.total_nodes_evaluated += current_nodes_count;
+                self.nodes_evaluated = current_nodes_count;
+                self.pv = search.pv.to_string();
+
+                println!("bestmove {}", search.best.as_ref().unwrap().mv);
+
+                return search.best;
+            }
+        }
+
+        None
     }
 }
 
@@ -69,6 +87,8 @@ impl<'a> Search<'a> {
         beta: isize,
         mut depth: usize,
     ) -> isize {
+        self.pv.init_length(self.ply);
+
         if depth == 0 {
             return self.quiesce(node, alpha, beta);
             //return evaluate(node);
@@ -108,18 +128,24 @@ impl<'a> Search<'a> {
             self.ply -= 1;
 
             if score >= beta {
-                self.killer_moves[1][self.ply] = self.killer_moves[0][self.ply];
-                self.killer_moves[0][self.ply] = Some(child);
+                if !child.is_capture() {
+                    self.killer_moves[1][self.ply] = self.killer_moves[0][self.ply];
+                    self.killer_moves[0][self.ply] = Some(child);
+                }
 
                 return beta;
             }
 
             if score > alpha {
-                let (piece, color) = node.piece_at(&child.from()).unwrap();
-                self.history_moves[color as usize][piece as usize][child.to() as usize] +=
-                    depth as isize;
+                if !child.is_capture() {
+                    let (piece, color) = node.piece_at(&child.from()).unwrap();
+                    self.history_moves[color as usize][piece as usize][child.to() as usize] +=
+                        depth as isize;
+                }
 
                 alpha = score;
+
+                self.pv.push_pv_move(self.ply, child);
 
                 if self.ply == 0 {
                     best_so_far = Some(child);

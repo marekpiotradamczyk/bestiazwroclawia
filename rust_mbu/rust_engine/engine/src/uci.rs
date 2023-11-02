@@ -139,22 +139,14 @@ fn go(args: Vec<&str>, engine: &mut Engine) {
         4
     };
 
-    let BestMove { score, mv } = engine
+    engine
         .search(&engine.pos.clone(), depth)
         .expect("Engine failed to find a best move");
-
-    dbg!(score);
-    println!(
-        "info score cp {score} depth {depth} nodes {}",
-        engine.nodes_evaluated
-    );
-
-    println!("bestmove {mv}");
 }
 
 fn dump(engine: &Engine) {
     println!("{}", engine.pos);
-    let mut moves = engine
+    let moves = engine
         .move_gen
         .generate_legal_moves(&engine.pos)
         .collect_vec();
