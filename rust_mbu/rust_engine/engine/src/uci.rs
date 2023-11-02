@@ -6,8 +6,9 @@ use sdk::{fen::Fen, position::Position};
 use timeit::timeit_loops;
 
 use crate::core::{
+    evaluate::evaluate,
     search::{BestMove, SearchEngine},
-    Engine, evaluate::evaluate,
+    Engine,
 };
 
 pub fn start_uci() {
@@ -112,7 +113,6 @@ fn position(args: Vec<&str>, engine: &mut Engine) {
             return;
         }
     }
-    // position fen rnbqkbnr/1ppp1ppp/p7/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 1 3 moves g8f6 h5f3
 
     engine.pos = pos;
 }
@@ -144,17 +144,23 @@ fn go(args: Vec<&str>, engine: &mut Engine) {
         .expect("Engine failed to find a best move");
 
     dbg!(score);
-    println!("info score cp {score} depth {depth} nodes {}", engine.nodes_evaluated);
+    println!(
+        "info score cp {score} depth {depth} nodes {}",
+        engine.nodes_evaluated
+    );
 
     println!("bestmove {mv}");
 }
 
 fn dump(engine: &Engine) {
     println!("{}", engine.pos);
-    let moves = engine.move_gen.generate_legal_moves(&engine.pos);
+    let mut moves = engine
+        .move_gen
+        .generate_legal_moves(&engine.pos)
+        .collect_vec();
 
     for mv in moves {
-        println!("{}", mv);
+        println!("{mv}");
     }
 
     println!("Eval: {}", evaluate(&engine.pos));

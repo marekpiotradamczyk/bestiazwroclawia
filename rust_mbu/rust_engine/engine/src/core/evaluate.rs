@@ -4,13 +4,13 @@ pub trait Evaluate {
     fn evaluate(&self, position: &Position) -> f64;
 }
 
-const PIECE_VALUES: [f64; 6] = [100.0, 300.0, 350.0, 500.0, 900.0, 10000.0];
+const PIECE_VALUES: [isize; 6] = [100, 300, 350, 500, 900, 10000];
 
-pub fn evaluate(position: &Position) -> f64 {
-    let mut score = 0.0;
+pub fn evaluate(position: &Position) -> isize {
+    let mut score = 0;
     for piece in Piece::all() {
-        let white_count = position.pieces[Color::White as usize][piece as usize].count() as f64;
-        let black_count = position.pieces[Color::Black as usize][piece as usize].count() as f64;
+        let white_count = position.pieces[Color::White as usize][piece as usize].count() as isize;
+        let black_count = position.pieces[Color::Black as usize][piece as usize].count() as isize;
 
         score += PIECE_VALUES[piece as usize] * (white_count - black_count);
     }

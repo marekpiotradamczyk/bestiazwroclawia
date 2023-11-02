@@ -9,7 +9,7 @@ use sdk::{
 
 type Result<T> = std::result::Result<T, anyhow::Error>;
 
-#[derive(Clone, Hash, Eq, PartialEq)]
+#[derive(Clone, Copy, Hash, Eq, PartialEq)]
 pub struct Move {
     inner: u16,
 }

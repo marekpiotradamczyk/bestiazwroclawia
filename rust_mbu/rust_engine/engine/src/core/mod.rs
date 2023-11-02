@@ -3,18 +3,15 @@ use std::{collections::hash_map::DefaultHasher, hash::{Hash, Hasher}};
 use move_gen::generators::movegen::MoveGen;
 use sdk::position::Position;
 
-use self::move_list::MoveList;
-
 pub mod evaluate;
 pub mod search;
-mod move_list;
+pub mod move_order;
 
 #[derive(Default)]
 pub struct Engine {
     pub total_nodes_evaluated: usize,
     pub nodes_evaluated: usize,
     pub move_gen: MoveGen,
-    pub move_list: MoveList,
     pub pos: Position,
 }
 
