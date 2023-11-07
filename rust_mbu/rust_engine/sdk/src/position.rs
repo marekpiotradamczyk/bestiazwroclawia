@@ -26,6 +26,7 @@ pub struct Position {
     #[derivative(Hash = "ignore")]
     #[derivative(PartialEq = "ignore")]
     pub fullmove_number: u16,
+    pub hash: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
@@ -46,7 +47,7 @@ pub enum Piece {
 
 #[derive(Debug, Clone, Hash)]
 pub struct Castling {
-    inner: u8,
+    pub inner: u8,
 }
 
 pub enum CastlingKind {
@@ -310,6 +311,7 @@ impl Display for Position {
 
         writeln!(f, "Turn: {}", self.turn)?;
         writeln!(f, "Castling: {}", self.castling)?;
+        writeln!(f, "Hash: {}", self.hash)?;
         if let Some(en_passant) = self.en_passant {
             writeln!(f, "En passant: {en_passant}")?;
         }

@@ -1,5 +1,5 @@
-pub mod core;
-mod uci;
+pub mod engine;
+pub mod uci;
 
 use uci::start_uci;
 
@@ -11,7 +11,7 @@ pub fn run() {
 
 pub fn main() {
     let child = thread::Builder::new()
-        .stack_size(32 * 1024 * 1024 * 2)
+        .stack_size(32 * 1024 * 1024 * 2 * 2)
         .spawn(run)
         .unwrap();
 

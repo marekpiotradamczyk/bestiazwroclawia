@@ -8,3 +8,4 @@ pub mod fen;
 pub mod lookup;
 pub mod position;
 pub mod square;
+pub mod hash;

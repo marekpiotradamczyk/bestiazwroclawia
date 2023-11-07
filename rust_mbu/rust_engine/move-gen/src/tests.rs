@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 use std::{collections::HashSet, thread};
 
+use rand::seq::SliceRandom;
 use sdk::{
     fen::Fen,
     position::{Color, Position},
@@ -9,7 +10,7 @@ use serde::Deserialize;
 
 use crate::{
     generators::movegen::MoveGen,
-    utils::{chess_notation::ChessNotation, logger::configure_logger},
+    utils::{chess_notation::ChessNotation, logger::configure_logger}, r#move::MakeMove,
 };
 
 #[derive(Deserialize, Debug)]
@@ -67,6 +68,29 @@ fn run_all_tests() {
         let file_name = file.unwrap().file_name().into_string().unwrap();
         info!("Running tests for {}", file_name);
         run_test(file_name);
+    }
+
+    test_hashes();
+}
+
+fn test_hashes() {
+    let mut pos = Position::default();
+    let move_gen = MoveGen::new();
+
+    for _ in 0..1000 {
+        let moves = move_gen.generate_legal_moves(&pos).collect::<Vec<_>>(); 
+        let fen = pos.to_fen();
+
+        if moves.is_empty() {
+            break;
+        }
+
+        let random_move = moves.choose(&mut rand::thread_rng()).unwrap();
+
+        let _ = pos.make_move(random_move).unwrap();
+
+        let hash = pos.calc_hash();
+        assert_eq!(hash, pos.hash, "Fen: {fen}, move: {random_move}");
     }
 }
 

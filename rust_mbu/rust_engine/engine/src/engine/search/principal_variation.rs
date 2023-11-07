@@ -1,4 +1,4 @@
-use super::search::MAX_PLY;
+use crate::engine::search::MAX_PLY;
 use move_gen::r#move::Move;
 
 pub struct PrincipalVariation {

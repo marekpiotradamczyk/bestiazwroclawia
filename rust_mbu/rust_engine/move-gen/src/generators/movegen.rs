@@ -1,10 +1,12 @@
-use rand::Rng;
+use rand::{rngs::StdRng, Rng, SeedableRng};
 use sdk::{
     bitboard::{Bitboard, Direction},
     lookup::{in_between, sliders::Slider},
     position::{self, Color, Piece, Position},
     square::{Rank, Square},
 };
+
+use core::array;
 
 use crate::{
     lookup::{load_lookup_tables, LookupTables, MagicEntry},
@@ -24,6 +26,7 @@ pub struct MoveGen {
 
 impl MoveGen {
     pub fn new() -> Self {
+
         let lookup_tables = load_lookup_tables().expect("Couldn't load lookup tables");
         Self {
             lookups: lookup_tables,
@@ -127,7 +130,8 @@ impl MoveGen {
         let pawn_capturing_moves =
             self.generate_pawn_attacks(pos, friendly_occ, enemy_occ, pinned_pieces, king_square);
         let knight_moves = self.generate_knight_moves(pos, friendly_occ, enemy_occ, pinned_pieces);
-        let slider_moves = self.generate_slider_moves(pos, friendly_occ, enemy_occ, pinned_pieces, king_square);
+        let slider_moves =
+            self.generate_slider_moves(pos, friendly_occ, enemy_occ, pinned_pieces, king_square);
         let king_moves = self.generate_king_moves(pos, friendly_occ, enemy_occ, pinned_pieces);
         let castling_moves =
             self.generate_all_castlings(pos, friendly_occ, enemy_occ, pinned_pieces);

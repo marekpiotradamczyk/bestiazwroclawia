@@ -64,7 +64,7 @@ impl PawnMoveGenerator for MoveGen {
 
             single_moves
                 .into_iter()
-                .chain(double_moves.into_iter())
+                .chain(double_moves)
                 .flat_map(move |target_square| {
                     let promotion_rank = match color {
                         Color::White => Rank::R8,

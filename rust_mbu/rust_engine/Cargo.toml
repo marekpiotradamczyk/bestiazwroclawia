@@ -1,9 +1,9 @@
 [workspace]
+resolver = "2"
 
 members = [
     "sdk",
     "move-gen",
     "magic",
-    "engine",
-    "examples/selfplay"
+    "engine"
 ]

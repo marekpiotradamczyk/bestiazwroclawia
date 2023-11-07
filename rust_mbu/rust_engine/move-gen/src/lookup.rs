@@ -73,7 +73,10 @@ pub fn load_rook_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 12]; 64]
         .unwrap()
         .join("rook_magics.bin");
 
-    let mut file = std::fs::File::open(path)?;
+    let mut file = match std::fs::File::open(path) {
+        Ok(file) => file,
+        Err(_) => std::fs::File::open("./rook_magics.bin")?
+    };
 
     for magic in magics.iter_mut() {
         let mut mask_bytes = [0u8; 8];
@@ -119,7 +122,10 @@ pub fn load_bishop_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 9]; 64
         .unwrap()
         .join("bishop_magics.bin");
 
-    let mut file = std::fs::File::open(path)?;
+    let mut file = match std::fs::File::open(path) {
+        Ok(file) => file,
+        Err(_) => std::fs::File::open("./bishop_magics.bin")?
+    };
 
     for magic in magics.iter_mut() {
         let mut mask_bytes = [0u8; 8];

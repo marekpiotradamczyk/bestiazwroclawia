@@ -28,9 +28,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.71"
+version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c7d0618f0e0b7e8ff11427422b64564d5fb0be1940354bfe2e0529b18a9d9b8"
+checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 
 [[package]]
 name = "autocfg"
@@ -149,7 +149,10 @@ checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
 name = "engine"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "derivative",
  "itertools",
+ "lazy_static",
  "move_gen",
  "sdk",
  "smallvec",
@@ -585,15 +588,6 @@ dependencies = [
  "rand",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "selfplay"
-version = "0.1.0"
-dependencies = [
- "engine",
- "move_gen",
- "sdk",
 ]
 
 [[package]]

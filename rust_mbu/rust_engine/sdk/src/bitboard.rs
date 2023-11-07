@@ -113,7 +113,7 @@ impl Bitboard {
 }
 
 impl Direction {
-    /// Returns tuple (file_offset, rank_offset)
+    /// Returns tuple `(file_offset, rank_offset)`
     #[must_use]
     pub const fn offsets(&self) -> (i8, i8) {
         match self {

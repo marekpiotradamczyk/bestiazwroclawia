@@ -1,7 +1,7 @@
 use move_gen::r#move::Move;
 use sdk::position::{Color, Position};
 
-use super::search::Search;
+use crate::engine::search::Search;
 
 /// Less valuable victim (LVA) and more valuable victim (MVV) tables
 /// Effectively this is a set of priorities for moves.
@@ -22,7 +22,7 @@ pub trait MoveUtils {
     }
 }
 
-impl<'a> MoveUtils for Search<'a> {
+impl MoveUtils for Search {
     fn score_move(&self, mv: &Move, pos: &Position) -> isize {
         if mv.is_capture() {
             let attacker = pos.piece_at(&mv.from()).unwrap().0;

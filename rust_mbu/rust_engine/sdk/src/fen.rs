@@ -22,6 +22,7 @@ impl Fen for Position {
             en_passant: None,
             halfmove_clock: 0,
             fullmove_number: 1,
+            hash: 0,
         };
         let mut fen = fen.split_whitespace();
         let ranks = fen.next().unwrap().split('/');
@@ -111,6 +112,7 @@ impl Fen for Position {
             (rank * 8 + file).try_into().ok()
         };
 
+        position.hash = position.calc_hash();
         Ok(position)
     }
 
