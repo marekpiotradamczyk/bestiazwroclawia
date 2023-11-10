@@ -6,7 +6,10 @@ use std::{
     thread,
 };
 
-use crate::uci::{uci_commands::Command, Result};
+use crate::{
+    engine::eval::evaluate,
+    uci::{uci_commands::Command, Result},
+};
 use move_gen::{generators::movegen::MoveGen, r#move::MakeMove};
 use sdk::position::{Color, Position};
 
@@ -40,6 +43,7 @@ impl Engine {
             Command::Position(pos, moves) => self.position(pos, moves),
             Command::SetOption(name, value) => self.set_option(name, value),
             Command::IsReady => println!("readyok"),
+            Command::Debug => self.debug(),
 
             _ => {}
         };
@@ -100,6 +104,15 @@ impl Engine {
             }
             Err(e) => println!("{e}"),
         }
+    }
+
+    fn debug(&self) {
+        println!("{}", self.root_pos);
+        let moves = self.move_gen.generate_legal_moves(&self.root_pos);
+        for mv in moves {
+            print!("{} ", mv);
+        }
+        println!("Eval: {}", evaluate(&self.root_pos));
     }
 }
 

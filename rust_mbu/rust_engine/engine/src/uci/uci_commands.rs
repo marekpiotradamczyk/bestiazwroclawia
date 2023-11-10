@@ -13,6 +13,7 @@ pub enum Command {
     UciNewGame,
     IsReady,
     Quit,
+    Debug,
 }
 
 
@@ -26,6 +27,7 @@ impl FromStr for Command {
             "uci" => Ok(Command::Uci),
             "quit" => Ok(Command::Quit),
             "ucinewgame" => Ok(Command::UciNewGame),
+            "d" | "debug" => Ok(Command::Debug),
             _ => Err("Invalid command".into()),
         }
     }

@@ -10,16 +10,27 @@ use move_gen::{
 };
 use sdk::position::Position;
 
-pub mod principal_variation;
 pub mod heuristics;
+pub mod principal_variation;
 pub mod utils;
 
-pub const MAX_PLY: usize = 128;
+pub const MAX_PLY: usize = 300;
 pub const MATE_SCORE: isize = 10000;
 
 use lazy_static::lazy_static;
 
-use self::{principal_variation::PrincipalVariation, utils::{time_control::{SearchOptions, TimeControl}, repetition::RepetitionTable}, heuristics::{transposition_table::{TranspositionTable, HashFlag}, move_order::MoveUtils}};
+use self::{
+    heuristics::{
+        late_move_reduction::is_lmr_applicable,
+        move_order::MoveUtils,
+        transposition_table::{HashFlag, TranspositionTable},
+    },
+    principal_variation::PrincipalVariation,
+    utils::{
+        repetition::RepetitionTable,
+        time_control::{SearchOptions, TimeControl},
+    },
+};
 
 use super::eval::evaluate;
 
@@ -96,7 +107,7 @@ impl Search {
     pub fn search(&mut self, position: &Position) -> Option<BestMove> {
         let (alpha, beta) = (-1_000_000, 1_000_000);
 
-        let depth = self.options.depth.unwrap_or(usize::MAX);
+        let depth = self.options.depth.unwrap_or(100);
 
         let mut best_move = None;
         for i in 1..=depth {
@@ -123,6 +134,10 @@ impl Search {
                 (current_nodes_count as f64 / (time as f64 / 1000.0)) as usize
             };
 
+            if self.best.is_none() {
+                break;
+            }
+
             println!(
                 "info score {} depth {} nodes {} nps {} time {} pv {}",
                 score_str,
@@ -134,7 +149,9 @@ impl Search {
             );
         }
 
-        println!("bestmove {}", best_move.as_ref().unwrap().mv);
+        if let Some(best) = best_move {
+            println!("bestmove {}", best.mv);
+        }
 
         self.best
     }
@@ -161,7 +178,7 @@ impl Search {
         if let Some(cached_alpha) = self.transposition_table.read(node.hash, alpha, beta, depth) {
             //println!("Found cached alpha: {cached_alpha} on depth {depth}");
             return cached_alpha;
-        } 
+        }
 
         if depth == 0 {
             return self.quiesce(node, alpha, beta);
@@ -176,10 +193,10 @@ impl Search {
 
         let mut best_so_far = None;
         let old_alpha = alpha;
-        let mut child_nodes = self.move_gen.generate_legal_moves(node).collect_vec();
 
         let in_check = self.move_gen.is_check(node);
 
+        let mut child_nodes = self.move_gen.generate_legal_moves(node).collect_vec();
         if child_nodes.is_empty() {
             if in_check {
                 return -MATE_SCORE + self.ply as isize;
@@ -192,9 +209,32 @@ impl Search {
             depth += 1;
         }
 
+        // Null move pruning
+        if depth >= 3 && !in_check {
+            let child = {
+                let mut child = node.clone();
+                child.make_null_move();
+                child
+            };
+
+            self.repetition_table.push(&child);
+            self.ply += 1;
+            let score = -self.negamax(&child, -beta, -beta + 1, depth - 3);
+            self.ply -=1;
+            self.repetition_table.decrement();
+
+            if self.stopped() {
+                return 0;
+            }
+
+            if score >= beta {
+                return beta;
+            }
+        }
+
         self.order_moves(&mut child_nodes, node);
 
-        for child in child_nodes {
+        for (moves_tried, child) in child_nodes.into_iter().enumerate() {
             let child_pos = {
                 let mut child_pos = node.clone();
                 let _ = child_pos.make_move(&child);
@@ -203,7 +243,35 @@ impl Search {
 
             self.ply += 1;
             self.repetition_table.push(&child_pos);
-            let score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
+
+            // Calculate score with late move reduction
+            //let score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
+            let score = if moves_tried == 0 {
+                // Full depth search
+                -self.negamax(&child_pos, -beta, -alpha, depth - 1)
+            } else {
+                let score = if is_lmr_applicable(&child, depth, moves_tried, in_check) {
+                    // Try reduced depth search
+                    -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 2)
+                } else {
+                    // Force full depth search
+                    alpha + 1
+                };
+
+                // If we found potentailly better move at lower depth, search it with full depth
+                if score > alpha {
+                    let score = -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 1);
+
+                    if score > alpha && score < beta {
+                        // LMR failed, search normally with full depth
+                        -self.negamax(&child_pos, -beta, -alpha, depth - 1)
+                    } else {
+                        score
+                    }
+                } else {
+                    score
+                }
+            }; 
             self.repetition_table.decrement();
             self.ply -= 1;
 
@@ -263,6 +331,12 @@ impl Search {
 
         if stand_pat >= beta {
             return beta;
+        }
+
+        // Delta pruning 
+        let queen_value = 900;
+        if stand_pat < alpha - queen_value {
+            return alpha;
         }
 
         if stand_pat > alpha {

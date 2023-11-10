@@ -154,6 +154,7 @@ dependencies = [
  "itertools",
  "lazy_static",
  "move_gen",
+ "rand",
  "sdk",
  "smallvec",
  "timeit",

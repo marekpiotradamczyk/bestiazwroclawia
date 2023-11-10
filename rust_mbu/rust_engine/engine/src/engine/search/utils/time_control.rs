@@ -6,6 +6,7 @@ use derivative::Derivative;
 pub struct TimeControl {
     start_time: Instant,
     limit: Option<isize>,
+    is_infinite: bool,
 }
 
 impl TimeControl {
@@ -14,11 +15,14 @@ impl TimeControl {
     }
 
     pub fn remaining_time(&self, now: Instant) -> isize {
-        self.limit.unwrap() - self.search_time(now)
+        if self.is_infinite {
+            return isize::MAX;
+        }
+        self.limit.unwrap_or_default() - self.search_time(now)
     }
 
     pub fn is_over(&self) -> bool {
-        if self.limit.is_none() {
+        if self.is_infinite {
             return false;
         }
 
@@ -43,10 +47,27 @@ pub struct SearchOptions {
 
 impl SearchOptions {
     pub fn time_control(&self, is_white: bool) -> TimeControl {
+        if self.infinite {
+            return TimeControl {
+                start_time: Instant::now(),
+                limit: None,
+                is_infinite: true,
+            };
+        }
+
         if self.movetime.is_some() {
             return TimeControl {
                 start_time: Instant::now(),
                 limit: self.movetime,
+                is_infinite: false,
+            };
+        }
+
+        if (is_white && self.wtime.is_none()) || (!is_white && self.btime.is_none()) {
+            return TimeControl {
+                start_time: Instant::now(),
+                limit: None,
+                is_infinite: true,
             };
         }
 
@@ -62,13 +83,22 @@ impl SearchOptions {
             self.btime.unwrap_or(0)
         };
 
-        let moves_to_go = self.movestogo.unwrap_or(30).max(1);
+        let moves_to_go = self.movestogo.unwrap_or(40).max(1);
 
-        let limit = time_left / moves_to_go + increment;
+        let limit = time_left / moves_to_go;
+
+        if limit <= 0 {
+            return TimeControl {
+                start_time: Instant::now(),
+                limit: None,
+                is_infinite: false,
+            };
+        }
 
         TimeControl {
             start_time: Instant::now(),
             limit: Some(limit),
+            is_infinite: false,
         }
     }
 }

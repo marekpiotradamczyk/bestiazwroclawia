@@ -9,6 +9,7 @@ derivative = "2.2.0"
 itertools = "0.11.0"
 lazy_static = "1.4.0"
 move_gen = { path = "../move-gen" }
+rand = "0.8.5"
 sdk = { path = "../sdk" }
 smallvec = "1.11.1"
 timeit = "0.1.2"

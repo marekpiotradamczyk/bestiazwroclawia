@@ -17,6 +17,7 @@ pub struct Move {
 
 pub trait MakeMove {
     fn make_move(&mut self, mv: &Move) -> Result<Option<Piece>>;
+    fn make_null_move(&mut self);
 }
 
 impl fmt::Debug for Move {
@@ -50,7 +51,6 @@ impl MakeMove for Position {
         let color = self.turn;
 
         let old_castling = self.castling.inner;
-        let mut castling_changed = false;
 
         for (rook_sq, kind) in [
             (Square::A1, CastlingKind::WhiteQueenside),
@@ -61,7 +61,6 @@ impl MakeMove for Position {
         .iter()
         {
             if mv.from() == *rook_sq || mv.to() == *rook_sq {
-                castling_changed = true;
                 self.castling.remove_castling_kind(kind);
             }
         }
@@ -70,17 +69,20 @@ impl MakeMove for Position {
             .remove_piece_at(&from)
             .expect("BUG: No piece at from square");
 
+        if from_piece == Piece::King {
+            self.castling.remove_color_castling(&color);
+        }
+
         // Update moved piece hash
         self.hash ^= ZOBRIST_KEYS.pieces[from_color as usize][from_piece as usize][from as usize];
         self.hash ^= ZOBRIST_KEYS.pieces[from_color as usize][from_piece as usize][to as usize];
 
         if matches!(mv.kind(), MoveKind::Castling) {
-            castling_changed = true;
             self.castling.remove_color_castling(&color);
         }
 
         // Update castling hash
-        if castling_changed {
+        if self.castling.inner != old_castling {
             self.hash ^= ZOBRIST_KEYS.castling_rights[old_castling as usize];
             self.hash ^= ZOBRIST_KEYS.castling_rights[self.castling.inner as usize];
         }
@@ -120,8 +122,8 @@ impl MakeMove for Position {
                 self.add_piece_at(to, from_piece, from_color)?;
 
                 // Update captured piece hash
-                self.hash ^=
-                    ZOBRIST_KEYS.pieces[target_color as usize][target_piece as usize][captured_sq as usize];
+                self.hash ^= ZOBRIST_KEYS.pieces[target_color as usize][target_piece as usize]
+                    [captured_sq as usize];
 
                 Some((target_piece, target_color))
             }
@@ -211,6 +213,15 @@ impl MakeMove for Position {
         }
 
         Ok(captured)
+    }
+
+    fn make_null_move(&mut self) {
+        let _ = self.swap_turn();
+        self.hash ^= ZOBRIST_KEYS.side_to_move;
+        if let Some(en_pass) = self.en_passant {
+            self.hash ^= ZOBRIST_KEYS.en_passant[en_pass as usize];
+            self.en_passant = None;
+        }
     }
 }
 
@@ -405,7 +416,10 @@ mod tests {
         .unwrap();
 
         let mv = Move::new(Square::D5, Square::E6, None, &MoveKind::EnPassant);
-        let mut position2 = Position::from_fen("rnqk1bnr/ppp2ppp/8/3Pp3/1P5P/N2P3b/P3PPPR/R1BQKBN1 w Qkq e6 0 10".to_string()).unwrap();
+        let mut position2 = Position::from_fen(
+            "rnqk1bnr/ppp2ppp/8/3Pp3/1P5P/N2P3b/P3PPPR/R1BQKBN1 w Qkq e6 0 10".to_string(),
+        )
+        .unwrap();
         position2.make_move(&mv).unwrap();
 
         assert_eq!(position.hash, position2.hash);
