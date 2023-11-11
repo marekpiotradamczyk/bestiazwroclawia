@@ -28,12 +28,12 @@ fn between(sq1: u8, sq2: u8) -> u64 {
     let file: u64 = (sq2 & 7).wrapping_sub(sq1 & 7);
     let rank: u64 = ((sq2 | 7).wrapping_sub(sq1)) >> 3;
 
-    let mut line = ((file & 7).wrapping_sub(1)) & a2a7; 
+    let mut line = ((file & 7).wrapping_sub(1)) & a2a7;
     line += 2 * (((rank & 7).wrapping_sub(1)) >> 58);
     line += (((rank.wrapping_sub(file)) & 15).wrapping_sub(1)) & b2g7;
     line += (((rank.wrapping_add(file)) & 15).wrapping_sub(1)) & h1b7;
     let mut line = Into::<u64>::into(line);
     line = line.wrapping_mul(btwn & btwn.wrapping_neg());
 
-    line & btwn 
+    line & btwn
 }

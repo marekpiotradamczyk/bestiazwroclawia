@@ -1,6 +1,6 @@
 use sdk::{bitboard::Bitboard, lookup::sliders::Slider, position::Color, square::Square};
 
-use crate::{lookup::MagicEntry, generators::movegen::MoveGen};
+use crate::{generators::movegen::MoveGen, lookup::MagicEntry};
 
 pub trait SimpleMoveGenerator {
     fn knight_attacks(&self, square: Square) -> Bitboard;

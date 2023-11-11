@@ -80,12 +80,7 @@ impl PawnMoveGenerator for MoveGen {
                             MoveKind::Quiet
                         };
 
-                        vec![Move::new(
-                            from_square,
-                            target_square,
-                            None,
-                            &kind,
-                        )]
+                        vec![Move::new(from_square, target_square, None, &kind)]
                     }
                     .into_iter()
                 })

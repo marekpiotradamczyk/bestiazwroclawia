@@ -1,4 +1,7 @@
-use crate::{bitboard::{Bitboard, Direction}, square::Square};
+use crate::{
+    bitboard::{Bitboard, Direction},
+    square::Square,
+};
 
 #[must_use]
 pub fn generate_rays_attacks() -> [[Bitboard; 64]; 8] {
@@ -6,7 +9,6 @@ pub fn generate_rays_attacks() -> [[Bitboard; 64]; 8] {
 
     for direction in Direction::all() {
         let (file_offset, rank_offset) = direction.offsets();
-
 
         for sq in Square::iter() {
             let mut bb = sq.bitboard();
@@ -20,7 +22,6 @@ pub fn generate_rays_attacks() -> [[Bitboard; 64]; 8] {
             attacks[direction as usize][sq as usize] = bb;
         }
     }
-
 
     attacks
 }

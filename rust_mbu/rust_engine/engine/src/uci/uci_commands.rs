@@ -1,4 +1,4 @@
-use std::{str::FromStr, error::Error};
+use std::{error::Error, str::FromStr};
 
 use sdk::position::Position;
 
@@ -14,8 +14,8 @@ pub enum Command {
     IsReady,
     Quit,
     Debug,
+    Test,
 }
-
 
 impl FromStr for Command {
     type Err = Box<dyn Error>;
@@ -28,8 +28,8 @@ impl FromStr for Command {
             "quit" => Ok(Command::Quit),
             "ucinewgame" => Ok(Command::UciNewGame),
             "d" | "debug" => Ok(Command::Debug),
+            "test" => Ok(Command::Test),
             _ => Err("Invalid command".into()),
         }
     }
 }
-

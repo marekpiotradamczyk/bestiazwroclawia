@@ -11,7 +11,10 @@ use crate::{
     uci::{uci_commands::Command, Result},
 };
 use move_gen::{generators::movegen::MoveGen, r#move::MakeMove};
-use sdk::position::{Color, Position};
+use sdk::{
+    fen::Fen,
+    position::{Color, Position},
+};
 
 use crate::engine::engine_options::EngineOptions;
 
@@ -44,6 +47,8 @@ impl Engine {
             Command::SetOption(name, value) => self.set_option(name, value),
             Command::IsReady => println!("readyok"),
             Command::Debug => self.debug(),
+            Command::UciNewGame => self.uci_new_game(),
+            Command::Test => self.test(),
 
             _ => {}
         };
@@ -67,7 +72,7 @@ impl Engine {
         };
 
         thread::Builder::new()
-            .stack_size(32 * 1024 * 1024 * 2)
+            .stack_size(32 * 1024 * 1024 * 4)
             .spawn(run)
             .unwrap();
 
@@ -97,6 +102,7 @@ impl Engine {
     }
 
     fn position(&mut self, mut pos: Position, moves: Vec<String>) {
+        self.repetition_table.clear();
         match parse_uci_moves(moves, &mut pos, &self.move_gen) {
             Ok(repetition_table) => {
                 self.root_pos = pos;
@@ -113,6 +119,18 @@ impl Engine {
             print!("{} ", mv);
         }
         println!("Eval: {}", evaluate(&self.root_pos));
+    }
+
+    fn uci_new_game(&mut self) {
+        self.root_pos = Position::default();
+        self.repetition_table.clear();
+    }
+
+    fn test(&mut self) {
+        // Mate in 3
+        self.root_pos = Position::from_fen("4k3/8/8/4K3/2R5/8/8/8 w - - 0 1".to_string()).unwrap();
+
+        self.go(SearchOptions::default());
     }
 }
 

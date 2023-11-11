@@ -71,7 +71,7 @@ impl SearchOptions {
             };
         }
 
-        let increment = if is_white {
+        let _increment = if is_white {
             self.winc.unwrap_or(0)
         } else {
             self.binc.unwrap_or(0)

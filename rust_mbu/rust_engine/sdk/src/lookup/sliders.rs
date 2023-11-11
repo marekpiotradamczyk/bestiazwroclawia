@@ -1,4 +1,4 @@
-use crate::{bitboard::Bitboard, square::Square, position::Piece};
+use crate::{bitboard::Bitboard, position::Piece, square::Square};
 
 const BISHOP_OFFSETS: [(i8, i8); 4] = [(1, 1), (-1, 1), (1, -1), (-1, -1)];
 const ROOK_OFFSETS: [(i8, i8); 4] = [(1, 0), (-1, 0), (0, 1), (0, -1)];

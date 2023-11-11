@@ -3,14 +3,9 @@ use std::{fmt::Display, str::FromStr};
 use anyhow::anyhow;
 use derivative::Derivative;
 
-use crate::{
-    bitboard::Bitboard,
-    fen::Fen,
-    square::Square,
-};
+use crate::{bitboard::Bitboard, fen::Fen, square::Square};
 
-#[derive(Derivative)]
-#[derive(Debug, Clone)]
+#[derive(Derivative, Debug, Clone)]
 #[derivative(Hash)]
 pub struct Position {
     pub pieces: [[Bitboard; 6]; 2],

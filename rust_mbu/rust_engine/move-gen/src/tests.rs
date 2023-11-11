@@ -10,7 +10,8 @@ use serde::Deserialize;
 
 use crate::{
     generators::movegen::MoveGen,
-    utils::{chess_notation::ChessNotation, logger::configure_logger}, r#move::MakeMove,
+    r#move::MakeMove,
+    utils::{chess_notation::ChessNotation, logger::configure_logger},
 };
 
 #[derive(Deserialize, Debug)]
@@ -78,7 +79,7 @@ fn test_hashes() {
     let move_gen = MoveGen::new();
 
     for _ in 0..1000 {
-        let moves = move_gen.generate_legal_moves(&pos).collect::<Vec<_>>(); 
+        let moves = move_gen.generate_legal_moves(&pos).collect::<Vec<_>>();
         let fen = pos.to_fen();
 
         if moves.is_empty() {

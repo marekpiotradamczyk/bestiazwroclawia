@@ -6,7 +6,8 @@ use sdk::{
         in_between::generate_in_between_squares,
         king::gen_king_attacks,
         knights::gen_knight_attacks,
-        pawns::{gen_double_pawn_moves, gen_pawn_attacks, gen_single_pawn_moves}, rays::generate_rays_attacks,
+        pawns::{gen_double_pawn_moves, gen_pawn_attacks, gen_single_pawn_moves},
+        rays::generate_rays_attacks,
     },
 };
 
@@ -75,7 +76,7 @@ pub fn load_rook_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 12]; 64]
 
     let mut file = match std::fs::File::open(path) {
         Ok(file) => file,
-        Err(_) => std::fs::File::open("./rook_magics.bin")?
+        Err(_) => std::fs::File::open("./rook_magics.bin")?,
     };
 
     for magic in magics.iter_mut() {
@@ -124,7 +125,7 @@ pub fn load_bishop_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 9]; 64
 
     let mut file = match std::fs::File::open(path) {
         Ok(file) => file,
-        Err(_) => std::fs::File::open("./bishop_magics.bin")?
+        Err(_) => std::fs::File::open("./bishop_magics.bin")?,
     };
 
     for magic in magics.iter_mut() {

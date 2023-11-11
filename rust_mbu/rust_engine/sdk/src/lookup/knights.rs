@@ -32,5 +32,5 @@ pub fn mask_knights_attacks(bb: Bitboard) -> Bitboard {
     knight_bb |= (bb >> 10) & !FILE_GH;
     knight_bb |= (bb >> 6) & !FILE_AB;
 
-    knight_bb 
+    knight_bb
 }

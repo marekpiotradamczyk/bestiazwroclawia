@@ -1,4 +1,4 @@
-use flexi_logger::{WriteMode, DeferredNow};
+use flexi_logger::{DeferredNow, WriteMode};
 use log::Record;
 
 pub fn configure_logger() {
@@ -23,9 +23,9 @@ pub fn log_format(
     let style = flexi_logger::style(level);
 
     let msg = if level == log::Level::Info {
-        format!("[{level:5}] {log}") 
+        format!("[{level:5}] {log}")
     } else {
-        format!("[{level:5}] [{path}|{line}]: {log}") 
+        format!("[{level:5}] [{path}|{line}]: {log}")
     };
 
     write!(w, "{}", style.paint(&msg))

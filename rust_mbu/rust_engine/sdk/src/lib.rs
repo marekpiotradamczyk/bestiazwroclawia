@@ -5,7 +5,7 @@ extern crate log;
 
 pub mod bitboard;
 pub mod fen;
+pub mod hash;
 pub mod lookup;
 pub mod position;
 pub mod square;
-pub mod hash;

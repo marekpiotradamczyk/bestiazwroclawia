@@ -7,8 +7,8 @@ use anyhow::anyhow;
 use itertools::Itertools;
 use sdk::{fen::Fen, position::Position};
 
-use crate::engine::Engine;
 use crate::engine::search::utils::time_control::SearchOptions;
+use crate::engine::Engine;
 use crate::uci::uci_commands::Command;
 
 pub type Result<T> = anyhow::Result<T>;

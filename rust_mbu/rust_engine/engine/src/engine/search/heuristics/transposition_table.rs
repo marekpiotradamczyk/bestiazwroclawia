@@ -1,8 +1,12 @@
+use sdk::position::Position;
+
+use crate::engine::search::MATE_SCORE;
+
 #[derive(Clone, Copy)]
 pub enum HashFlag {
     EXACT,
-    LOWERBOUND,
-    UPPERBOUND,
+    ALPHA,
+    BETA,
 }
 
 #[derive(Clone, Copy)]
@@ -32,7 +36,30 @@ impl TranspositionTable {
         self.inner = [None; HASH_SIZE];
     }
 
-    pub fn read(&self, hash: u64, alpha: isize, beta: isize, depth: usize) -> Option<isize> {
+    pub fn cashed_value(
+        &self,
+        node: &Position,
+        ply: usize,
+        pv_node: bool,
+        depth: usize,
+        alpha: isize,
+        beta: isize,
+    ) -> Option<isize> {
+        if ply > 0 && !pv_node {
+            self.read(node.hash, alpha, beta, depth, ply)
+        } else {
+            None
+        }
+    }
+
+    pub fn read(
+        &self,
+        hash: u64,
+        alpha: isize,
+        beta: isize,
+        depth: usize,
+        ply: usize,
+    ) -> Option<isize> {
         if let Some(entry) = self.inner[hash as usize % HASH_SIZE] {
             if entry.depth < depth {
                 return None;
@@ -42,35 +69,37 @@ impl TranspositionTable {
                 return None;
             }
 
+            let mut score = entry.score;
+
+            if score < -MATE_SCORE {
+                score += ply as isize;
+            } else if score > MATE_SCORE {
+                score -= ply as isize;
+            }
+
             match entry.flag {
-                HashFlag::EXACT => Some(entry.score),
-                HashFlag::LOWERBOUND => {
-                    if entry.score >= beta {
-                        Some(beta)
-                    } else {
-                        None
-                    }
-                }
-                HashFlag::UPPERBOUND => {
-                    if entry.score <= alpha {
-                        Some(alpha)
-                    } else {
-                        None
-                    }
-                }
+                HashFlag::EXACT => Some(score),
+                HashFlag::BETA => (score >= beta).then_some(beta),
+                HashFlag::ALPHA => (score <= alpha).then_some(alpha),
             }
         } else {
             None
         }
     }
 
-    pub fn write(&mut self, hash: u64, score: isize, depth: usize, flag: HashFlag) {
-        let entry = TranspositionEntry {
+    pub fn write(&mut self, hash: u64, score: isize, depth: usize, ply: usize, flag: HashFlag) {
+        let mut entry = TranspositionEntry {
             hash,
             depth,
             flag,
             score,
         };
+
+        if entry.score < -MATE_SCORE {
+            entry.score -= ply as isize;
+        } else if entry.score > MATE_SCORE {
+            entry.score += ply as isize;
+        }
 
         let index = hash as usize % HASH_SIZE;
 

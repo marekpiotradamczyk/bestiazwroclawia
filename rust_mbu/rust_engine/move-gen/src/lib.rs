@@ -10,14 +10,15 @@ use pretty_env_logger::env_logger::fmt::Style;
 use sdk::{
     bitboard::Bitboard,
     fen::Fen,
+    lookup::king::mask_king_attacks,
     position::{Color, Piece, Position},
-    square::Square, lookup::king::mask_king_attacks,
+    square::Square,
 };
 use xray::XRayGenerator;
 
+pub mod generators;
 pub mod lookup;
+pub mod r#move;
 mod tests;
 pub mod utils;
 pub mod xray;
-pub mod r#move;
-pub mod generators;

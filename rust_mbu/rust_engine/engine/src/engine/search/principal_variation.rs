@@ -22,14 +22,14 @@ impl PrincipalVariation {
 
     pub fn push_pv_move(&mut self, ply: usize, mv: Move) {
         self.table[ply][ply] = Some(mv);
-        
+
         for i in ply + 1..self.length[ply + 1] {
             self.table[ply][i] = self.table[ply + 1][i];
         }
 
         self.length[ply] = self.length[ply + 1];
     }
-}   
+}
 
 impl ToString for PrincipalVariation {
     fn to_string(&self) -> String {

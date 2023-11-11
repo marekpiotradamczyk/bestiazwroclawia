@@ -37,6 +37,11 @@ impl RepetitionTable {
 
         count >= 3
     }
+
+    pub fn clear(&mut self) {
+        self.idx = 0;
+        self.table = [0; MAX_PLY];
+    }
 }
 
 #[cfg(test)]

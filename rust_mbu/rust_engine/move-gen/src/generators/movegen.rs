@@ -26,7 +26,6 @@ pub struct MoveGen {
 
 impl MoveGen {
     pub fn new() -> Self {
-
         let lookup_tables = load_lookup_tables().expect("Couldn't load lookup tables");
         Self {
             lookups: lookup_tables,

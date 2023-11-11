@@ -15,7 +15,13 @@ pub mod principal_variation;
 pub mod utils;
 
 pub const MAX_PLY: usize = 300;
-pub const MATE_SCORE: isize = 10000;
+pub const INF: isize = 1_000_000;
+pub const MATE_VALUE: isize = 900_000;
+pub const MATE_SCORE: isize = 800_000;
+pub const DEFAULT_ALPHA: isize = -INF;
+pub const DEFAULT_BETA: isize = INF;
+pub const ASPIRATION_WINDOW_OFFSET: isize = 50;
+pub const REPEATED_POSITION_SCORE: isize = -1;
 
 use lazy_static::lazy_static;
 
@@ -105,7 +111,7 @@ impl Search {
     }
 
     pub fn search(&mut self, position: &Position) -> Option<BestMove> {
-        let (alpha, beta) = (-1_000_000, 1_000_000);
+        let (mut alpha, mut beta) = (DEFAULT_ALPHA, DEFAULT_BETA);
 
         let depth = self.options.depth.unwrap_or(100);
 
@@ -113,6 +119,18 @@ impl Search {
         for i in 1..=depth {
             self.reset();
             let best_score = self.negamax(position, alpha, beta, i);
+
+            // Try full search if aspiration window failed
+            if best_score <= alpha || best_score >= beta {
+                alpha = DEFAULT_ALPHA;
+                beta = DEFAULT_BETA;
+                continue;
+            }
+
+            // Adjust aspiration window
+            alpha = best_score - ASPIRATION_WINDOW_OFFSET;
+            beta = best_score + ASPIRATION_WINDOW_OFFSET;
+
             if self.best.is_some() {
                 best_move = self.best;
             }
@@ -170,14 +188,28 @@ impl Search {
         self.pv.init_length(self.ply);
 
         if self.repetition_table.is_repeated() {
-            return 0;
+            return REPEATED_POSITION_SCORE;
         }
 
-        let mut hash_flag = HashFlag::UPPERBOUND;
+        let mut hash_flag = HashFlag::ALPHA;
 
-        if let Some(cached_alpha) = self.transposition_table.read(node.hash, alpha, beta, depth) {
-            //println!("Found cached alpha: {cached_alpha} on depth {depth}");
+        let pv_node = beta - alpha > 1;
+        // Transposition table lookup
+        if let Some(cached_alpha) = self
+            .transposition_table
+            .cashed_value(node, self.ply, pv_node, depth, alpha, beta)
+        {
             return cached_alpha;
+        }
+
+        if self.ply > 0 && !pv_node {
+            if let Some(cached_alpha) = self
+                .transposition_table
+                .read(node.hash, alpha, beta, depth, self.ply)
+            {
+                //println!("Found cached alpha: {cached_alpha} on depth {depth}");
+                return cached_alpha;
+            }
         }
 
         if depth == 0 {
@@ -196,48 +228,23 @@ impl Search {
 
         let in_check = self.move_gen.is_check(node);
 
-        let mut child_nodes = self.move_gen.generate_legal_moves(node).collect_vec();
-        if child_nodes.is_empty() {
-            if in_check {
-                return -MATE_SCORE + self.ply as isize;
-            } else {
-                return 0;
-            }
-        }
-
         if in_check {
             depth += 1;
         }
 
+        let mut child_nodes = self.move_gen.generate_legal_moves(node).collect_vec();
+
         // Null move pruning
-        if depth >= 3 && !in_check {
-            let child = {
-                let mut child = node.clone();
-                child.make_null_move();
-                child
-            };
-
-            self.repetition_table.push(&child);
-            self.ply += 1;
-            let score = -self.negamax(&child, -beta, -beta + 1, depth - 3);
-            self.ply -=1;
-            self.repetition_table.decrement();
-
-            if self.stopped() {
-                return 0;
-            }
-
-            if score >= beta {
-                return beta;
-            }
+        if self.null_move_reduction(node, beta, depth, in_check, self.ply) {
+            return beta;
         }
 
         self.order_moves(&mut child_nodes, node);
 
-        for (moves_tried, child) in child_nodes.into_iter().enumerate() {
+        for (moves_tried, child) in child_nodes.iter().enumerate() {
             let child_pos = {
                 let mut child_pos = node.clone();
-                let _ = child_pos.make_move(&child);
+                let _ = child_pos.make_move(child);
                 child_pos
             };
 
@@ -246,11 +253,12 @@ impl Search {
 
             // Calculate score with late move reduction
             //let score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
+
             let score = if moves_tried == 0 {
                 // Full depth search
                 -self.negamax(&child_pos, -beta, -alpha, depth - 1)
             } else {
-                let score = if is_lmr_applicable(&child, depth, moves_tried, in_check) {
+                let score = if is_lmr_applicable(child, depth, moves_tried, in_check) {
                     // Try reduced depth search
                     -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 2)
                 } else {
@@ -271,21 +279,9 @@ impl Search {
                 } else {
                     score
                 }
-            }; 
+            };
             self.repetition_table.decrement();
             self.ply -= 1;
-
-            if score >= beta {
-                self.transposition_table
-                    .write(node.hash, score, depth, HashFlag::LOWERBOUND);
-
-                if !child.is_capture() {
-                    self.killer_moves[1][self.ply] = self.killer_moves[0][self.ply];
-                    self.killer_moves[0][self.ply] = Some(child);
-                }
-
-                return beta;
-            }
 
             if self.stopped() {
                 return 0;
@@ -295,27 +291,55 @@ impl Search {
                 hash_flag = HashFlag::EXACT;
 
                 if !child.is_capture() {
-                    let (piece, color) = node.piece_at(&child.from()).unwrap();
+                    let (piece, color) = node.piece_at(&child.from()).expect("No piece found");
                     self.history_moves[color as usize][piece as usize][child.to() as usize] +=
                         depth as isize;
                 }
 
                 alpha = score;
 
-                self.pv.push_pv_move(self.ply, child);
+                self.pv.push_pv_move(self.ply, *child);
 
                 if self.ply == 0 {
                     best_so_far = Some(child);
+                }
+
+                if score >= beta {
+                    self.transposition_table.write(
+                        node.hash,
+                        score,
+                        depth,
+                        self.ply,
+                        HashFlag::BETA,
+                    );
+
+                    if !child.is_capture() {
+                        self.killer_moves[1][self.ply] = self.killer_moves[0][self.ply];
+                        self.killer_moves[0][self.ply] = Some(*child);
+                    }
+
+                    return beta;
                 }
             }
         }
 
         if old_alpha != alpha {
-            self.best = best_so_far.map(|mv| BestMove { score: alpha, mv });
+            self.best = best_so_far.map(|mv| BestMove {
+                score: alpha,
+                mv: *mv,
+            });
+        }
+
+        if child_nodes.is_empty() {
+            if in_check {
+                return -MATE_VALUE + self.ply as isize;
+            } else {
+                return 0;
+            }
         }
 
         self.transposition_table
-            .write(node.hash, alpha, depth, hash_flag);
+            .write(node.hash, alpha, depth, self.ply, hash_flag);
 
         alpha
     }
@@ -324,7 +348,11 @@ impl Search {
         self.quiesce_nodes_evaluated += 1;
 
         if self.repetition_table.is_repeated() {
-            return 0;
+            return REPEATED_POSITION_SCORE;
+        }
+
+        if self.ply >= MAX_PLY {
+            return evaluate(node);
         }
 
         let stand_pat = evaluate(node);
@@ -333,7 +361,7 @@ impl Search {
             return beta;
         }
 
-        // Delta pruning 
+        // Delta pruning
         let queen_value = 900;
         if stand_pat < alpha - queen_value {
             return alpha;
@@ -368,16 +396,16 @@ impl Search {
             self.repetition_table.decrement();
             self.ply -= 1;
 
-            if score >= beta {
-                return beta;
-            }
-
             if self.stopped() {
                 return 0;
             }
 
             if score > alpha {
                 alpha = score;
+
+                if score >= beta {
+                    return beta;
+                }
             }
         }
 
@@ -386,10 +414,10 @@ impl Search {
 }
 
 fn mate_score(score: isize) -> Option<isize> {
-    if score > MATE_SCORE - MAX_PLY as isize {
-        Some((MATE_SCORE - score + 1) / 2)
-    } else if score < -MATE_SCORE + MAX_PLY as isize {
-        Some((-MATE_SCORE - score + 1) / 2)
+    if score > MATE_VALUE - MAX_PLY as isize {
+        Some((MATE_VALUE - score + 1) / 2)
+    } else if score < -MATE_VALUE + MAX_PLY as isize {
+        Some((-MATE_VALUE - score + 1) / 2)
     } else {
         None
     }
