@@ -1,5 +1,6 @@
 use std::{
     sync::{
+        atomic::Ordering,
         mpsc::{channel, Sender},
         Arc,
     },
@@ -21,8 +22,10 @@ use crate::engine::engine_options::EngineOptions;
 use anyhow::anyhow;
 
 use self::search::{
+    heuristics::transposition_table::TranspositionTable,
+    parallel::Search,
     utils::{repetition::RepetitionTable, time_control::SearchOptions},
-    Search, STOPPED,
+    STOPPED,
 };
 
 pub mod engine_options;
@@ -34,6 +37,7 @@ pub struct Engine {
     pub root_pos: Position,
     pub move_gen: Arc<MoveGen>,
     pub repetition_table: RepetitionTable,
+    pub transposition_table: Arc<TranspositionTable>,
     pub options: EngineOptions,
 }
 
@@ -80,14 +84,23 @@ impl Engine {
     }
 
     pub fn go(&mut self, options: SearchOptions) {
-        *STOPPED.lock().unwrap() = false;
+        STOPPED.store(false, Ordering::Relaxed);
         let pos = self.root_pos.clone();
         let move_gen = self.move_gen.clone();
         let is_white = pos.turn == Color::White;
         let rep_table = self.repetition_table.clone();
+        let transposition_table = self.transposition_table.clone();
+        let engine_options = self.options;
 
         let run = move || {
-            let mut search = Search::new(options, move_gen, is_white, rep_table);
+            let mut search = Search::new(
+                options,
+                engine_options,
+                move_gen,
+                is_white,
+                rep_table,
+                transposition_table,
+            );
             search.search(&pos);
         };
 
@@ -98,7 +111,7 @@ impl Engine {
     }
 
     pub fn stop(&mut self) {
-        *STOPPED.lock().unwrap() = true;
+        STOPPED.store(true, Ordering::Relaxed);
     }
 
     fn position(&mut self, mut pos: Position, moves: Vec<String>) {
@@ -124,13 +137,18 @@ impl Engine {
     fn uci_new_game(&mut self) {
         self.root_pos = Position::default();
         self.repetition_table.clear();
+        self.transposition_table.clear();
     }
 
     fn test(&mut self) {
-        // Mate in 3
-        self.root_pos = Position::from_fen("4k3/8/8/4K3/2R5/8/8/8 w - - 0 1".to_string()).unwrap();
+        self.uci_new_game();
+        self.root_pos = Position::from_fen("4k3/R7/8/3K4/8/8/8/8 w - - 12 7".to_string()).unwrap();
+        let search = SearchOptions {
+            depth: Some(13),
+            ..Default::default()
+        };
 
-        self.go(SearchOptions::default());
+        self.go(search);
     }
 }
 
@@ -138,7 +156,7 @@ fn uci_info() {
     println!("id name NoName");
     println!("id author Mateusz Burdyna");
     println!("option name Move Overhead type spin default 10 min 0 max 5000");
-    println!("option name Threads type spin default 1 min 1 max 1024");
+    println!("option name Threads type spin default 10 min 1 max 1024");
     println!("option name Hash type spin default 16 min 1 max 33554432");
     println!("uciok");
 }
@@ -149,6 +167,7 @@ fn parse_uci_moves(
     move_gen: &MoveGen,
 ) -> Result<RepetitionTable> {
     let mut repetition_table = RepetitionTable::default();
+    repetition_table.last_irreversible[0] = pos.halfmove_clock as usize;
 
     for mv_str in moves {
         let mv = move_gen
@@ -156,8 +175,9 @@ fn parse_uci_moves(
             .find(|mv| mv.to_string() == mv_str)
             .ok_or(anyhow!("Invalid move: {mv_str}"))?;
 
+        let old_pos = pos.clone();
         let _ = pos.make_move(&mv).map_err(anyhow::Error::from);
-        repetition_table.push(pos);
+        repetition_table.push(pos, mv.is_irreversible(&old_pos));
     }
 
     Ok(repetition_table)

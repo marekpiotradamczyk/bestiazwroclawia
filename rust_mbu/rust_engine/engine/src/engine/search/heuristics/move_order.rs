@@ -1,12 +1,12 @@
 use move_gen::r#move::Move;
 use sdk::position::{Color, Position};
 
-use crate::engine::search::Search;
+use crate::engine::search::parallel::SearchData;
 
 /// Less valuable victim (LVA) and more valuable victim (MVV) tables
 /// Effectively this is a set of priorities for moves.
 /// For example Queen capturing a pawn would score lower (101) than a pawn capturing a pawn (105).
-pub const MVV_LVA: [[isize; 6]; 6] = [
+pub const MVV_LVA: [[i32; 6]; 6] = [
     [105, 205, 305, 405, 505, 605],
     [104, 204, 304, 404, 504, 604],
     [103, 203, 303, 403, 503, 603],
@@ -16,14 +16,20 @@ pub const MVV_LVA: [[isize; 6]; 6] = [
 ];
 
 pub trait MoveUtils {
-    fn score_move(&self, mv: &Move, pos: &Position) -> isize;
-    fn order_moves(&self, moves: &mut [Move], pos: &Position) {
-        moves.sort_by_key(|m| -self.score_move(m, pos));
+    fn score_move(&self, mv: &Move, pos: &Position) -> i32;
+    fn order_moves(&self, moves: &mut [Move], pos: &Position, best_move: Option<Move>) {
+        moves.sort_by_key(|m| {
+            if best_move.is_some_and(|best| best == *m) {
+                -3_000_000
+            } else {
+                -self.score_move(m, pos)
+            }
+        });
     }
 }
 
-impl MoveUtils for Search {
-    fn score_move(&self, mv: &Move, pos: &Position) -> isize {
+impl MoveUtils for SearchData {
+    fn score_move(&self, mv: &Move, pos: &Position) -> i32 {
         if mv.is_capture() {
             let attacker = pos.piece_at(&mv.from()).unwrap().0;
             let victim = if mv.is_enpass_capture() {

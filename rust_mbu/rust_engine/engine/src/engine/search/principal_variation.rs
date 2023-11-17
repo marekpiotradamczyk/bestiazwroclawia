@@ -1,16 +1,19 @@
 use crate::engine::search::MAX_PLY;
 use move_gen::r#move::Move;
 
+const PV_TABLE_SIZE: usize = MAX_PLY;
+
+#[derive(Clone)]
 pub struct PrincipalVariation {
-    table: [[Option<Move>; MAX_PLY]; MAX_PLY],
-    length: [usize; MAX_PLY],
+    table: [[Option<Move>; PV_TABLE_SIZE]; PV_TABLE_SIZE],
+    length: [usize; PV_TABLE_SIZE],
 }
 
 impl Default for PrincipalVariation {
     fn default() -> Self {
         Self {
-            table: [[None; MAX_PLY]; MAX_PLY],
-            length: [0; MAX_PLY],
+            table: [[None; PV_TABLE_SIZE]; PV_TABLE_SIZE],
+            length: [0; PV_TABLE_SIZE],
         }
     }
 }
@@ -28,6 +31,10 @@ impl PrincipalVariation {
         }
 
         self.length[ply] = self.length[ply + 1];
+    }
+
+    pub fn best(&self) -> Option<Move> {
+        self.table[0][0]
     }
 }
 

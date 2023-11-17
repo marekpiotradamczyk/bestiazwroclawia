@@ -1,47 +1,37 @@
-use std::{
-    sync::{Arc, Mutex},
-    time::Instant,
-};
+use std::sync::{atomic::AtomicBool, Arc};
 
 use itertools::Itertools;
-use move_gen::{
-    generators::movegen::MoveGen,
-    r#move::{MakeMove, Move},
-};
+use move_gen::r#move::{MakeMove, Move};
 use sdk::position::Position;
 
 pub mod heuristics;
+pub mod parallel;
 pub mod principal_variation;
 pub mod utils;
 
 pub const MAX_PLY: usize = 300;
-pub const INF: isize = 1_000_000;
-pub const MATE_VALUE: isize = 900_000;
-pub const MATE_SCORE: isize = 800_000;
-pub const DEFAULT_ALPHA: isize = -INF;
-pub const DEFAULT_BETA: isize = INF;
-pub const ASPIRATION_WINDOW_OFFSET: isize = 50;
-pub const REPEATED_POSITION_SCORE: isize = -1;
+pub const MATE_VALUE: i32 = 900_000;
+pub const MATE_SCORE: i32 = 800_000;
+pub const INF: i32 = 1_000_000;
+pub const DEFAULT_ALPHA: i32 = -INF;
+pub const DEFAULT_BETA: i32 = INF;
+pub const ASPIRATION_WINDOW_OFFSET: i32 = 50;
+pub const REPEATED_POSITION_SCORE: i32 = 0;
 
 use lazy_static::lazy_static;
 
 use self::{
     heuristics::{
-        late_move_reduction::is_lmr_applicable,
-        move_order::MoveUtils,
-        transposition_table::{HashFlag, TranspositionTable},
+        futility_pruning::is_futile, late_move_reduction::is_lmr_applicable, move_order::MoveUtils,
+        transposition_table::HashFlag,
     },
-    principal_variation::PrincipalVariation,
-    utils::{
-        repetition::RepetitionTable,
-        time_control::{SearchOptions, TimeControl},
-    },
+    parallel::SearchData,
 };
 
 use super::eval::evaluate;
 
 lazy_static! {
-    pub static ref STOPPED: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
+    pub static ref STOPPED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
 }
 
 pub trait SearchEngine {
@@ -50,166 +40,29 @@ pub trait SearchEngine {
 
 #[derive(Clone, Debug, Copy)]
 pub struct BestMove {
-    pub score: isize,
+    pub score: i32,
     pub mv: Move,
 }
 
-pub struct Search {
-    pub nodes_evaluated: usize,
-    pub quiesce_nodes_evaluated: usize,
-    pub ply: usize,
-    pub move_gen: Arc<MoveGen>,
-    pub best: Option<BestMove>,
-    pub killer_moves: [[Option<Move>; MAX_PLY]; 2],
-    pub history_moves: [[[isize; 64]; 6]; 2],
-    pub pv: PrincipalVariation,
-    pub stopped: Arc<Mutex<bool>>,
-    pub options: SearchOptions,
-    pub time_control: TimeControl,
-    pub repetition_table: RepetitionTable,
-    pub transposition_table: TranspositionTable,
-}
-
-impl Search {
-    pub fn new(
-        options: SearchOptions,
-        move_gen: Arc<MoveGen>,
-        is_white: bool,
-        repetition_table: RepetitionTable,
-    ) -> Self {
-        let time_control = options.time_control(is_white);
-
-        Self {
-            nodes_evaluated: 0,
-            quiesce_nodes_evaluated: 0,
-            ply: 0,
-            move_gen,
-            best: None,
-            killer_moves: [[None; MAX_PLY]; 2],
-            history_moves: [[[0; 64]; 6]; 2],
-            pv: PrincipalVariation::default(),
-            stopped: Arc::clone(&STOPPED),
-            options,
-            time_control,
-            repetition_table,
-            transposition_table: TranspositionTable::default(),
-        }
-    }
-
-    pub fn total_nodes_evaluated(&self) -> usize {
-        self.nodes_evaluated + self.quiesce_nodes_evaluated
-    }
-
-    pub fn reset(&mut self) {
-        self.nodes_evaluated = 0;
-        self.quiesce_nodes_evaluated = 0;
-        self.ply = 0;
-        self.best = None;
-        self.killer_moves = [[None; MAX_PLY]; 2];
-        self.history_moves = [[[0; 64]; 6]; 2];
-        self.pv = PrincipalVariation::default();
-    }
-
-    pub fn search(&mut self, position: &Position) -> Option<BestMove> {
-        let (mut alpha, mut beta) = (DEFAULT_ALPHA, DEFAULT_BETA);
-
-        let depth = self.options.depth.unwrap_or(100);
-
-        let mut best_move = None;
-        for i in 1..=depth {
-            self.reset();
-            let best_score = self.negamax(position, alpha, beta, i);
-
-            // Try full search if aspiration window failed
-            if best_score <= alpha || best_score >= beta {
-                alpha = DEFAULT_ALPHA;
-                beta = DEFAULT_BETA;
-                continue;
-            }
-
-            // Adjust aspiration window
-            alpha = best_score - ASPIRATION_WINDOW_OFFSET;
-            beta = best_score + ASPIRATION_WINDOW_OFFSET;
-
-            if self.best.is_some() {
-                best_move = self.best;
-            }
-
-            if self.stopped() {
-                break;
-            }
-
-            let current_nodes_count = self.nodes_evaluated + self.quiesce_nodes_evaluated;
-
-            let score_str = mate_score(best_score)
-                .map(|score| format!("mate {}", score))
-                .unwrap_or_else(|| format!("cp {}", best_score));
-
-            let time = self.time_control.search_time(Instant::now());
-            let nps = if time == 0 {
-                20000
-            } else {
-                (current_nodes_count as f64 / (time as f64 / 1000.0)) as usize
-            };
-
-            if self.best.is_none() {
-                break;
-            }
-
-            println!(
-                "info score {} depth {} nodes {} nps {} time {} pv {}",
-                score_str,
-                i,
-                current_nodes_count,
-                nps,
-                time,
-                self.pv.to_string()
-            );
-        }
-
-        if let Some(best) = best_move {
-            println!("bestmove {}", best.mv);
-        }
-
-        self.best
-    }
-
-    fn stopped(&self) -> bool {
-        *self.stopped.lock().unwrap() || self.time_control.is_over()
-    }
-
-    fn negamax(
-        &mut self,
-        node: &Position,
-        mut alpha: isize,
-        beta: isize,
-        mut depth: usize,
-    ) -> isize {
+impl SearchData {
+    fn negamax(&mut self, node: &Position, alpha: i32, beta: i32, depth: usize) -> i32 {
         self.pv.init_length(self.ply);
 
-        if self.repetition_table.is_repeated() {
+        if self.repetition_table.is_repeated()
+            || self.repetition_table.is_draw_by_fifty_moves_rule()
+        {
             return REPEATED_POSITION_SCORE;
         }
 
-        let mut hash_flag = HashFlag::ALPHA;
-
         let pv_node = beta - alpha > 1;
         // Transposition table lookup
-        if let Some(cached_alpha) = self
+        let (cached_alpha, best_move) = self
             .transposition_table
-            .cashed_value(node, self.ply, pv_node, depth, alpha, beta)
-        {
-            return cached_alpha;
-        }
+            .cashed_value(node, self.ply, pv_node, depth, alpha, beta);
 
-        if self.ply > 0 && !pv_node {
-            if let Some(cached_alpha) = self
-                .transposition_table
-                .read(node.hash, alpha, beta, depth, self.ply)
-            {
-                //println!("Found cached alpha: {cached_alpha} on depth {depth}");
-                return cached_alpha;
-            }
+        if let Some(cached_alpha) = cached_alpha {
+            self.tt_hits += 1;
+            return cached_alpha;
         }
 
         if depth == 0 {
@@ -223,56 +76,114 @@ impl Search {
 
         self.nodes_evaluated += 1;
 
-        let mut best_so_far = None;
-        let old_alpha = alpha;
-
-        let in_check = self.move_gen.is_check(node);
-
-        if in_check {
-            depth += 1;
-        }
-
         let mut child_nodes = self.move_gen.generate_legal_moves(node).collect_vec();
+        let in_check = self.move_gen.is_check(node);
 
         // Null move pruning
         if self.null_move_reduction(node, beta, depth, in_check, self.ply) {
             return beta;
         }
 
-        self.order_moves(&mut child_nodes, node);
+        let static_eval = evaluate(node);
 
-        for (moves_tried, child) in child_nodes.iter().enumerate() {
+        // Razoring
+        if let Some((score, fails_low)) =
+            self.razoring(node, static_eval, alpha, beta, depth, in_check, pv_node)
+        {
+            if fails_low {
+                return score;
+            }
+        }
+
+        self.order_moves(&mut child_nodes, node, best_move);
+
+        if child_nodes.is_empty() {
+            if in_check {
+                return -MATE_VALUE + self.ply as i32;
+            } else {
+                return 0;
+            }
+        }
+
+        self.search_move_list(
+            node,
+            &child_nodes,
+            alpha,
+            beta,
+            depth,
+            in_check,
+            pv_node,
+            static_eval,
+            best_move,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn search_move_list(
+        &mut self,
+        node: &Position,
+        move_list: &[Move],
+        mut alpha: i32,
+        beta: i32,
+        depth: usize,
+        in_check: bool,
+        pv_node: bool,
+        static_eval: i32,
+        mut best_move: Option<Move>,
+    ) -> i32 {
+        let mut flag = HashFlag::ALPHA;
+        for (moves_tried, child) in move_list.iter().enumerate() {
             let child_pos = {
                 let mut child_pos = node.clone();
                 let _ = child_pos.make_move(child);
                 child_pos
             };
 
+            let gives_check = self.move_gen.is_check(&child_pos);
+
+            if is_futile(
+                depth,
+                alpha,
+                beta,
+                child.is_capture(),
+                in_check,
+                gives_check,
+                static_eval,
+                moves_tried,
+            ) {
+                break;
+            }
+
+            let extend = 0;
+            // Check extension
             self.ply += 1;
-            self.repetition_table.push(&child_pos);
+            self.repetition_table
+                .push(&child_pos, child.is_irreversible(node));
 
             // Calculate score with late move reduction
             //let score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
 
             let score = if moves_tried == 0 {
                 // Full depth search
-                -self.negamax(&child_pos, -beta, -alpha, depth - 1)
+                -self.negamax(&child_pos, -beta, -alpha, depth + extend - 1)
             } else {
-                let score = if is_lmr_applicable(child, depth, moves_tried, in_check) {
-                    // Try reduced depth search
-                    -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 2)
-                } else {
-                    // Force full depth search
-                    alpha + 1
-                };
+                let score =
+                    if is_lmr_applicable(child, depth, moves_tried, in_check, gives_check, pv_node)
+                    {
+                        // Try reduced depth search
+                        -self.negamax(&child_pos, -alpha - 1, -alpha, depth + extend - 2)
+                    } else {
+                        // Force full depth search
+                        alpha + 1
+                    };
 
                 // If we found potentailly better move at lower depth, search it with full depth
                 if score > alpha {
-                    let score = -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 1);
+                    let score = -self.negamax(&child_pos, -alpha - 1, -alpha, depth + extend - 1);
 
                     if score > alpha && score < beta {
                         // LMR failed, search normally with full depth
-                        -self.negamax(&child_pos, -beta, -alpha, depth - 1)
+                        -self.negamax(&child_pos, -beta, -alpha, depth + extend - 1)
                     } else {
                         score
                     }
@@ -288,29 +199,27 @@ impl Search {
             }
 
             if score > alpha {
-                hash_flag = HashFlag::EXACT;
-
                 if !child.is_capture() {
                     let (piece, color) = node.piece_at(&child.from()).expect("No piece found");
                     self.history_moves[color as usize][piece as usize][child.to() as usize] +=
-                        depth as isize;
+                        depth as i32;
                 }
 
+                flag = HashFlag::EXACT;
                 alpha = score;
-
                 self.pv.push_pv_move(self.ply, *child);
-
-                if self.ply == 0 {
-                    best_so_far = Some(child);
-                }
+                best_move = Some(*child);
 
                 if score >= beta {
+                    // Fail high
                     self.transposition_table.write(
                         node.hash,
-                        score,
+                        beta,
+                        best_move,
                         depth,
                         self.ply,
                         HashFlag::BETA,
+                        self.age,
                     );
 
                     if !child.is_capture() {
@@ -323,31 +232,18 @@ impl Search {
             }
         }
 
-        if old_alpha != alpha {
-            self.best = best_so_far.map(|mv| BestMove {
-                score: alpha,
-                mv: *mv,
-            });
-        }
-
-        if child_nodes.is_empty() {
-            if in_check {
-                return -MATE_VALUE + self.ply as isize;
-            } else {
-                return 0;
-            }
-        }
-
         self.transposition_table
-            .write(node.hash, alpha, depth, self.ply, hash_flag);
+            .write(node.hash, alpha, best_move, depth, self.ply, flag, self.age);
 
         alpha
     }
 
-    fn quiesce(&mut self, node: &Position, mut alpha: isize, beta: isize) -> isize {
-        self.quiesce_nodes_evaluated += 1;
+    fn quiesce(&mut self, node: &Position, mut alpha: i32, beta: i32) -> i32 {
+        self.nodes_evaluated += 1;
 
-        if self.repetition_table.is_repeated() {
+        if self.repetition_table.is_repeated()
+            || self.repetition_table.is_draw_by_fifty_moves_rule()
+        {
             return REPEATED_POSITION_SCORE;
         }
 
@@ -377,7 +273,7 @@ impl Search {
 
         let mut moves = self.move_gen.generate_legal_moves(node).collect_vec();
 
-        self.order_moves(&mut moves, node);
+        self.order_moves(&mut moves, node, None);
 
         for mv in moves {
             if !mv.is_capture() {
@@ -391,7 +287,7 @@ impl Search {
             };
 
             self.ply += 1;
-            self.repetition_table.push(&child);
+            self.repetition_table.push(&child, mv.is_irreversible(node));
             let score = -self.quiesce(&child, -beta, -alpha);
             self.repetition_table.decrement();
             self.ply -= 1;
@@ -410,15 +306,5 @@ impl Search {
         }
 
         alpha
-    }
-}
-
-fn mate_score(score: isize) -> Option<isize> {
-    if score > MATE_VALUE - MAX_PLY as isize {
-        Some((MATE_VALUE - score + 1) / 2)
-    } else if score < -MATE_VALUE + MAX_PLY as isize {
-        Some((-MATE_VALUE - score + 1) / 2)
-    } else {
-        None
     }
 }

@@ -2,12 +2,12 @@ use crate::engine::Engine;
 use anyhow::anyhow;
 use derivative::Derivative;
 
-#[derive(Derivative)]
+#[derive(Derivative, Copy, Clone)]
 #[derivative(Default)]
 pub struct EngineOptions {
     #[derivative(Default(value = "5"))]
     pub move_overhead: usize,
-    #[derivative(Default(value = "1"))]
+    #[derivative(Default(value = "10"))]
     pub threads: usize,
     #[derivative(Default(value = "16"))]
     pub hash: usize,

@@ -1,16 +1,16 @@
 use move_gen::r#move::MakeMove;
 use sdk::position::Position;
 
-use crate::engine::search::Search;
+use crate::engine::search::parallel::SearchData;
 
-impl Search {
+impl SearchData {
     /// Checks if after giving a free move to opponent, the score is still so good that it exceeds
     /// beta. If so,
     /// [Source](https://web.archive.org/web/20071031095933/http://www.brucemo.com/compchess/programming/nullmove.htm)
     pub fn null_move_reduction(
         &mut self,
         node: &Position,
-        beta: isize,
+        beta: i32,
         depth: usize,
         in_check: bool,
         ply: usize,
@@ -25,7 +25,7 @@ impl Search {
             child
         };
 
-        self.repetition_table.push(&child);
+        self.repetition_table.push(&child, false);
         self.ply += 1;
         let score = -self.negamax(&child, -beta, -beta + 1, depth - 3);
         self.ply -= 1;

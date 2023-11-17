@@ -12,7 +12,7 @@ type Result<T> = std::result::Result<T, anyhow::Error>;
 
 #[derive(Clone, Copy, Hash, Eq, PartialEq)]
 pub struct Move {
-    inner: u16,
+    pub inner: u16,
 }
 
 pub trait MakeMove {

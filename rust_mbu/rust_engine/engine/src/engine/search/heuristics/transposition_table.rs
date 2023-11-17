@@ -1,4 +1,6 @@
+use move_gen::r#move::Move;
 use sdk::position::Position;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 use crate::engine::search::MATE_SCORE;
 
@@ -9,31 +11,59 @@ pub enum HashFlag {
     BETA,
 }
 
-#[derive(Clone, Copy)]
-pub struct TranspositionEntry {
-    pub hash: u64,
-    pub depth: usize,
-    pub flag: HashFlag,
-    pub score: isize,
-}
+pub type TTEntry = [AtomicU64; 2];
 
 const HASH_SIZE: usize = 1 << 20;
 
 pub struct TranspositionTable {
-    inner: [Option<TranspositionEntry>; HASH_SIZE],
+    inner: [TTEntry; HASH_SIZE],
 }
 
 impl Default for TranspositionTable {
     fn default() -> Self {
         Self {
-            inner: [None; HASH_SIZE],
+            inner: [DEFAULT_ENTRY; HASH_SIZE],
         }
     }
 }
+// 32 Bits for score
+pub const SCORE_SHIFT: u64 = 64 - 32;
+pub const SCORE_MASK: u64 = 0b11111111111111111111111111111111 << SCORE_SHIFT;
 
+// 7 Bits for depth
+pub const DEPTH_SHIFT: u64 = 64 - 32 - 7;
+pub const DEPTH_MASK: u64 = 0b1111111 << DEPTH_SHIFT;
+
+// 16 Bits for move
+pub const MOVE_SHIFT: u64 = 64 - 32 - 7 - 16;
+pub const MOVE_MASK: u64 = 0b1111111111111111 << MOVE_SHIFT;
+
+// 7 Bits for age
+pub const AGE_SHIFT: u64 = 64 - 32 - 7 - 16 - 7;
+pub const AGE_MASK: u64 = 0b1111111 << AGE_SHIFT;
+
+// 2 Bits for flag
+pub const FLAG_MASK: u64 = 0b11;
+
+fn pack_tt_entry(score: i32, mv: Option<Move>, depth: usize, age: usize, flag: HashFlag) -> u64 {
+    let mut packed = 0;
+
+    // Bits 0-13
+    packed |= (score as u64) << SCORE_SHIFT;
+    packed |= (depth as u64) << DEPTH_SHIFT;
+    packed |= (mv.unwrap_or(Move::null()).inner as u64) << MOVE_SHIFT;
+    packed |= (age as u64) << AGE_SHIFT;
+    packed |= flag as u64;
+
+    packed
+}
+
+const DEFAULT_ENTRY: TTEntry = [AtomicU64::new(0), AtomicU64::new(0)];
+
+#[allow(clippy::too_many_arguments)]
 impl TranspositionTable {
-    pub fn clear(&mut self) {
-        self.inner = [None; HASH_SIZE];
+    pub fn clear(&self) {
+        unsafe { (self.inner.as_ptr() as *mut [TTEntry; HASH_SIZE]).write_bytes(0, HASH_SIZE) };
     }
 
     pub fn cashed_value(
@@ -42,73 +72,127 @@ impl TranspositionTable {
         ply: usize,
         pv_node: bool,
         depth: usize,
-        alpha: isize,
-        beta: isize,
-    ) -> Option<isize> {
+        alpha: i32,
+        beta: i32,
+    ) -> (Option<i32>, Option<Move>) {
         if ply > 0 && !pv_node {
             self.read(node.hash, alpha, beta, depth, ply)
         } else {
-            None
+            (None, None)
         }
     }
 
     pub fn read(
         &self,
         hash: u64,
-        alpha: isize,
-        beta: isize,
+        alpha: i32,
+        beta: i32,
         depth: usize,
         ply: usize,
-    ) -> Option<isize> {
-        if let Some(entry) = self.inner[hash as usize % HASH_SIZE] {
-            if entry.depth < depth {
-                return None;
+    ) -> (Option<i32>, Option<Move>) {
+        let [hash_lock, entry_lock] = &self.inner[hash as usize % HASH_SIZE];
+        let tt_hash = hash_lock.load(Ordering::Relaxed);
+        if tt_hash != 0 {
+            let tt_entry = entry_lock.load(Ordering::Relaxed);
+            if tt_hash != hash {
+                return (None, None);
             }
 
-            if entry.hash != hash {
-                return None;
+            if get_depth(tt_entry) < depth {
+                return (None, get_move(tt_entry));
             }
 
-            let mut score = entry.score;
+            let mut score = get_score(tt_entry);
 
             if score < -MATE_SCORE {
-                score += ply as isize;
+                score += ply as i32;
             } else if score > MATE_SCORE {
-                score -= ply as isize;
+                score -= ply as i32;
             }
 
-            match entry.flag {
-                HashFlag::EXACT => Some(score),
-                HashFlag::BETA => (score >= beta).then_some(beta),
-                HashFlag::ALPHA => (score <= alpha).then_some(alpha),
-            }
+            (
+                match get_flag(tt_entry) {
+                    HashFlag::EXACT => Some(score),
+                    HashFlag::BETA => (score >= beta).then_some(beta),
+                    HashFlag::ALPHA => (score <= alpha).then_some(alpha),
+                },
+                get_move(tt_entry),
+            )
         } else {
-            None
+            (None, None)
         }
     }
 
-    pub fn write(&mut self, hash: u64, score: isize, depth: usize, ply: usize, flag: HashFlag) {
-        let mut entry = TranspositionEntry {
-            hash,
-            depth,
-            flag,
-            score,
-        };
-
-        if entry.score < -MATE_SCORE {
-            entry.score -= ply as isize;
-        } else if entry.score > MATE_SCORE {
-            entry.score += ply as isize;
+    pub fn write(
+        &self,
+        hash: u64,
+        mut score: i32,
+        mv: Option<Move>,
+        depth: usize,
+        ply: usize,
+        flag: HashFlag,
+        age: usize,
+    ) {
+        if score < -MATE_SCORE {
+            score -= ply as i32;
+        } else if score > MATE_SCORE {
+            score += ply as i32;
         }
+
+        let new_entry = pack_tt_entry(score, mv, depth, age, flag);
 
         let index = hash as usize % HASH_SIZE;
 
-        if let Some(old_entry) = self.inner[index] {
-            if old_entry.depth < depth {
-                self.inner[index] = Some(entry);
+        let [old_hash_lock, old_entry_lock] = &self.inner[index];
+        let old_hash = old_hash_lock.load(Ordering::Relaxed);
+        let old_entry = old_entry_lock.load(Ordering::Relaxed);
+
+        if old_hash != 0 {
+            let old_age = get_age(old_entry);
+            let old_depth = get_depth(old_entry);
+
+            let replace = (old_age < age) || (old_age == age && old_depth < depth);
+
+            if replace {
+                old_entry_lock.store(new_entry, Ordering::Relaxed);
+                old_hash_lock.store(hash, Ordering::Relaxed);
             }
         } else {
-            self.inner[index] = Some(entry);
+            old_entry_lock.store(new_entry, Ordering::Relaxed);
+            old_hash_lock.store(hash, Ordering::Relaxed);
         }
+    }
+}
+
+pub fn get_depth(packed: u64) -> usize {
+    ((packed & DEPTH_MASK) >> DEPTH_SHIFT) as usize
+}
+
+pub fn get_score(packed: u64) -> i32 {
+    ((packed & SCORE_MASK) >> SCORE_SHIFT) as i32
+}
+
+pub fn get_move(packed: u64) -> Option<Move> {
+    let inner = (packed & MOVE_MASK) >> MOVE_SHIFT;
+
+    if inner == 0 {
+        None
+    } else {
+        Some(Move {
+            inner: inner as u16,
+        })
+    }
+}
+
+pub fn get_age(packed: u64) -> usize {
+    ((packed & AGE_MASK) >> AGE_SHIFT) as usize
+}
+
+pub fn get_flag(packed: u64) -> HashFlag {
+    match packed & FLAG_MASK {
+        0 => HashFlag::EXACT,
+        1 => HashFlag::ALPHA,
+        2 => HashFlag::BETA,
+        _ => unreachable!(),
     }
 }
