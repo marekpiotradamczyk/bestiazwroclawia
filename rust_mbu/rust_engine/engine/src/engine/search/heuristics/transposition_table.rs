@@ -62,10 +62,6 @@ const DEFAULT_ENTRY: TTEntry = [AtomicU64::new(0), AtomicU64::new(0)];
 
 #[allow(clippy::too_many_arguments)]
 impl TranspositionTable {
-    pub fn clear(&self) {
-        unsafe { (self.inner.as_ptr() as *mut [TTEntry; HASH_SIZE]).write_bytes(0, HASH_SIZE) };
-    }
-
     pub fn cashed_value(
         &self,
         node: &Position,

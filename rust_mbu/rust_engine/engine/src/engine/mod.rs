@@ -137,7 +137,7 @@ impl Engine {
     fn uci_new_game(&mut self) {
         self.root_pos = Position::default();
         self.repetition_table.clear();
-        self.transposition_table.clear();
+        self.transposition_table = Arc::new(TranspositionTable::default());
     }
 
     fn test(&mut self) {
