@@ -8,7 +8,7 @@ use std::{
 };
 
 use crate::{
-    engine::{eval::evaluate, search::heuristics::static_exchange_evaluation::static_exchange_evaluation},
+    engine::{eval::evaluate, search::heuristics::static_exchange_evaluation::{static_exchange_evaluation, static_exchange_evaluation_move_done}},
     uci::{uci_commands::Command, Result},
 };
 use move_gen::{generators::movegen::MoveGen, r#move::{MakeMove, Move, MoveKind}};
@@ -143,12 +143,13 @@ impl Engine {
     fn test(&mut self) {
         let pos = Position::from_fen("1k1r1br1/p1p1pppp/7q/1PpP4/Q3PPPP/P7/4N2R/R4K2 w - - 1 29".to_string()).unwrap();
 
-        let mv = Move::new(Square::D5, Square::D6, None, &MoveKind::Capture);
+        let mv = Move::new(Square::E2, Square::D4, None, &MoveKind::Capture);
 
         println!("{}", pos);
         println!("{}", mv);
 
-        dbg!(static_exchange_evaluation(&self.move_gen, &pos, &mv));
+        //dbg!(static_exchange_evaluation(&self.move_gen, &pos, &mv));
+        dbg!(static_exchange_evaluation_move_done(&self.move_gen, &pos, &mv));
     }
 }
 

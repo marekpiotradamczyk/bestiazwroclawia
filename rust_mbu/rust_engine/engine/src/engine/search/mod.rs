@@ -25,7 +25,7 @@ use self::{
     heuristics::{
         futility_pruning::is_futile, late_move_pruning::is_lmp_applicable,
         late_move_reduction::is_lmr_applicable, move_order::MoveUtils,
-        static_exchange_evaluation::static_exchange_evaluation, transposition_table::HashFlag,
+        static_exchange_evaluation::{static_exchange_evaluation, static_exchange_evaluation_move_done}, transposition_table::HashFlag,
     },
     parallel::SearchData,
 };
@@ -153,8 +153,20 @@ impl SearchData {
             };
 
             let gives_check = self.move_gen.is_check(&child_pos);
+
             if gives_check {
-                extend = EXTEND_CHECK;
+                let value_of_moved_piece = PIECE_VALUES[node.piece_at(&child.from()).unwrap().0 as usize];
+
+                let opponent_recapture_gain = static_exchange_evaluation_move_done(
+                    &self.move_gen,
+                    node,
+                    child);
+
+                let is_safe_check = opponent_recapture_gain <= value_of_moved_piece;
+
+                if is_safe_check {
+                    extend = EXTEND_CHECK;
+                }
             }
 
             if is_futile(
