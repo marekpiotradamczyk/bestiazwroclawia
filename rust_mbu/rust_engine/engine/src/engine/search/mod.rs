@@ -17,6 +17,7 @@ pub const DEFAULT_ALPHA: i32 = -INF;
 pub const DEFAULT_BETA: i32 = INF;
 pub const ASPIRATION_WINDOW_OFFSET: i32 = 50;
 pub const REPEATED_POSITION_SCORE: i32 = 0;
+pub const EXTEND_CHECK: usize = 1;
 
 use lazy_static::lazy_static;
 
@@ -53,6 +54,13 @@ impl SearchData {
             || self.repetition_table.is_draw_by_fifty_moves_rule()
         {
             return REPEATED_POSITION_SCORE;
+        }
+
+        // Mate distance pruning
+        let alpha = i32::max(alpha, -MATE_VALUE + self.ply as i32 - 1);
+        let beta = i32::min(beta, MATE_VALUE - self.ply as i32);
+        if alpha >= beta {
+            return alpha;
         }
 
         let pv_node = beta - alpha > 1;
@@ -136,6 +144,8 @@ impl SearchData {
     ) -> i32 {
         let mut flag = HashFlag::ALPHA;
         for (moves_tried, child) in move_list.iter().enumerate() {
+            let mut extend = 0;
+            let mut reduce = 0;
             let child_pos = {
                 let mut child_pos = node.clone();
                 let _ = child_pos.make_move(child);
@@ -143,6 +153,9 @@ impl SearchData {
             };
 
             let gives_check = self.move_gen.is_check(&child_pos);
+            if gives_check {
+                extend = EXTEND_CHECK;
+            }
 
             if is_futile(
                 child,
@@ -155,22 +168,19 @@ impl SearchData {
                 gives_check,
                 static_eval,
                 moves_tried,
+                extend,
             ) {
                 self.nodes_pruned += 1;
                 break;
             }
 
-            let extend = 0;
-
-            
             // TODO: Its glitched somehow
             /*
             if is_lmp_applicable(moves_tried, depth, pv_node, gives_check, alpha, child) {
                 self.nodes_pruned += 1;
                 break;
-            } 
+            }
             */
-            
 
             // Check extension
             self.ply += 1;
@@ -180,7 +190,7 @@ impl SearchData {
             // Calculate score with late move reduction
             //let score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
 
-            let score = if moves_tried == 0 {
+            let score = if moves_tried == 0 || extend > 0 {
                 // Full depth search
                 -self.negamax(&child_pos, -beta, -alpha, depth + extend - 1)
             } else {
@@ -188,7 +198,7 @@ impl SearchData {
                     if is_lmr_applicable(child, depth, moves_tried, in_check, gives_check, pv_node)
                     {
                         // Try reduced depth search
-                        -self.negamax(&child_pos, -alpha - 1, -alpha, depth + extend - 2)
+                        -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 2)
                     } else {
                         // Force full depth search
                         alpha + 1
@@ -196,11 +206,11 @@ impl SearchData {
 
                 // If we found potentailly better move at lower depth, search it with full depth
                 if score > alpha {
-                    let score = -self.negamax(&child_pos, -alpha - 1, -alpha, depth + extend - 1);
+                    let score = -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 1);
 
                     if score > alpha && score < beta {
                         // LMR failed, search normally with full depth
-                        -self.negamax(&child_pos, -beta, -alpha, depth + extend - 1)
+                        -self.negamax(&child_pos, -beta, -alpha, depth - 1)
                     } else {
                         score
                     }
@@ -301,7 +311,6 @@ impl SearchData {
                 continue;
             }
 
-            
             if !mv.is_enpass_capture() {
                 let attacking_piece = node.piece_at(&mv.from()).unwrap().0;
                 let captured_piece = node.piece_at(&mv.to()).unwrap().0;
@@ -313,7 +322,6 @@ impl SearchData {
                     continue;
                 }
             }
-            
 
             let child = {
                 let mut child = node.clone();

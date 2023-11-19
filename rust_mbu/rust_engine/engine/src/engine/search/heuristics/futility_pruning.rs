@@ -15,8 +15,10 @@ pub fn is_futile(
     gives_check: bool,
     static_eval: i32,
     moves_tried: usize,
+    extend: usize,
 ) -> bool {
     if in_check
+        || extend > 0
         || moves_tried <= 1
         || is_capture
         || gives_check

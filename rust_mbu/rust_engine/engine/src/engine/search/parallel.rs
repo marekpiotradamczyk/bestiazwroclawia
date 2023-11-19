@@ -118,9 +118,9 @@ impl SearchThread {
         let (mut alpha, mut beta) = (DEFAULT_ALPHA, DEFAULT_BETA);
 
         let mut best_move = None;
-        for i in 1..=self.depth {
+        for depth in 1..=self.depth {
             self.data.reset();
-            let best_score = self.data.negamax(&position, alpha, beta, i);
+            let mut best_score = self.data.negamax(&position, alpha, beta, depth);
             if self.data.stopped() {
                 break;
             }
@@ -129,7 +129,7 @@ impl SearchThread {
             if best_score <= alpha || best_score >= beta {
                 alpha = DEFAULT_ALPHA;
                 beta = DEFAULT_BETA;
-                continue;
+                best_score = self.data.negamax(&position, alpha, beta, depth);
             }
 
             // Adjust aspiration window
@@ -154,7 +154,7 @@ impl SearchThread {
                 println!(
                     "info score {} depth {} nodes {} pruned {} nps {} time {} pv {}",
                     score_str,
-                    i,
+                    depth,
                     current_nodes_count,
                     self.data.nodes_pruned,
                     nps,
@@ -170,6 +170,9 @@ impl SearchThread {
         if is_prime_thread {
             if let Some(best_move) = best_move {
                 println!("bestmove {}", best_move);
+            } else {
+                // Log null move, just to satisfy the protocol
+                println!("bestmove 0000");
             }
         }
     }
