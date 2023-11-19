@@ -4,7 +4,7 @@ pub trait Evaluate {
     fn evaluate(&self, position: &Position) -> f64;
 }
 
-const PIECE_VALUES: [i32; 6] = [100, 300, 350, 500, 900, 10000];
+pub const PIECE_VALUES: [i32; 6] = [100, 300, 350, 500, 900, 10000];
 
 pub fn evaluate(position: &Position) -> i32 {
     let mut score = 0;

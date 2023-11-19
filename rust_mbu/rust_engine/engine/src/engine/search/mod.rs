@@ -22,13 +22,14 @@ use lazy_static::lazy_static;
 
 use self::{
     heuristics::{
-        futility_pruning::is_futile, late_move_reduction::is_lmr_applicable, move_order::MoveUtils,
-        transposition_table::HashFlag,
+        futility_pruning::is_futile, late_move_pruning::is_lmp_applicable,
+        late_move_reduction::is_lmr_applicable, move_order::MoveUtils,
+        static_exchange_evaluation::static_exchange_evaluation, transposition_table::HashFlag,
     },
     parallel::SearchData,
 };
 
-use super::eval::evaluate;
+use super::eval::{evaluate, PIECE_VALUES};
 
 lazy_static! {
     pub static ref STOPPED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
@@ -61,7 +62,7 @@ impl SearchData {
             .cashed_value(node, self.ply, pv_node, depth, alpha, beta);
 
         if let Some(cached_alpha) = cached_alpha {
-            self.tt_hits += 1;
+            self.nodes_pruned += 1;
             return cached_alpha;
         }
 
@@ -81,6 +82,7 @@ impl SearchData {
 
         // Null move pruning
         if self.null_move_reduction(node, beta, depth, in_check, self.ply) {
+            self.nodes_pruned += 1;
             return beta;
         }
 
@@ -91,6 +93,7 @@ impl SearchData {
             self.razoring(node, static_eval, alpha, beta, depth, in_check, pv_node)
         {
             if fails_low {
+                self.nodes_pruned += 1;
                 return score;
             }
         }
@@ -142,6 +145,8 @@ impl SearchData {
             let gives_check = self.move_gen.is_check(&child_pos);
 
             if is_futile(
+                child,
+                node,
                 depth,
                 alpha,
                 beta,
@@ -151,10 +156,22 @@ impl SearchData {
                 static_eval,
                 moves_tried,
             ) {
+                self.nodes_pruned += 1;
                 break;
             }
 
             let extend = 0;
+
+            
+            // TODO: Its glitched somehow
+            /*
+            if is_lmp_applicable(moves_tried, depth, pv_node, gives_check, alpha, child) {
+                self.nodes_pruned += 1;
+                break;
+            } 
+            */
+            
+
             // Check extension
             self.ply += 1;
             self.repetition_table
@@ -227,6 +244,8 @@ impl SearchData {
                         self.killer_moves[0][self.ply] = Some(*child);
                     }
 
+                    self.nodes_pruned += 1;
+
                     return beta;
                 }
             }
@@ -254,12 +273,14 @@ impl SearchData {
         let stand_pat = evaluate(node);
 
         if stand_pat >= beta {
+            self.nodes_pruned += 1;
             return beta;
         }
 
         // Delta pruning
         let queen_value = 900;
         if stand_pat < alpha - queen_value {
+            self.nodes_pruned += 1;
             return alpha;
         }
 
@@ -279,6 +300,20 @@ impl SearchData {
             if !mv.is_capture() {
                 continue;
             }
+
+            
+            if !mv.is_enpass_capture() {
+                let attacking_piece = node.piece_at(&mv.from()).unwrap().0;
+                let captured_piece = node.piece_at(&mv.to()).unwrap().0;
+
+                if PIECE_VALUES[attacking_piece as usize] > PIECE_VALUES[captured_piece as usize]
+                    && static_exchange_evaluation(&self.move_gen, node, &mv) < 0
+                {
+                    self.nodes_pruned += 1;
+                    continue;
+                }
+            }
+            
 
             let child = {
                 let mut child = node.clone();
@@ -300,6 +335,7 @@ impl SearchData {
                 alpha = score;
 
                 if score >= beta {
+                    self.nodes_pruned += 1;
                     return beta;
                 }
             }

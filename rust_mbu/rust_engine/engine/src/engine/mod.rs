@@ -8,13 +8,13 @@ use std::{
 };
 
 use crate::{
-    engine::eval::evaluate,
+    engine::{eval::evaluate, search::heuristics::static_exchange_evaluation::static_exchange_evaluation},
     uci::{uci_commands::Command, Result},
 };
-use move_gen::{generators::movegen::MoveGen, r#move::MakeMove};
+use move_gen::{generators::movegen::MoveGen, r#move::{MakeMove, Move, MoveKind}};
 use sdk::{
     fen::Fen,
-    position::{Color, Position},
+    position::{Color, Position}, square::Square,
 };
 
 use crate::engine::engine_options::EngineOptions;
@@ -141,14 +141,14 @@ impl Engine {
     }
 
     fn test(&mut self) {
-        self.uci_new_game();
-        self.root_pos = Position::from_fen("4k3/R7/8/3K4/8/8/8/8 w - - 12 7".to_string()).unwrap();
-        let search = SearchOptions {
-            depth: Some(13),
-            ..Default::default()
-        };
+        let pos = Position::from_fen("1k1r1br1/p1p1pppp/7q/1PpP4/Q3PPPP/P7/4N2R/R4K2 w - - 1 29".to_string()).unwrap();
 
-        self.go(search);
+        let mv = Move::new(Square::D5, Square::D6, None, &MoveKind::Capture);
+
+        println!("{}", pos);
+        println!("{}", mv);
+
+        dbg!(static_exchange_evaluation(&self.move_gen, &pos, &mv));
     }
 }
 

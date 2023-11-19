@@ -7,7 +7,7 @@ use derivative::Derivative;
 pub struct EngineOptions {
     #[derivative(Default(value = "5"))]
     pub move_overhead: usize,
-    #[derivative(Default(value = "10"))]
+    #[derivative(Default(value = "1"))]
     pub threads: usize,
     #[derivative(Default(value = "16"))]
     pub hash: usize,

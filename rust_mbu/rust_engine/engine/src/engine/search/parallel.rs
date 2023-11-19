@@ -43,7 +43,7 @@ pub struct SearchThread {
 #[derive(Clone)]
 pub struct SearchData {
     pub nodes_evaluated: usize,
-    pub tt_hits: usize,
+    pub nodes_pruned: usize,
     pub ply: usize,
     pub move_gen: Arc<MoveGen>,
     pub killer_moves: [[Option<Move>; MAX_PLY]; 2],
@@ -88,14 +88,14 @@ impl Search {
                 repetition_table: self.repetion_table.clone(),
                 transposition_table: self.transposition_table.clone(),
                 time_control: self.time_control.clone(),
-                tt_hits: 0,
+                nodes_pruned: 0,
                 age: 0,
             };
 
             let mut thread = SearchThread {
                 data: data.clone(),
                 transposition_table: data.transposition_table.clone(),
-                depth: self.options.depth.unwrap_or(20),
+                depth: self.options.depth.unwrap_or(150),
                 id,
             };
 
@@ -152,11 +152,11 @@ impl SearchThread {
                     .unwrap_or_else(|| format!("cp {}", best_score));
 
                 println!(
-                    "info score {} depth {} nodes {} tthits {} nps {} time {} pv {}",
+                    "info score {} depth {} nodes {} pruned {} nps {} time {} pv {}",
                     score_str,
                     i,
                     current_nodes_count,
-                    self.data.tt_hits,
+                    self.data.nodes_pruned,
                     nps,
                     time,
                     self.data.pv.to_string()
@@ -168,7 +168,9 @@ impl SearchThread {
             }
         }
         if is_prime_thread {
-            println!("bestmove {}", best_move.unwrap());
+            if let Some(best_move) = best_move {
+                println!("bestmove {}", best_move);
+            }
         }
     }
 }
