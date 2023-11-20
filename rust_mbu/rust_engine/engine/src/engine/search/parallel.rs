@@ -31,6 +31,7 @@ pub struct Search {
     pub move_gen: Arc<MoveGen>,
     pub repetion_table: RepetitionTable,
     pub transposition_table: Arc<TranspositionTable>,
+    pub age: usize,
 }
 
 pub struct SearchThread {
@@ -63,6 +64,7 @@ impl Search {
         is_white: bool,
         rep_table: RepetitionTable,
         transposition_table: Arc<TranspositionTable>,
+        age: usize,
     ) -> Self {
         Self {
             time_control: Arc::new(options.time_control(is_white)),
@@ -71,6 +73,7 @@ impl Search {
             repetion_table: rep_table,
             transposition_table,
             engine_options,
+            age,
         }
     }
 
@@ -89,7 +92,7 @@ impl Search {
                 transposition_table: self.transposition_table.clone(),
                 time_control: self.time_control.clone(),
                 nodes_pruned: 0,
-                age: 0,
+                age: self.age,
             };
 
             let mut thread = SearchThread {
@@ -185,7 +188,7 @@ impl SearchData {
         self.killer_moves = [[None; MAX_PLY]; 2];
         self.history_moves = [[[0; 64]; 6]; 2];
         self.pv = PrincipalVariation::default();
-        self.age += 1;
+        //self.age += 1;
     }
 
     pub fn stopped(&self) -> bool {

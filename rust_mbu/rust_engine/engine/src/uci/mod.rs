@@ -35,6 +35,9 @@ pub fn start_uci() {
             "position" => parse_position(args),
             "go" => parse_go(args),
             "setoption" => parse_set_option(args),
+            "simulate" => Ok(Command::Simulate(
+                args.into_iter().map(ToString::to_string).collect_vec(),
+            )),
             "quit" => return,
             any => Command::from_str(any).map_err(|_| anyhow!("Unknown command {any}")),
         };

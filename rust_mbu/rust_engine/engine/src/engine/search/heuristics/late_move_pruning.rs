@@ -13,7 +13,7 @@ pub fn is_lmp_applicable(
     alpha: i32,
     mv: &Move,
 ) -> bool {
-    return depth < LMP_DEPTH
+    depth < LMP_DEPTH
         && order > LMP[depth]
         && !pv_node
         && !gives_check
@@ -21,5 +21,5 @@ pub fn is_lmp_applicable(
         && !matches!(
             mv.kind(),
             MoveKind::Capture | MoveKind::Promotion | MoveKind::PromotionCapture
-        );
+        )
 }

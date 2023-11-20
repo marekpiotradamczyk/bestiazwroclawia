@@ -1,5 +1,5 @@
 use move_gen::r#move::Move;
-use sdk::position::{Position, Piece, Color};
+use sdk::position::{Color, Piece, Position};
 
 pub const FUTILITY_MARGIN: i32 = 200;
 

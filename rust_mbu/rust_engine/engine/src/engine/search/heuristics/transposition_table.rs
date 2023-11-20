@@ -4,7 +4,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 use crate::engine::search::MATE_SCORE;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum HashFlag {
     EXACT,
     ALPHA,
@@ -58,6 +58,7 @@ fn pack_tt_entry(score: i32, mv: Option<Move>, depth: usize, age: usize, flag: H
     packed
 }
 
+#[allow(clippy::declare_interior_mutable_const)]
 const DEFAULT_ENTRY: TTEntry = [AtomicU64::new(0), AtomicU64::new(0)];
 
 #[allow(clippy::too_many_arguments)]
@@ -88,8 +89,8 @@ impl TranspositionTable {
     ) -> (Option<i32>, Option<Move>) {
         let [hash_lock, entry_lock] = &self.inner[hash as usize % HASH_SIZE];
         let tt_hash = hash_lock.load(Ordering::Relaxed);
+        let tt_entry = entry_lock.load(Ordering::Relaxed);
         if tt_hash != 0 {
-            let tt_entry = entry_lock.load(Ordering::Relaxed);
             if tt_hash != hash {
                 return (None, None);
             }
@@ -190,5 +191,41 @@ pub fn get_flag(packed: u64) -> HashFlag {
         1 => HashFlag::ALPHA,
         2 => HashFlag::BETA,
         _ => unreachable!(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use move_gen::r#move::{Move, MoveKind};
+    use sdk::square::Square;
+
+    use super::{pack_tt_entry, TranspositionTable};
+
+    #[test]
+    fn test_tt() {
+        let tt = TranspositionTable::default();
+        tt.write(11, 5, None, 4, 0, super::HashFlag::EXACT, 0);
+        tt.write(11, 6, None, 3, 0, super::HashFlag::EXACT, 1);
+        tt.write(11, 7, None, 5, 0, super::HashFlag::EXACT, 1);
+        tt.write(9, 70, None, 5, 0, super::HashFlag::EXACT, 2);
+
+        assert_eq!(tt.read(11, 0, 0, 0, 0), (Some(7), None));
+    }
+
+    #[test]
+    fn test_pack() {
+        let depth = 9;
+        let score = -12345;
+        let mv = Some(Move::new(Square::A3, Square::B7, None, &MoveKind::Capture));
+        let age = 7;
+        let flag = super::HashFlag::EXACT;
+
+        let packed = pack_tt_entry(score, mv, depth, age, flag);
+
+        assert_eq!(super::get_depth(packed), depth);
+        assert_eq!(super::get_score(packed), score);
+        assert_eq!(super::get_move(packed), mv);
+        assert_eq!(super::get_age(packed), age);
+        assert_eq!(super::get_flag(packed), flag);
     }
 }

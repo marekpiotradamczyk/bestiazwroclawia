@@ -8,13 +8,20 @@ use std::{
 };
 
 use crate::{
-    engine::{eval::evaluate, search::heuristics::static_exchange_evaluation::{static_exchange_evaluation, static_exchange_evaluation_move_done}},
+    engine::{
+        eval::evaluate,
+        search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done,
+    },
     uci::{uci_commands::Command, Result},
 };
-use move_gen::{generators::movegen::MoveGen, r#move::{MakeMove, Move, MoveKind}};
+use move_gen::{
+    generators::movegen::MoveGen,
+    r#move::{MakeMove, Move, MoveKind},
+};
 use sdk::{
     fen::Fen,
-    position::{Color, Position}, square::Square,
+    position::{Color, Position},
+    square::Square,
 };
 
 use crate::engine::engine_options::EngineOptions;
@@ -39,6 +46,7 @@ pub struct Engine {
     pub repetition_table: RepetitionTable,
     pub transposition_table: Arc<TranspositionTable>,
     pub options: EngineOptions,
+    pub age: usize,
 }
 
 impl Engine {
@@ -53,6 +61,7 @@ impl Engine {
             Command::Debug => self.debug(),
             Command::UciNewGame => self.uci_new_game(),
             Command::Test => self.test(),
+            Command::Simulate(moves) => self.simulate(moves),
 
             _ => {}
         };
@@ -91,6 +100,7 @@ impl Engine {
         let rep_table = self.repetition_table.clone();
         let transposition_table = self.transposition_table.clone();
         let engine_options = self.options;
+        let age = self.age;
 
         let run = move || {
             let mut search = Search::new(
@@ -100,6 +110,7 @@ impl Engine {
                 is_white,
                 rep_table,
                 transposition_table,
+                age,
             );
             search.search(&pos);
         };
@@ -116,6 +127,7 @@ impl Engine {
 
     fn position(&mut self, mut pos: Position, moves: Vec<String>) {
         self.repetition_table.clear();
+        self.age += 1;
         match parse_uci_moves(moves, &mut pos, &self.move_gen) {
             Ok(repetition_table) => {
                 self.root_pos = pos;
@@ -138,10 +150,14 @@ impl Engine {
         self.root_pos = Position::default();
         self.repetition_table.clear();
         self.transposition_table = Arc::new(TranspositionTable::default());
+        self.age = 0;
     }
 
     fn test(&mut self) {
-        let pos = Position::from_fen("1k1r1br1/p1p1pppp/7q/1PpP4/Q3PPPP/P7/4N2R/R4K2 w - - 1 29".to_string()).unwrap();
+        let pos = Position::from_fen(
+            "1k1r1br1/p1p1pppp/7q/1PpP4/Q3PPPP/P7/4N2R/R4K2 w - - 1 29".to_string(),
+        )
+        .unwrap();
 
         let mv = Move::new(Square::E2, Square::D4, None, &MoveKind::Capture);
 
@@ -149,7 +165,28 @@ impl Engine {
         println!("{}", mv);
 
         //dbg!(static_exchange_evaluation(&self.move_gen, &pos, &mv));
-        dbg!(static_exchange_evaluation_move_done(&self.move_gen, &pos, &mv));
+        dbg!(static_exchange_evaluation_move_done(
+            &self.move_gen,
+            &pos,
+            &mv
+        ));
+    }
+
+    fn simulate(&mut self, moves: Vec<String>) {
+        for i in 0..moves.len() {
+            let opts = SearchOptions {
+                depth: Some(10),
+                ..Default::default()
+            };
+            let mvs = &moves[..=i];
+            self.uci_new_game();
+            let pos = Position::default();
+            self.position(pos, mvs.to_vec());
+            println!("{}", self.root_pos);
+            self.go(opts);
+            dbg!();
+            dbg!();
+        }
     }
 }
 

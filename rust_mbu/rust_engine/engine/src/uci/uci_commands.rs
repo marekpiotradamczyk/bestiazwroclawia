@@ -15,6 +15,7 @@ pub enum Command {
     Quit,
     Debug,
     Test,
+    Simulate(Vec<String>),
 }
 
 impl FromStr for Command {
