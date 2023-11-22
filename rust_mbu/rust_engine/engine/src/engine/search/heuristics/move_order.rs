@@ -30,6 +30,7 @@ pub trait MoveUtils {
 
 impl MoveUtils for SearchData {
     fn score_move(&self, mv: &Move, pos: &Position) -> i32 {
+        // We prioritze captures
         if mv.is_capture() {
             let attacker = pos.piece_at(&mv.from()).unwrap().0;
             let victim = if mv.is_enpass_capture() {
@@ -43,9 +44,10 @@ impl MoveUtils for SearchData {
             return MVV_LVA[attacker as usize][victim as usize] + 1_000_000;
         }
 
-        if self.killer_moves[0][self.ply].is_some() {
+        // Then we prioritize killer moves, that is moves that caused a beta cutoff in the past.
+        if self.killer_moves[0][self.ply].is_some_and(|killer| killer == *mv) {
             500_000
-        } else if self.killer_moves[1][self.ply].is_some() {
+        } else if self.killer_moves[1][self.ply].is_some_and(|killer| killer == *mv) {
             450_000
         } else {
             let (piece, color) = pos.piece_at(&mv.from()).unwrap();

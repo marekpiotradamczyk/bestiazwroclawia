@@ -1,7 +1,13 @@
 use move_gen::r#move::Move;
 use sdk::position::{Color, Piece, Position};
 
-pub const FUTILITY_MARGIN: i32 = 200;
+use crate::engine::search::MATE_SCORE;
+
+pub const FUTILITY_MARGIN: [i32; 16] = [
+    0, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300,
+];
+
+pub const FUTILITY_DEPTH: usize = 6;
 
 #[allow(clippy::too_many_arguments)]
 pub fn is_futile(
@@ -10,6 +16,7 @@ pub fn is_futile(
     depth: usize,
     alpha: i32,
     beta: i32,
+    pv_node: bool,
     is_capture: bool,
     in_check: bool,
     gives_check: bool,
@@ -17,14 +24,17 @@ pub fn is_futile(
     moves_tried: usize,
     extend: usize,
 ) -> bool {
+    // Check, extended moves, captures, moves which gives check, positions with mate score and
+    // positions above depth 6 shouldn't be pruned.
     if in_check
         || extend > 0
         || moves_tried <= 1
         || is_capture
         || gives_check
-        || alpha.abs() > 10000
-        || beta.abs() > 10000
-        || depth > 6
+        || alpha.abs() > MATE_SCORE
+        || beta.abs() > MATE_SCORE
+        || depth > FUTILITY_DEPTH
+        || pv_node
     {
         return false;
     }
@@ -45,5 +55,5 @@ pub fn is_futile(
         return false;
     }
 
-    static_eval + FUTILITY_MARGIN * depth as i32 <= alpha
+    static_eval + FUTILITY_MARGIN[depth] <= alpha
 }

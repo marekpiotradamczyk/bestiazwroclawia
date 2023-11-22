@@ -10,8 +10,10 @@ pub fn is_lmr_applicable(
     in_check: bool,
     gives_check: bool,
     pv_node: bool,
+    extend: usize,
 ) -> bool {
     depth >= LMR_LIMIT
+        && extend == 0
         && moves_tried >= LMR_MIN_MOVES
         && !in_check
         && !gives_check

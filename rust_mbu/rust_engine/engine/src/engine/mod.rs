@@ -35,11 +35,14 @@ use self::search::{
     STOPPED,
 };
 
+use derivative::Derivative;
+
 pub mod engine_options;
 pub mod eval;
 pub mod search;
 
-#[derive(Default)]
+#[derive(Derivative)]
+#[derivative(Default)]
 pub struct Engine {
     pub root_pos: Position,
     pub move_gen: Arc<MoveGen>,
@@ -47,6 +50,8 @@ pub struct Engine {
     pub transposition_table: Arc<TranspositionTable>,
     pub options: EngineOptions,
     pub age: usize,
+    #[derivative(Default(value = "true"))]
+    pub ready: bool,
 }
 
 impl Engine {
@@ -127,6 +132,8 @@ impl Engine {
 
     fn position(&mut self, mut pos: Position, moves: Vec<String>) {
         self.repetition_table.clear();
+        // TODO: Temp fix
+        self.transposition_table = Arc::new(TranspositionTable::default());
         self.age += 1;
         match parse_uci_moves(moves, &mut pos, &self.move_gen) {
             Ok(repetition_table) => {
@@ -175,17 +182,19 @@ impl Engine {
     fn simulate(&mut self, moves: Vec<String>) {
         for i in 0..moves.len() {
             let opts = SearchOptions {
-                depth: Some(10),
+                depth: Some(8),
                 ..Default::default()
             };
             let mvs = &moves[..=i];
-            self.uci_new_game();
+            dbg!(&mvs);
             let pos = Position::default();
             self.position(pos, mvs.to_vec());
             println!("{}", self.root_pos);
             self.go(opts);
+            thread::sleep(std::time::Duration::from_secs(2));
             dbg!();
             dbg!();
+            dbg!(self.age);
         }
     }
 }

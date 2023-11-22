@@ -3,9 +3,11 @@ use sdk::position::Position;
 
 use crate::engine::search::parallel::SearchData;
 
+pub const NULL_MOVE_DEPTH_REDUCTION: usize = 2;
+
 impl SearchData {
     /// Checks if after giving a free move to opponent, the score is still so good that it exceeds
-    /// beta. If so,
+    /// beta.
     /// [Source](https://web.archive.org/web/20071031095933/http://www.brucemo.com/compchess/programming/nullmove.htm)
     pub fn null_move_reduction(
         &mut self,
@@ -27,7 +29,12 @@ impl SearchData {
 
         self.repetition_table.push(&child, false);
         self.ply += 1;
-        let score = -self.negamax(&child, -beta, -beta + 1, depth - 3);
+        let score = -self.negamax(
+            &child,
+            -beta,
+            -beta + 1,
+            depth - NULL_MOVE_DEPTH_REDUCTION - 1,
+        );
         self.ply -= 1;
         self.repetition_table.decrement();
 

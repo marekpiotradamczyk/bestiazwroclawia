@@ -24,6 +24,7 @@ use lazy_static::lazy_static;
 use self::{
     heuristics::{
         futility_pruning::is_futile,
+        late_move_pruning::is_lmp_applicable,
         late_move_reduction::is_lmr_applicable,
         move_order::MoveUtils,
         static_exchange_evaluation::{
@@ -52,66 +53,71 @@ pub struct BestMove {
 
 impl SearchData {
     fn negamax(&mut self, node: &Position, alpha: i32, beta: i32, depth: usize) -> i32 {
+        // Initialize PV table
         self.pv.init_length(self.ply);
 
+        self.nodes_evaluated += 1;
+
+        // Check for draw by repetition
         if self.repetition_table.is_repeated()
             || self.repetition_table.is_draw_by_fifty_moves_rule()
         {
             return REPEATED_POSITION_SCORE;
         }
 
-        // Mate distance pruning
+        // Prune mate distance
+        // If we can see mate, we don't need to search further
         let alpha = i32::max(alpha, -MATE_VALUE + self.ply as i32 - 1);
         let beta = i32::min(beta, MATE_VALUE - self.ply as i32);
         if alpha >= beta {
             return alpha;
         }
 
+        // If aspiration window is null, we are in PV node
         let pv_node = beta - alpha > 1;
+
         // Transposition table lookup
         let (cached_alpha, best_move) = self
             .transposition_table
             .cashed_value(node, self.ply, pv_node, depth, alpha, beta);
 
         if let Some(cached_alpha) = cached_alpha {
-            self.nodes_pruned += 1;
             return cached_alpha;
         }
 
+        // Run quiescence search on horizon
         if depth == 0 {
             return self.quiesce(node, alpha, beta);
             //return evaluate(node);
         }
 
+        // Stop search if we are too deep
         if self.ply >= MAX_PLY {
             return evaluate(node);
         }
 
-        self.nodes_evaluated += 1;
-
+        // Generate legal moves for current position
         let mut child_nodes = self.move_gen.generate_legal_moves(node).collect_vec();
         let in_check = self.move_gen.is_check(node);
 
         // Null move pruning
         if self.null_move_reduction(node, beta, depth, in_check, self.ply) {
-            self.nodes_pruned += 1;
             return beta;
         }
 
+        // Statically evaluate current position. This is needed for pruning.
         let static_eval = evaluate(node);
 
         // Razoring
-        if let Some((score, fails_low)) =
-            self.razoring(node, static_eval, alpha, beta, depth, in_check, pv_node)
+        if let Some(score) = self.razoring(node, static_eval, alpha, beta, depth, in_check, pv_node)
         {
-            if fails_low {
-                self.nodes_pruned += 1;
-                return score;
-            }
+            return score;
         }
 
+        // Order moves by probability of being good in order to improve alpha-beta pruning.
         self.order_moves(&mut child_nodes, node, best_move);
 
+        // If there are no legal moves, we are in checkmate or stalemate
         if child_nodes.is_empty() {
             if in_check {
                 return -MATE_VALUE + self.ply as i32;
@@ -120,6 +126,8 @@ impl SearchData {
             }
         }
 
+        // At this point we couldn't prune anything, so we need to start searching through legal
+        // moves.
         self.search_move_list(
             node,
             &child_nodes,
@@ -146,9 +154,14 @@ impl SearchData {
         static_eval: i32,
         mut best_move: Option<Move>,
     ) -> i32 {
+        // Flag for transposition table indicating if we found exact score or not.
         let mut flag = HashFlag::ALPHA;
+
         for (moves_tried, child) in move_list.iter().enumerate() {
             let mut extend = 0;
+            let mut reduce = 0;
+
+            // Make a move
             let child_pos = {
                 let mut child_pos = node.clone();
                 let _ = child_pos.make_move(child);
@@ -157,6 +170,8 @@ impl SearchData {
 
             let gives_check = self.move_gen.is_check(&child_pos);
 
+            // Check extension. We don't extend if check is unsafe, that is oponnent can gain
+            // material by series of captures. We check that using `static_exchange_evaluation`.
             if gives_check {
                 let value_of_moved_piece =
                     PIECE_VALUES[node.piece_at(&child.from()).unwrap().0 as usize];
@@ -171,12 +186,15 @@ impl SearchData {
                 }
             }
 
+            // Futulity pruning
+            // We assume we can't improve in certain situations, so we prune the node.
             if is_futile(
                 child,
                 node,
                 depth,
                 alpha,
                 beta,
+                pv_node,
                 child.is_capture(),
                 in_check,
                 gives_check,
@@ -184,17 +202,15 @@ impl SearchData {
                 moves_tried,
                 extend,
             ) {
-                self.nodes_pruned += 1;
                 break;
             }
 
-            // TODO: Its glitched somehow
-            /*
-            if is_lmp_applicable(moves_tried, depth, pv_node, gives_check, alpha, child) {
-                self.nodes_pruned += 1;
+            // Late move pruning
+            // We assume that moves that are far in the move list, are less likely to be good, so we prune them.
+            // Not applicable in PV nodes, in check, in captures and in positions with mate score.
+            if is_lmp_applicable(moves_tried, depth, pv_node, in_check, alpha, child) {
                 break;
             }
-            */
 
             // Check extension
             self.ply += 1;
@@ -203,35 +219,21 @@ impl SearchData {
 
             // Calculate score with late move reduction
             //let score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
+            if is_lmr_applicable(
+                child,
+                depth,
+                moves_tried,
+                in_check,
+                gives_check,
+                pv_node,
+                extend,
+            ) {
+                reduce = 1;
+            }
 
-            let score = if moves_tried == 0 || extend > 0 {
-                // Full depth search
-                -self.negamax(&child_pos, -beta, -alpha, depth + extend - 1)
-            } else {
-                let score =
-                    if is_lmr_applicable(child, depth, moves_tried, in_check, gives_check, pv_node)
-                    {
-                        // Try reduced depth search
-                        -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 2)
-                    } else {
-                        // Force full depth search
-                        alpha + 1
-                    };
+            // Search move
+            let score = self.search_move(&child_pos, alpha, beta, depth, reduce, extend, pv_node);
 
-                // If we found potentailly better move at lower depth, search it with full depth
-                if score > alpha {
-                    let score = -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 1);
-
-                    if score > alpha && score < beta {
-                        // LMR failed, search normally with full depth
-                        -self.negamax(&child_pos, -beta, -alpha, depth - 1)
-                    } else {
-                        score
-                    }
-                } else {
-                    score
-                }
-            };
             self.repetition_table.decrement();
             self.ply -= 1;
 
@@ -239,9 +241,11 @@ impl SearchData {
                 return 0;
             }
 
+            // If we found better move, update alpha and best move
             if score > alpha {
                 if !child.is_capture() {
                     let (piece, color) = node.piece_at(&child.from()).expect("No piece found");
+                    // Update history moves, so we can order moves better next time
                     self.history_moves[color as usize][piece as usize][child.to() as usize] +=
                         depth as i32;
                 }
@@ -251,8 +255,9 @@ impl SearchData {
                 self.pv.push_pv_move(self.ply, *child);
                 best_move = Some(*child);
 
+                // Fail high
                 if score >= beta {
-                    // Fail high
+                    // Store beta cutoff in transposition table
                     self.transposition_table.write(
                         node.hash,
                         beta,
@@ -263,22 +268,48 @@ impl SearchData {
                         self.age,
                     );
 
+                    // Update killer moves
                     if !child.is_capture() {
                         self.killer_moves[1][self.ply] = self.killer_moves[0][self.ply];
                         self.killer_moves[0][self.ply] = Some(*child);
                     }
-
-                    self.nodes_pruned += 1;
 
                     return beta;
                 }
             }
         }
 
+        // Store alpha cutoff in transposition table
         self.transposition_table
             .write(node.hash, alpha, best_move, depth, self.ply, flag, self.age);
 
         alpha
+    }
+
+    fn search_move(
+        &mut self,
+        child_pos: &Position,
+        alpha: i32,
+        beta: i32,
+        depth: usize,
+        reduce: usize,
+        extend: usize,
+        pv_node: bool,
+    ) -> i32 {
+        let final_depth = depth - reduce + extend - 1;
+        let mut score = -self.negamax(&child_pos, -alpha - 1, -alpha, final_depth);
+
+        // If we found potentailly better move at lower depth, search it with full depth
+        if score > alpha && reduce > 0 {
+            score = -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 1);
+        }
+
+        if score > alpha && score < beta && pv_node {
+            // LMR failed, search normally with full depth
+            score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
+        }
+
+        score
     }
 
     fn quiesce(&mut self, node: &Position, mut alpha: i32, beta: i32) -> i32 {
@@ -297,14 +328,12 @@ impl SearchData {
         let stand_pat = evaluate(node);
 
         if stand_pat >= beta {
-            self.nodes_pruned += 1;
             return beta;
         }
 
         // Delta pruning
         let queen_value = 900;
         if stand_pat < alpha - queen_value {
-            self.nodes_pruned += 1;
             return alpha;
         }
 
@@ -332,7 +361,6 @@ impl SearchData {
                 if PIECE_VALUES[attacking_piece as usize] > PIECE_VALUES[captured_piece as usize]
                     && static_exchange_evaluation(&self.move_gen, node, &mv) < 0
                 {
-                    self.nodes_pruned += 1;
                     continue;
                 }
             }
@@ -357,7 +385,6 @@ impl SearchData {
                 alpha = score;
 
                 if score >= beta {
-                    self.nodes_pruned += 1;
                     return beta;
                 }
             }

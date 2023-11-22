@@ -44,7 +44,6 @@ pub struct SearchThread {
 #[derive(Clone)]
 pub struct SearchData {
     pub nodes_evaluated: usize,
-    pub nodes_pruned: usize,
     pub ply: usize,
     pub move_gen: Arc<MoveGen>,
     pub killer_moves: [[Option<Move>; MAX_PLY]; 2],
@@ -91,7 +90,6 @@ impl Search {
                 repetition_table: self.repetion_table.clone(),
                 transposition_table: self.transposition_table.clone(),
                 time_control: self.time_control.clone(),
-                nodes_pruned: 0,
                 age: self.age,
             };
 
@@ -133,6 +131,7 @@ impl SearchThread {
                 alpha = DEFAULT_ALPHA;
                 beta = DEFAULT_BETA;
                 best_score = self.data.negamax(&position, alpha, beta, depth);
+                //continue;
             }
 
             // Adjust aspiration window
@@ -155,11 +154,10 @@ impl SearchThread {
                     .unwrap_or_else(|| format!("cp {}", best_score));
 
                 println!(
-                    "info score {} depth {} nodes {} pruned {} nps {} time {} pv {}",
+                    "info score {} depth {} nodes {} nps {} time {} pv {}",
                     score_str,
                     depth,
                     current_nodes_count,
-                    self.data.nodes_pruned,
                     nps,
                     time,
                     self.data.pv.to_string()

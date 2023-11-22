@@ -38,6 +38,7 @@ pub const DEPTH_MASK: u64 = 0b1111111 << DEPTH_SHIFT;
 pub const MOVE_SHIFT: u64 = 64 - 32 - 7 - 16;
 pub const MOVE_MASK: u64 = 0b1111111111111111 << MOVE_SHIFT;
 
+//TODO: MORE???
 // 7 Bits for age
 pub const AGE_SHIFT: u64 = 64 - 32 - 7 - 16 - 7;
 pub const AGE_MASK: u64 = 0b1111111 << AGE_SHIFT;

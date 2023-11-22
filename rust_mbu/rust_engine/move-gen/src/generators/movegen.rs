@@ -178,12 +178,6 @@ impl MoveGen {
     }
 }
 
-pub enum PositionState {
-    Checkmate,
-    Stalemate,
-    InProgress,
-}
-
 impl Default for MoveGen {
     fn default() -> Self {
         Self::new()
