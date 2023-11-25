@@ -36,7 +36,7 @@ pub const fn evaluate(position: &Position, alpha: i32, beta: i32) -> i32 {
         let piece = position.piece_at(&square);
 
         if let Some((piece, color)) = piece {
-            score += PIECE_TABLES[color as usize][piece as usize][sq];
+            score += PIECE_TABLES[color as usize][piece as usize][sq] * side_multiplier;
         }
 
         sq += 1;
