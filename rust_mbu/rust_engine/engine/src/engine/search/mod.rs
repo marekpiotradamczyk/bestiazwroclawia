@@ -292,6 +292,7 @@ impl SearchData {
         alpha
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn search_move(
         &mut self,
         child_pos: &Position,
@@ -307,16 +308,16 @@ impl SearchData {
         }
 
         let final_depth = depth - reduce + extend - 1;
-        let mut score = -self.negamax(&child_pos, -alpha - 1, -alpha, final_depth);
+        let mut score = -self.negamax(child_pos, -alpha - 1, -alpha, final_depth);
 
         // If we found potentailly better move at lower depth, search it with full depth
         if score > alpha && reduce > 0 {
-            score = -self.negamax(&child_pos, -alpha - 1, -alpha, depth - 1);
+            score = -self.negamax(child_pos, -alpha - 1, -alpha, depth - 1);
         }
 
         if score > alpha && score < beta && pv_node {
             // LMR failed, search normally with full depth
-            score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
+            score = -self.negamax(child_pos, -beta, -alpha, depth - 1);
         }
 
         score
