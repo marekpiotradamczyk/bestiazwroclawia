@@ -53,6 +53,9 @@ pub struct BestMove {
 
 impl SearchData {
     fn negamax(&mut self, node: &Position, alpha: i32, beta: i32, depth: usize) -> i32 {
+        if self.stopped() {
+            return 0;
+        }
         // Initialize PV table
         self.pv.init_length(self.ply);
 
@@ -154,6 +157,9 @@ impl SearchData {
         static_eval: i32,
         mut best_move: Option<Move>,
     ) -> i32 {
+        if self.stopped() {
+            return 0;
+        }
         // Flag for transposition table indicating if we found exact score or not.
         let mut flag = HashFlag::ALPHA;
 
@@ -237,10 +243,10 @@ impl SearchData {
             self.repetition_table.decrement();
             self.ply -= 1;
 
+            // Do not update anything if we are stopped
             if self.stopped() {
                 return 0;
             }
-
             // If we found better move, update alpha and best move
             if score > alpha {
                 if !child.is_capture() {
@@ -296,6 +302,10 @@ impl SearchData {
         extend: usize,
         pv_node: bool,
     ) -> i32 {
+        if self.stopped() {
+            return 0;
+        }
+
         let final_depth = depth - reduce + extend - 1;
         let mut score = -self.negamax(&child_pos, -alpha - 1, -alpha, final_depth);
 
@@ -313,6 +323,10 @@ impl SearchData {
     }
 
     fn quiesce(&mut self, node: &Position, mut alpha: i32, beta: i32) -> i32 {
+        if self.stopped() {
+            return 0;
+        }
+
         self.nodes_evaluated += 1;
 
         if self.repetition_table.is_repeated()
@@ -339,10 +353,6 @@ impl SearchData {
 
         if stand_pat > alpha {
             alpha = stand_pat;
-        }
-
-        if self.stopped() {
-            return 0;
         }
 
         let mut moves = self.move_gen.generate_legal_moves(node).collect_vec();
@@ -376,10 +386,6 @@ impl SearchData {
             let score = -self.quiesce(&child, -beta, -alpha);
             self.repetition_table.decrement();
             self.ply -= 1;
-
-            if self.stopped() {
-                return 0;
-            }
 
             if score > alpha {
                 alpha = score;

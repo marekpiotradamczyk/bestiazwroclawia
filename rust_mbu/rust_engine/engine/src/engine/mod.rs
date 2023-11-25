@@ -182,7 +182,8 @@ impl Engine {
     fn simulate(&mut self, moves: Vec<String>) {
         for i in 0..moves.len() {
             let opts = SearchOptions {
-                depth: Some(8),
+                wtime: Some(50000),
+                btime: Some(50000),
                 ..Default::default()
             };
             let mvs = &moves[..=i];

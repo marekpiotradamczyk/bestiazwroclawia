@@ -120,11 +120,11 @@ impl SearchThread {
 
         let mut best_move = None;
         for depth in 1..=self.depth {
-            self.data.reset();
-            let mut best_score = self.data.negamax(&position, alpha, beta, depth);
             if self.data.stopped() {
                 break;
             }
+            self.data.reset();
+            let mut best_score = self.data.negamax(&position, alpha, beta, depth);
 
             // Try full search if aspiration window failed
             if best_score <= alpha || best_score >= beta {
@@ -153,6 +153,9 @@ impl SearchThread {
                     .map(|score| format!("mate {}", score))
                     .unwrap_or_else(|| format!("cp {}", best_score));
 
+                if self.data.stopped() {
+                    break;
+                }
                 println!(
                     "info score {} depth {} nodes {} nps {} time {} pv {}",
                     score_str,
@@ -164,7 +167,7 @@ impl SearchThread {
                 );
             }
 
-            if self.data.pv.best().is_some() {
+            if self.data.pv.best().is_some() && !self.data.stopped() {
                 best_move = self.data.pv.best();
             }
         }
