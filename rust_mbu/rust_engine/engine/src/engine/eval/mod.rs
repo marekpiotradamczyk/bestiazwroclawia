@@ -22,13 +22,16 @@ pub const fn evaluate(position: &Position, alpha: i32, beta: i32) -> i32 {
     };
 
     // Lazy evaluation cutoff
+    /*
     let cutoff = PIECE_VALUES[Piece::Bishop as usize];
+    
     if score + cutoff < alpha {
         return alpha;
     }
     if score - cutoff > beta {
         return beta;
     }
+    */
 
     let mut sq = 0;
     while sq < 64 {
