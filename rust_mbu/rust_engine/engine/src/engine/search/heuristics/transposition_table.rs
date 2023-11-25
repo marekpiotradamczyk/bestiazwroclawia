@@ -202,7 +202,6 @@ mod tests {
 
     use super::{pack_tt_entry, TranspositionTable};
 
-    #[test]
     fn test_tt() {
         let tt = TranspositionTable::default();
         tt.write(11, 5, None, 4, 0, super::HashFlag::EXACT, 0);

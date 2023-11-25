@@ -4,7 +4,7 @@ use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 use crate::bitboard::Bitboard;
 
-#[derive(IntoPrimitive, TryFromPrimitive, Debug, PartialEq, Eq, Ord, PartialOrd)]
+#[derive(IntoPrimitive, TryFromPrimitive, Debug, PartialEq, Eq, Ord, PartialOrd, Clone, Copy)]
 #[repr(u8)]
 pub enum File {
     A,
@@ -56,6 +56,13 @@ impl File {
     pub const fn bitboard(self) -> Bitboard {
         Bitboard(0x0101_0101_0101_0101 << self as u8)
     }
+
+    #[must_use]
+    pub const fn all() -> [File; 8] {
+        use crate::square::File::*;
+
+        [A, B, C, D, E, F, G, H]
+    }
 }
 
 impl Rank {
@@ -63,9 +70,16 @@ impl Rank {
     pub const fn bitboard(self) -> Bitboard {
         Bitboard(0xFF << (self as u8 * 8))
     }
+
+    #[must_use]
+    pub const fn all() -> [Rank; 8] {
+        use crate::square::Rank::*;
+
+        [R1, R2, R3, R4, R5, R6, R7, R8]
+    }
 }
 
-#[derive(IntoPrimitive, TryFromPrimitive, Debug, PartialEq, Eq, Ord, PartialOrd)]
+#[derive(IntoPrimitive, TryFromPrimitive, Debug, PartialEq, Eq, Ord, PartialOrd, Clone, Copy)]
 #[repr(u8)]
 pub enum Rank {
     R1,
@@ -98,26 +112,67 @@ impl Square {
         Bitboard(1 << self as usize)
     }
 
-    #[must_use]
-    pub fn rank(&self) -> Rank {
-        (*self as u8 >> 3)
-            .try_into()
-            .expect("BUG: Square couldn't be converted to rank.")
+    #[rustfmt::skip]
+    pub const fn all() -> [Square; 64] {
+        use crate::square::Square::*;
+
+        [
+            A1, B1, C1, D1, E1, F1, G1, H1,
+            A2, B2, C2, D2, E2, F2, G2, H2,
+            A3, B3, C3, D3, E3, F3, G3, H3,
+            A4, B4, C4, D4, E4, F4, G4, H4,
+            A5, B5, C5, D5, E5, F5, G5, H5,
+            A6, B6, C6, D6, E6, F6, G6, H6,
+            A7, B7, C7, D7, E7, F7, G7, H7,
+            A8, B8, C8, D8, E8, F8, G8, H8,
+        ]
     }
 
     #[must_use]
-    pub fn file(&self) -> File {
-        (*self as u8 & 0b00_0111).try_into().expect("Invalid file.")
+    pub const fn rank(&self) -> Rank {
+        let idx = *self as u8 >> 3;
+
+        Rank::all()[idx as usize]
     }
 
     #[must_use]
-    pub fn offset(&self, rank_offset: i8, file_offset: i8) -> Option<Square> {
-        let (file, rank): (File, Rank) = self.into();
+    pub const fn file(&self) -> File {
+        let idx = *self as u8 & 0b00_0111;
 
-        let file = TryInto::<u8>::try_into(file as i8 + file_offset).ok()?;
-        let rank = TryInto::<u8>::try_into(rank as i8 + rank_offset).ok()?;
+        File::all()[idx as usize]
+    }
 
-        Some((file.try_into().ok()?, rank.try_into().ok()?).into())
+    #[must_use]
+    pub const fn offset(&self, rank_offset: i8, file_offset: i8) -> Option<Square> {
+        let (file, rank): (File, Rank) = self.to_file_rank();
+
+        let file_idx = file as i8 + file_offset;
+        if file_idx > 7 || file_idx < 0 {
+            return None;
+        }
+
+        let rank_idx = rank as i8 + rank_offset;
+        if rank_idx > 7 || rank_idx < 0 {
+            return None;
+        }
+
+        let file = File::all()[file_idx as usize];
+        let rank = Rank::all()[rank_idx as usize];
+
+        Some(Square::from_file_rank(file, rank))
+    }
+
+    pub const fn from_file_rank(file: File, rank: Rank) -> Square {
+        let idx = (rank as u8 * 8) + file as u8;
+
+        Square::all()[idx as usize]
+    }
+
+    pub const fn to_file_rank(&self) -> (File, Rank) {
+        let file = self.file();
+        let rank = self.rank();
+
+        (file, rank)
     }
 
     #[must_use]
@@ -139,35 +194,6 @@ impl Square {
 impl Display for Square {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.coords_str())
-    }
-}
-
-impl From<(File, Rank)> for Square {
-    fn from((file, rank): (File, Rank)) -> Self {
-        let file = file as u8;
-        let rank = rank as u8;
-
-        (rank * 8 + file)
-            .try_into()
-            .expect("BUG: Square couldn't be computed from file and rank.")
-    }
-}
-
-impl From<Square> for (File, Rank) {
-    fn from(value: Square) -> Self {
-        let file = value.file();
-        let rank = value.rank();
-
-        (file, rank)
-    }
-}
-
-impl From<&Square> for (File, Rank) {
-    fn from(value: &Square) -> Self {
-        let file = value.file();
-        let rank = value.rank();
-
-        (file, rank)
     }
 }
 

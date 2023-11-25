@@ -150,7 +150,6 @@ impl Engine {
         for mv in moves {
             print!("{} ", mv);
         }
-        println!("Eval: {}", evaluate(&self.root_pos));
     }
 
     fn uci_new_game(&mut self) {

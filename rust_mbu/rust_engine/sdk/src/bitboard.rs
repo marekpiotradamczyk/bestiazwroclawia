@@ -33,7 +33,7 @@ pub enum Direction {
 
 impl Bitboard {
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.0 == 0
     }
 
@@ -48,17 +48,17 @@ impl Bitboard {
     }
 
     #[must_use]
-    pub fn lsb(&self) -> Square {
-        (self.0.trailing_zeros() as u8)
-            .try_into()
-            .expect("BUG: LSB couldn't be computed from bitboard.")
+    pub const fn lsb(&self) -> Square {
+        let idx = self.0.trailing_zeros() as usize;
+
+        Square::all()[idx]
     }
 
     #[must_use]
-    pub fn msb(&self) -> Square {
-        (63 - self.0.leading_zeros() as u8)
-            .try_into()
-            .expect("BUG: MSB couldn't be computed from bitboard.")
+    pub const fn msb(&self) -> Square {
+        let idx = (63 - self.0.leading_zeros()) as usize;
+
+        Square::all()[idx]
     }
 
     pub fn pop_lsb(&mut self) -> Square {
@@ -76,17 +76,17 @@ impl Bitboard {
     }
 
     #[must_use]
-    pub fn has(&self, square: Square) -> bool {
+    pub const fn has(&self, square: Square) -> bool {
         self.0 & square.bitboard().0 != 0
     }
 
     #[must_use]
-    pub fn count(&self) -> u8 {
+    pub const fn count(&self) -> u8 {
         self.0.count_ones() as u8
     }
 
     #[must_use]
-    pub fn shift(&self, direction: &Direction) -> Bitboard {
+    pub const fn shift(&self, direction: &Direction) -> Bitboard {
         const FILE_A: Bitboard = File::A.bitboard();
         const FILE_H: Bitboard = File::H.bitboard();
 
@@ -103,7 +103,7 @@ impl Bitboard {
     }
 
     #[must_use]
-    pub fn subsets(&self) -> SubsetIterator {
+    pub const fn subsets(&self) -> SubsetIterator {
         SubsetIterator {
             subset: Bitboard(0),
             set: *self,

@@ -76,6 +76,16 @@ impl FromStr for Castling {
     }
 }
 
+impl From<usize> for Color {
+    fn from(value: usize) -> Self {
+        match value {
+            0 => Color::White,
+            1 => Color::Black,
+            _ => panic!("Invalid color index"),
+        }
+    }
+}
+
 impl From<Square> for CastlingKind {
     fn from(value: Square) -> Self {
         match value {
@@ -114,17 +124,17 @@ impl CastlingKind {
 
 impl Castling {
     #[must_use]
-    pub fn full() -> Castling {
+    pub const fn full() -> Castling {
         Castling { inner: 0b1111 }
     }
 
     #[must_use]
-    pub fn empty() -> Castling {
+    pub const fn empty() -> Castling {
         Castling { inner: 0 }
     }
 
     #[must_use]
-    pub fn has_castling_kind(&self, castling_kind: &CastlingKind) -> bool {
+    pub const fn has_castling_kind(&self, castling_kind: &CastlingKind) -> bool {
         match castling_kind {
             CastlingKind::WhiteKingside => self.inner & 0b1000 != 0,
             CastlingKind::WhiteQueenside => self.inner & 0b0100 != 0,
@@ -161,14 +171,20 @@ impl Castling {
 
 impl Position {
     #[must_use]
-    pub fn occupation(&self, color: &Color) -> Bitboard {
-        self.pieces[*color as usize]
-            .iter()
-            .fold(Bitboard(0), |acc, x| acc | *x)
+    pub const fn occupation(&self, color: &Color) -> Bitboard {
+        let mut result = 0;
+        let mut piece = 0;
+        while piece < 6 {
+            result |= self.pieces[*color as usize][piece].0;
+
+            piece += 1;
+        }
+
+        Bitboard(result)
     }
 
     #[must_use]
-    pub fn enemy(&self) -> Color {
+    pub const fn enemy(&self) -> Color {
         match self.turn {
             Color::White => Color::Black,
             Color::Black => Color::White,
@@ -208,14 +224,21 @@ impl Position {
     }
 
     #[must_use]
-    pub fn piece_at(&self, square: &Square) -> Option<(Piece, Color)> {
-        let square = square.bitboard();
-        for color in [Color::White, Color::Black] {
-            for (i, piece_bb) in self.pieces[color as usize].iter().enumerate() {
-                if !((piece_bb & square).is_empty()) {
-                    return Some((Piece::from(i), color));
+    pub const fn piece_at(&self, square: &Square) -> Option<(Piece, Color)> {
+        let mut color = 0;
+
+        while color < 2 {
+            let mut piece = 0;
+
+            while piece < 6 {
+                if self.pieces[color][piece].has(*square) {
+                    return Some((Piece::all()[piece], Color::all()[color]));
                 }
+
+                piece += 1;
             }
+
+            color += 1;
         }
 
         None
@@ -329,7 +352,7 @@ impl Piece {
     }
 
     #[must_use]
-    pub fn to_utf8_symbol(&self, color: Color) -> &'static str {
+    pub const fn to_utf8_symbol(&self, color: Color) -> &'static str {
         match (self, color) {
             (Piece::Pawn, Color::Black) => "♙",
             (Piece::Pawn, Color::White) => "♟",
@@ -380,15 +403,19 @@ impl Iterator for ColorIterator {
 
 impl Color {
     #[must_use]
-    pub fn iter() -> ColorIterator {
+    pub const fn iter() -> ColorIterator {
         ColorIterator { idx: 0 }
     }
 
     #[must_use]
-    pub fn enemy(&self) -> Color {
+    pub const fn enemy(&self) -> Color {
         match self {
             Color::White => Color::Black,
             Color::Black => Color::White,
         }
+    }
+
+    pub const fn all() -> [Color; 2] {
+        [Color::White, Color::Black]
     }
 }

@@ -96,7 +96,7 @@ impl SearchData {
 
         // Stop search if we are too deep
         if self.ply >= MAX_PLY {
-            return evaluate(node);
+            return evaluate(node, alpha, beta);
         }
 
         // Generate legal moves for current position
@@ -109,7 +109,7 @@ impl SearchData {
         }
 
         // Statically evaluate current position. This is needed for pruning.
-        let static_eval = evaluate(node);
+        let static_eval = evaluate(node, alpha, beta);
 
         // Razoring
         if let Some(score) = self.razoring(node, static_eval, alpha, beta, depth, in_check, pv_node)
@@ -337,10 +337,10 @@ impl SearchData {
         }
 
         if self.ply >= MAX_PLY {
-            return evaluate(node);
+            return evaluate(node, alpha, beta);
         }
 
-        let stand_pat = evaluate(node);
+        let stand_pat = evaluate(node, alpha, beta);
 
         if stand_pat >= beta {
             return beta;

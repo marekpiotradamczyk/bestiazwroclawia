@@ -22,8 +22,8 @@ pub trait PinnerGenerator {
 }
 
 pub fn ray_direction(sq: Square, target: Square) -> Option<Direction> {
-    let (first_file, first_rank) = sq.into();
-    let (second_file, second_rank) = target.into();
+    let (first_file, first_rank) = sq.to_file_rank();
+    let (second_file, second_rank) = target.to_file_rank();
 
     let file_diff = first_file as i8 - second_file as i8;
     let rank_diff = first_rank as i8 - second_rank as i8;
