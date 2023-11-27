@@ -16,8 +16,8 @@ use super::{
     MATE_VALUE,
 };
 
-use crate::engine::search::STOPPED;
 use crate::engine::{engine_options::EngineOptions, search::MAX_PLY};
+use crate::engine::{eval::evaluation_table::EvaluationTable, search::STOPPED};
 use move_gen::r#move::Move;
 pub const INF: i32 = 1_000_000;
 pub const DEFAULT_ALPHA: i32 = -INF;
@@ -31,12 +31,14 @@ pub struct Search {
     pub move_gen: Arc<MoveGen>,
     pub repetion_table: RepetitionTable,
     pub transposition_table: Arc<TranspositionTable>,
+    pub eval_table: Arc<EvaluationTable>,
     pub age: usize,
 }
 
 pub struct SearchThread {
     pub data: SearchData,
     pub transposition_table: Arc<TranspositionTable>,
+    pub eval_table: Arc<EvaluationTable>,
     pub depth: usize,
     pub id: usize,
 }
@@ -51,6 +53,7 @@ pub struct SearchData {
     pub pv: PrincipalVariation,
     pub repetition_table: RepetitionTable,
     pub transposition_table: Arc<TranspositionTable>,
+    pub eval_table: Arc<EvaluationTable>,
     pub time_control: Arc<TimeControl>,
     pub age: usize,
 }
@@ -63,6 +66,7 @@ impl Search {
         is_white: bool,
         rep_table: RepetitionTable,
         transposition_table: Arc<TranspositionTable>,
+        eval_table: Arc<EvaluationTable>,
         age: usize,
     ) -> Self {
         Self {
@@ -71,6 +75,7 @@ impl Search {
             move_gen,
             repetion_table: rep_table,
             transposition_table,
+            eval_table,
             engine_options,
             age,
         }
@@ -91,6 +96,7 @@ impl Search {
                 transposition_table: self.transposition_table.clone(),
                 time_control: self.time_control.clone(),
                 age: self.age,
+                eval_table: self.eval_table.clone(),
             };
 
             let mut thread = SearchThread {
@@ -98,6 +104,7 @@ impl Search {
                 transposition_table: data.transposition_table.clone(),
                 depth: self.options.depth.unwrap_or(150),
                 id,
+                eval_table: self.eval_table.clone(),
             };
 
             let pos = position.clone();

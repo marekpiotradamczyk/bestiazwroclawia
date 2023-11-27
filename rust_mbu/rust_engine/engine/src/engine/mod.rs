@@ -8,10 +8,7 @@ use std::{
 };
 
 use crate::{
-    engine::{
-        eval::evaluate,
-        search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done,
-    },
+    engine::{search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done, eval::king_safety::calc_king_safety},
     uci::{uci_commands::Command, Result},
 };
 use move_gen::{
@@ -28,12 +25,12 @@ use crate::engine::engine_options::EngineOptions;
 
 use anyhow::anyhow;
 
-use self::search::{
+use self::{search::{
     heuristics::transposition_table::TranspositionTable,
     parallel::Search,
     utils::{repetition::RepetitionTable, time_control::SearchOptions},
     STOPPED,
-};
+}, eval::evaluation_table::EvaluationTable};
 
 use derivative::Derivative;
 
@@ -48,6 +45,7 @@ pub struct Engine {
     pub move_gen: Arc<MoveGen>,
     pub repetition_table: RepetitionTable,
     pub transposition_table: Arc<TranspositionTable>,
+    pub evaluation_table: Arc<EvaluationTable>,
     pub options: EngineOptions,
     pub age: usize,
     #[derivative(Default(value = "true"))]
@@ -104,6 +102,7 @@ impl Engine {
         let is_white = pos.turn == Color::White;
         let rep_table = self.repetition_table.clone();
         let transposition_table = self.transposition_table.clone();
+        let eval_table = self.evaluation_table.clone();
         let engine_options = self.options;
         let age = self.age;
 
@@ -115,6 +114,7 @@ impl Engine {
                 is_white,
                 rep_table,
                 transposition_table,
+                eval_table,
                 age,
             );
             search.search(&pos);
@@ -150,6 +150,8 @@ impl Engine {
         for mv in moves {
             print!("{} ", mv);
         }
+        println!("Near king: {:?}", self.move_gen.lookups.squares_near_king[0][self.root_pos.pieces[0][5].lsb() as usize]);
+        println!("Safety bonus: {}", calc_king_safety(&self.root_pos, self.move_gen.clone()));
     }
 
     fn uci_new_game(&mut self) {
