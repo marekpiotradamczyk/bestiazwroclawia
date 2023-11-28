@@ -8,7 +8,10 @@ use std::{
 };
 
 use crate::{
-    engine::{search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done, eval::king_safety::calc_king_safety},
+    engine::{
+        eval::king_safety::calc_king_safety,
+        search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done,
+    },
     uci::{uci_commands::Command, Result},
 };
 use move_gen::{
@@ -25,12 +28,15 @@ use crate::engine::engine_options::EngineOptions;
 
 use anyhow::anyhow;
 
-use self::{search::{
-    heuristics::transposition_table::TranspositionTable,
-    parallel::Search,
-    utils::{repetition::RepetitionTable, time_control::SearchOptions},
-    STOPPED,
-}, eval::evaluation_table::EvaluationTable};
+use self::{
+    eval::evaluation_table::EvaluationTable,
+    search::{
+        heuristics::transposition_table::TranspositionTable,
+        parallel::Search,
+        utils::{repetition::RepetitionTable, time_control::SearchOptions},
+        STOPPED,
+    },
+};
 
 use derivative::Derivative;
 
@@ -150,8 +156,14 @@ impl Engine {
         for mv in moves {
             print!("{} ", mv);
         }
-        println!("Near king: {:?}", self.move_gen.lookups.squares_near_king[0][self.root_pos.pieces[0][5].lsb() as usize]);
-        println!("Safety bonus: {}", calc_king_safety(&self.root_pos, self.move_gen.clone()));
+        println!(
+            "Near king: {:?}",
+            self.move_gen.lookups.squares_near_king[0][self.root_pos.pieces[0][5].lsb() as usize]
+        );
+        println!(
+            "Safety bonus: {}",
+            calc_king_safety(&self.root_pos, self.move_gen.clone())
+        );
     }
 
     fn uci_new_game(&mut self) {

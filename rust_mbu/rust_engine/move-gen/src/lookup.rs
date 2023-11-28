@@ -7,7 +7,8 @@ use sdk::{
         king::gen_king_attacks,
         knights::gen_knight_attacks,
         pawns::{gen_double_pawn_moves, gen_pawn_attacks, gen_single_pawn_moves},
-        rays::generate_rays_attacks, squares_near_king::generate_squares_near_king,
+        rays::generate_rays_attacks,
+        squares_near_king::generate_squares_near_king,
     },
 };
 

@@ -37,4 +37,3 @@ pub fn calc_king_safety_units(position: &Position, move_gen: Arc<MoveGen>, color
 
     bonus
 }
-

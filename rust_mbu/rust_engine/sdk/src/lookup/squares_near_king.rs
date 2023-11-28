@@ -25,8 +25,7 @@ pub fn generate_squares_near_king() -> [[Bitboard; 64]; 2] {
 
     for king_sq in Square::all() {
         for king_color in Color::all() {
-            squares[king_color as usize][king_sq as usize] =
-                squares_near_king(king_sq, king_color);
+            squares[king_color as usize][king_sq as usize] = squares_near_king(king_sq, king_color);
         }
     }
 

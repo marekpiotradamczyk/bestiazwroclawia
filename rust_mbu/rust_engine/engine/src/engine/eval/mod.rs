@@ -1,6 +1,7 @@
-pub mod positional_tables;
 pub mod evaluation_table;
 pub mod king_safety;
+pub mod pawns;
+pub mod positional_tables;
 
 use std::sync::Arc;
 
@@ -13,11 +14,19 @@ pub trait Evaluate {
 
 use crate::engine::eval::positional_tables::PIECE_TABLES;
 
-use self::{evaluation_table::EvaluationTable, king_safety::calc_king_safety};
+use self::{
+    evaluation_table::EvaluationTable,
+    king_safety::calc_king_safety,
+    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns},
+};
 
 pub const PIECE_VALUES: [i32; 6] = [100, 300, 320, 500, 900, 10000];
 
-pub fn evaluate(position: &Position, eval_table: Arc<EvaluationTable>, move_gen: Arc<MoveGen>) -> i32 {
+pub fn evaluate(
+    position: &Position,
+    eval_table: Arc<EvaluationTable>,
+    move_gen: Arc<MoveGen>,
+) -> i32 {
     if let Some(value) = eval_table.read(position.hash) {
         return value;
     }
@@ -56,6 +65,8 @@ pub fn evaluate(position: &Position, eval_table: Arc<EvaluationTable>, move_gen:
     }
 
     score += calc_king_safety(position, move_gen.clone());
+    score += penalty_for_isolated_pawns(position);
+    score += penalty_for_stacked_pawns(position);
     /*
     let mut sq = 0;
 
