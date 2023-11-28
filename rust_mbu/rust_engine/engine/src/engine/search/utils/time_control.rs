@@ -83,7 +83,7 @@ impl SearchOptions {
             self.btime.unwrap_or(0)
         };
 
-        let moves_to_go = self.movestogo.unwrap_or(25).max(1);
+        let moves_to_go = self.movestogo.unwrap_or(20).max(1);
 
         let limit = time_left / moves_to_go;
 
