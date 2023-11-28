@@ -2,6 +2,7 @@ pub mod evaluation_table;
 pub mod king_safety;
 pub mod pawns;
 pub mod positional_tables;
+pub mod rooks;
 
 use std::sync::Arc;
 
@@ -17,7 +18,7 @@ use crate::engine::eval::positional_tables::PIECE_TABLES;
 use self::{
     evaluation_table::EvaluationTable,
     king_safety::calc_king_safety,
-    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns},
+    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns}, rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
 };
 
 pub const PIECE_VALUES: [i32; 6] = [100, 300, 320, 500, 900, 10000];
@@ -67,6 +68,8 @@ pub fn evaluate(
     score += calc_king_safety(position, move_gen.clone());
     score += penalty_for_isolated_pawns(position);
     score += penalty_for_stacked_pawns(position);
+    score += bonus_rook_for_open_files(position);
+    score += bonus_rook_for_semi_open_files(position);
     /*
     let mut sq = 0;
 
