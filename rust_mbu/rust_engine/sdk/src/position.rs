@@ -3,7 +3,7 @@ use std::{fmt::Display, str::FromStr};
 use anyhow::anyhow;
 use derivative::Derivative;
 
-use crate::{bitboard::Bitboard, fen::Fen, square::Square};
+use crate::{bitboard::Bitboard, fen::Fen, square::{Square, FILE_MASKS}};
 
 #[derive(Derivative, Debug, Clone)]
 #[derivative(Hash)]
@@ -242,6 +242,40 @@ impl Position {
         }
 
         None
+    }
+
+    pub fn open_files(&self) -> Bitboard {
+        let mut result = Bitboard::empty();
+
+        for file in 0..8 {
+            let file_mask = FILE_MASKS[file];
+
+            let white_pawns = self.pieces[Color::White as usize][Piece::Pawn as usize];
+            let black_pawns = self.pieces[Color::Black as usize][Piece::Pawn as usize];
+
+            if (white_pawns & file_mask).is_empty() && (black_pawns & file_mask).is_empty() {
+                result |= file_mask;
+            }
+        }
+
+        result
+    }
+
+    pub fn semi_open_files(&self, color: &Color) -> Bitboard {
+        let mut result = Bitboard::empty();
+
+        for file in 0..8 {
+            let file_mask = FILE_MASKS[file];
+
+            let our_pawns = self.pieces[*color as usize][Piece::Pawn as usize];
+            let enemy_pawns = self.pieces[color.enemy() as usize][Piece::Pawn as usize];
+
+            if (our_pawns & file_mask).is_empty() && !(enemy_pawns & file_mask).is_empty() {
+                result |= file_mask;
+            }
+        }
+
+        result
     }
 }
 
