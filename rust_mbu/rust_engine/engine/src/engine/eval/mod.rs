@@ -18,7 +18,7 @@ use crate::engine::eval::positional_tables::PIECE_TABLES;
 use self::{
     evaluation_table::EvaluationTable,
     king_safety::calc_king_safety,
-    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns}, rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
+    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns}, rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files}, positional_tables::positional_bonus,
 };
 
 pub const PIECE_VALUES: [i32; 6] = [100, 300, 320, 500, 900, 10000];
@@ -40,31 +40,7 @@ pub fn evaluate(
 
     let mut score = material(position);
 
-    let mut piece_type = 0;
-
-    while piece_type < 6 {
-        let mut white_pieces = position.pieces[Color::White as usize][piece_type];
-        let mut black_pieces = position.pieces[Color::Black as usize][piece_type];
-
-        while !white_pieces.is_empty() {
-            let square = white_pieces.lsb();
-            white_pieces.0 ^= square.bitboard().0;
-
-            score +=
-                PIECE_TABLES[Color::White as usize][piece_type][square as usize] * side_multiplier;
-        }
-
-        while !black_pieces.is_empty() {
-            let square = black_pieces.lsb();
-            black_pieces.0 ^= square.bitboard().0;
-
-            score +=
-                PIECE_TABLES[Color::Black as usize][piece_type][square as usize] * side_multiplier;
-        }
-
-        piece_type += 1;
-    }
-
+    score += positional_bonus(position);
     score += calc_king_safety(position, move_gen.clone());
     score += penalty_for_isolated_pawns(position);
     score += penalty_for_stacked_pawns(position);

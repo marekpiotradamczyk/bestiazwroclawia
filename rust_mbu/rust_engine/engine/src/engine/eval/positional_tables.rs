@@ -1,3 +1,5 @@
+use sdk::position::{Color, Position};
+
 pub const PIECE_TABLES: [[[i32; 64]; 6]; 2] = [
     [
         // White Pawns
@@ -133,3 +135,32 @@ pub const PIECE_TABLES: [[[i32; 64]; 6]; 2] = [
         ],
     ],
 ];
+
+pub fn positional_bonus(position: &Position) -> i32 {
+    let mut score = 0;
+
+    let mut piece_type = 0;
+
+    while piece_type < 6 {
+        let mut white_pieces = position.pieces[Color::White as usize][piece_type];
+        let mut black_pieces = position.pieces[Color::Black as usize][piece_type];
+
+        while !white_pieces.is_empty() {
+            let square = white_pieces.lsb();
+            white_pieces.0 ^= square.bitboard().0;
+
+            score += PIECE_TABLES[Color::White as usize][piece_type][square as usize];
+        }
+
+        while !black_pieces.is_empty() {
+            let square = black_pieces.lsb();
+            black_pieces.0 ^= square.bitboard().0;
+
+            score -= PIECE_TABLES[Color::Black as usize][piece_type][square as usize];
+        }
+
+        piece_type += 1;
+    }
+
+    score
+}
