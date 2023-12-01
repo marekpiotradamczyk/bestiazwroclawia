@@ -16,7 +16,9 @@ pub trait Evaluate {
 use self::{
     evaluation_table::EvaluationTable,
     king_safety::calc_king_safety,
-    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns}, rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files}, positional_tables::tapered_eval,
+    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns},
+    positional_tables::tapered_eval,
+    rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
 };
 
 pub const PIECE_VALUES: [i32; 6] = [100, 300, 320, 500, 900, 10000];

@@ -3,7 +3,11 @@ use std::{fmt::Display, str::FromStr};
 use anyhow::anyhow;
 use derivative::Derivative;
 
-use crate::{bitboard::Bitboard, fen::Fen, square::{Square, FILE_MASKS}};
+use crate::{
+    bitboard::Bitboard,
+    fen::Fen,
+    square::{Square, FILE_MASKS},
+};
 
 #[derive(Derivative, Debug, Clone)]
 #[derivative(Hash)]

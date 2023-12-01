@@ -169,8 +169,10 @@ pub fn tapered_eval(position: &Position) -> i32 {
             let square = white_pieces.lsb();
             white_pieces.0 ^= square.bitboard().0;
 
-            middlegame_score += MIDDLEGAME_TABLES[piece_type][flip(square as usize)] + PIECE_PHASE_VALUES[0][piece_type as usize];
-            endgame_score += ENDGAME_TABLES[piece_type][flip(square as usize)] + PIECE_PHASE_VALUES[1][piece_type as usize];
+            middlegame_score += MIDDLEGAME_TABLES[piece_type][flip(square as usize)]
+                + PIECE_PHASE_VALUES[0][piece_type as usize];
+            endgame_score += ENDGAME_TABLES[piece_type][flip(square as usize)]
+                + PIECE_PHASE_VALUES[1][piece_type as usize];
             phase += PHASE_INC[piece_type as usize];
         }
 
@@ -178,8 +180,10 @@ pub fn tapered_eval(position: &Position) -> i32 {
             let square = black_pieces.lsb();
             black_pieces.0 ^= square.bitboard().0;
 
-            middlegame_score -= MIDDLEGAME_TABLES[piece_type][square as usize] + PIECE_PHASE_VALUES[0][piece_type as usize];
-            endgame_score -= ENDGAME_TABLES[piece_type][square as usize] + PIECE_PHASE_VALUES[1][piece_type as usize];
+            middlegame_score -= MIDDLEGAME_TABLES[piece_type][square as usize]
+                + PIECE_PHASE_VALUES[0][piece_type as usize];
+            endgame_score -= ENDGAME_TABLES[piece_type][square as usize]
+                + PIECE_PHASE_VALUES[1][piece_type as usize];
             phase += PHASE_INC[piece_type as usize];
         }
 
