@@ -13,12 +13,10 @@ pub trait Evaluate {
     fn evaluate(&self, position: &Position) -> f64;
 }
 
-use crate::engine::eval::positional_tables::PIECE_TABLES;
-
 use self::{
     evaluation_table::EvaluationTable,
     king_safety::calc_king_safety,
-    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns}, rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files}, positional_tables::positional_bonus,
+    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns}, rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files}, positional_tables::tapered_eval,
 };
 
 pub const PIECE_VALUES: [i32; 6] = [100, 300, 320, 500, 900, 10000];
@@ -38,9 +36,8 @@ pub fn evaluate(
         -1
     };
 
-    let mut score = material(position);
+    let mut score = tapered_eval(position);
 
-    score += positional_bonus(position);
     score += calc_king_safety(position, move_gen.clone());
     score += penalty_for_isolated_pawns(position);
     score += penalty_for_stacked_pawns(position);

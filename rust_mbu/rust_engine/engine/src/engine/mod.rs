@@ -9,7 +9,7 @@ use std::{
 
 use crate::{
     engine::{
-        eval::{king_safety::calc_king_safety, pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns}, rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files}, evaluate, material, positional_tables::positional_bonus},
+        eval::{king_safety::calc_king_safety, pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns}, rooks::rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files}, evaluate, material, positional_tables::tapered_eval},
         search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done,
     },
     uci::{uci_commands::Command, Result},
@@ -153,13 +153,16 @@ impl Engine {
     fn debug(&self) {
         println!("{}", self.root_pos);
         let moves = self.move_gen.generate_legal_moves(&self.root_pos);
+        println!("Legal moves: ");
         for mv in moves {
             print!("{} ", mv);
         }
-
-        println!("Material diff: {}", material(&self.root_pos));
         println!();
-        println!("Positional bonus: {}", positional_bonus(&self.root_pos));
+        println!();
+
+        println!("RAW DIFF: {}", material(&self.root_pos));
+        println!();
+        println!("Tapered eval: {}", tapered_eval(&self.root_pos));
         println!(
             "Safety bonus: {}",
             calc_king_safety(&self.root_pos, self.move_gen.clone())
