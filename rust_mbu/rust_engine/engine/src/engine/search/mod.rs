@@ -283,7 +283,8 @@ impl SearchData {
                         if self.ply > 0 {
                             let previous_move_ply = self.ply - 1;
 
-                            self.counter_moves[1][previous_move_ply] = self.counter_moves[0][previous_move_ply];
+                            self.counter_moves[1][previous_move_ply] =
+                                self.counter_moves[0][previous_move_ply];
                             self.counter_moves[0][previous_move_ply] = Some(*child);
                         }
 

@@ -49,16 +49,19 @@ impl MoveUtils for SearchData {
             500_000
         } else if self.killer_moves[1][self.ply].is_some_and(|killer| killer == *mv) {
             490_000
-        } else if self.ply > 1 && self.counter_moves[0][self.ply - 1].is_some_and(|counter| counter == *mv) {
+        } else if self.ply > 1
+            && self.counter_moves[0][self.ply - 1].is_some_and(|counter| counter == *mv)
+        {
             480_000
-        } else if self.ply > 1 && self.counter_moves[1][self.ply - 1].is_some_and(|counter| counter == *mv) {
+        } else if self.ply > 1
+            && self.counter_moves[1][self.ply - 1].is_some_and(|counter| counter == *mv)
+        {
             470_000
         } else if self.ply > 2 && self.pair_moves[0][self.ply - 2].is_some_and(|pair| pair == *mv) {
             460_000
         } else if self.ply > 2 && self.pair_moves[1][self.ply - 2].is_some_and(|pair| pair == *mv) {
             450_000
-        }
-        else {
+        } else {
             let (piece, color) = pos.piece_at(&mv.from()).unwrap();
 
             self.history_moves[color as usize][piece as usize][mv.to() as usize]

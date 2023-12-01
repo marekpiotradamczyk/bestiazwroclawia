@@ -25,7 +25,6 @@ impl SearchData {
         if val < beta && depth <= 3 {
             let new_score = self.quiesce(node, alpha, beta);
             if depth == 1 {
-
                 return Some(i32::max(new_score, val));
             }
 
