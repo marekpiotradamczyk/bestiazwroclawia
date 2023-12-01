@@ -1,4 +1,5 @@
 /target
 deploy.sh
 deploy-dev.sh
+deploy-train.sh
 .DS_Store
