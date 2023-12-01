@@ -253,7 +253,7 @@ impl SearchData {
                     let (piece, color) = node.piece_at(&child.from()).expect("No piece found");
                     // Update history moves, so we can order moves better next time
                     self.history_moves[color as usize][piece as usize][child.to() as usize] +=
-                        depth as i32;
+                        (depth * depth) as i32;
                 }
 
                 flag = HashFlag::EXACT;
@@ -308,6 +308,7 @@ impl SearchData {
         }
 
         let final_depth = depth - reduce + extend - 1;
+        // Do the PV search to check whether move is good or not
         let mut score = -self.negamax(child_pos, -alpha - 1, -alpha, final_depth);
 
         // If we found potentailly better move at lower depth, search it with full depth

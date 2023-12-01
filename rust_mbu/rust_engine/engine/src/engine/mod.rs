@@ -140,6 +140,7 @@ impl Engine {
 
         thread::Builder::new()
             .stack_size(32 * 1024 * 1024 * 2 * 8)
+            .name("GoThread".to_string())
             .spawn(run)
             .unwrap();
     }

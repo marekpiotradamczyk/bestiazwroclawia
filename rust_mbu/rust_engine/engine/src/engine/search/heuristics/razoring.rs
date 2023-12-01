@@ -22,9 +22,9 @@ impl SearchData {
 
         let mut val = static_eval + 125;
 
-        if val < beta {
+        if val < beta && depth <= 3 {
+            let new_score = self.quiesce(node, alpha, beta);
             if depth == 1 {
-                let new_score = self.quiesce(node, alpha, beta);
 
                 return Some(i32::max(new_score, val));
             }
@@ -32,7 +32,6 @@ impl SearchData {
             val += 175;
 
             if val < beta && depth <= 3 {
-                let new_score = self.quiesce(node, alpha, beta);
                 if new_score < beta {
                     return Some(i32::max(new_score, val));
                 }
