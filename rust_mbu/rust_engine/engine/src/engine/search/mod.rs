@@ -274,10 +274,24 @@ impl SearchData {
                         self.age,
                     );
 
-                    // Update killer moves
+                    // Update move order
                     if !child.is_capture() {
                         self.killer_moves[1][self.ply] = self.killer_moves[0][self.ply];
                         self.killer_moves[0][self.ply] = Some(*child);
+
+                        // counter moves
+                        if self.ply > 0 {
+                            let previous_move_ply = self.ply - 1;
+
+                            self.counter_moves[1][previous_move_ply] = self.counter_moves[0][previous_move_ply];
+                            self.counter_moves[0][previous_move_ply] = Some(*child);
+                        }
+
+                        // Pair moves
+                        if self.ply > 1 {
+                            self.pair_moves[1][self.ply - 2] = self.pair_moves[0][self.ply - 2];
+                            self.pair_moves[0][self.ply - 2] = Some(*child);
+                        }
                     }
 
                     return beta;

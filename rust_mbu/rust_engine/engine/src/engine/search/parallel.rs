@@ -50,6 +50,8 @@ pub struct SearchData {
     pub move_gen: Arc<MoveGen>,
     pub killer_moves: [[Option<Move>; MAX_PLY]; 2],
     pub history_moves: [[[i32; 64]; 6]; 2],
+    pub counter_moves: [[Option<Move>; MAX_PLY]; 2],
+    pub pair_moves: [[Option<Move>; MAX_PLY]; 2],
     pub pv: PrincipalVariation,
     pub repetition_table: RepetitionTable,
     pub transposition_table: Arc<TranspositionTable>,
@@ -97,6 +99,8 @@ impl Search {
                 time_control: self.time_control.clone(),
                 age: self.age,
                 eval_table: self.eval_table.clone(),
+                counter_moves: [[None; MAX_PLY]; 2],
+                pair_moves: [[None; MAX_PLY]; 2],
             };
 
             let mut thread = SearchThread {
