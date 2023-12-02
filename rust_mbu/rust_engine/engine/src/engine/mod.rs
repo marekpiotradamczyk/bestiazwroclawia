@@ -17,6 +17,7 @@ use crate::{
                 isolated_pawns::penalty_for_isolated_pawns,
                 stacked_pawns::penalty_for_stacked_pawns,
             },
+            pin_bonus::bonus_for_absolute_pins,
             positional_tables::tapered_eval,
             rooks::rook_on_open_files::{
                 bonus_rook_for_open_files, bonus_rook_for_semi_open_files,
@@ -195,6 +196,10 @@ impl Engine {
         println!(
             "Rook on semi-open file bonus: {}",
             bonus_rook_for_semi_open_files(&self.root_pos)
+        );
+        println!(
+            "Absolute pin bonus: {}",
+            bonus_for_absolute_pins(&self.root_pos, self.move_gen.clone())
         );
 
         println!();

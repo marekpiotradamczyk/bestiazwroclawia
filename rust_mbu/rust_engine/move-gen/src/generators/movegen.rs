@@ -32,17 +32,17 @@ impl MoveGen {
         }
     }
 
-    pub fn pinned_pieces(&self, pos: &Position) -> Bitboard {
-        let king_square = pos.pieces[pos.turn as usize][Piece::King as usize].msb();
+    pub fn pinned_pieces(&self, pos: &Position, color: Color) -> Bitboard {
+        let king_square = pos.pieces[color as usize][Piece::King as usize].msb();
         let occ = pos.occupied;
 
-        let own_pieces = pos.occupation(&pos.turn);
+        let own_pieces = pos.occupation(&color);
 
-        let op_rq = pos.pieces[pos.enemy() as usize][Piece::Rook as usize]
-            | pos.pieces[pos.enemy() as usize][Piece::Queen as usize];
+        let op_rq = pos.pieces[color.enemy() as usize][Piece::Rook as usize]
+            | pos.pieces[color.enemy() as usize][Piece::Queen as usize];
 
-        let op_bq = pos.pieces[pos.enemy() as usize][Piece::Bishop as usize]
-            | pos.pieces[pos.enemy() as usize][Piece::Queen as usize];
+        let op_bq = pos.pieces[color.enemy() as usize][Piece::Bishop as usize]
+            | pos.pieces[color.enemy() as usize][Piece::Queen as usize];
 
         let mut pinned_pieces = Bitboard(0);
 
@@ -121,7 +121,7 @@ impl MoveGen {
     ) -> Box<dyn Iterator<Item = Move> + 'a> {
         let friendly_occ = pos.occupation(&pos.turn);
         let enemy_occ = pos.occupation(&pos.enemy());
-        let pinned_pieces = self.pinned_pieces(pos);
+        let pinned_pieces = self.pinned_pieces(pos, pos.turn);
         let king_square = pos.pieces[pos.turn as usize][Piece::King as usize].msb();
 
         let pawn_quiet_moves =
