@@ -45,19 +45,6 @@ pub fn evaluate(
     score += penalty_for_stacked_pawns(position);
     score += bonus_rook_for_open_files(position);
     score += bonus_rook_for_semi_open_files(position);
-    /*
-    let mut sq = 0;
-
-    while sq < 64 {
-        let square = Square::all()[sq];
-        let piece = position.piece_at(&square);
-
-        if let Some((piece, color)) = piece {
-            score += PIECE_TABLES[color as usize][piece as usize][sq] * side_multiplier;
-        }
-
-        sq += 1;
-    } */
 
     let final_score = score * side_multiplier;
 

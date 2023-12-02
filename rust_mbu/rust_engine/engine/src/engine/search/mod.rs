@@ -162,10 +162,10 @@ impl SearchData {
         }
         // Flag for transposition table indicating if we found exact score or not.
         let mut flag = HashFlag::ALPHA;
+        let mut reduce = 0;
 
         for (moves_tried, child) in move_list.iter().enumerate() {
             let mut extend = 0;
-            let mut reduce = 0;
 
             // Make a move
             let child_pos = {
@@ -225,15 +225,17 @@ impl SearchData {
 
             // Calculate score with late move reduction
             //let score = -self.negamax(&child_pos, -beta, -alpha, depth - 1);
-            if is_lmr_applicable(
-                child,
-                depth,
-                moves_tried,
-                in_check,
-                gives_check,
-                pv_node,
-                extend,
-            ) {
+            if reduce == 0
+                && is_lmr_applicable(
+                    child,
+                    depth,
+                    moves_tried,
+                    in_check,
+                    gives_check,
+                    pv_node,
+                    extend,
+                )
+            {
                 reduce = 1;
             }
 
@@ -296,6 +298,10 @@ impl SearchData {
                     }
 
                     return beta;
+                } else {
+                    if depth > 2 && depth < 12 {
+                        reduce = usize::max(reduce, 2);
+                    }
                 }
             }
         }
@@ -342,6 +348,14 @@ impl SearchData {
     fn quiesce(&mut self, node: &Position, mut alpha: i32, beta: i32) -> i32 {
         if self.stopped() {
             return 0;
+        }
+
+        // Transposition table lookup
+        if let (Some(cached_alpha), _) = self
+            .transposition_table
+            .cashed_value(node, self.ply, false, 0, alpha, beta)
+        {
+            return cached_alpha;
         }
 
         self.nodes_evaluated += 1;

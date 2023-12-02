@@ -13,7 +13,7 @@ pub enum HashFlag {
 
 pub type TTEntry = [AtomicU64; 2];
 
-const HASH_SIZE: usize = 1 << 20;
+const HASH_SIZE: usize = 1 << 21;
 
 pub struct TranspositionTable {
     inner: [TTEntry; HASH_SIZE],
