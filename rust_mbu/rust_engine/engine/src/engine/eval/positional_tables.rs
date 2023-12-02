@@ -154,10 +154,9 @@ pub const fn flip(sq: usize) -> usize {
     sq ^ 56
 }
 
-pub fn tapered_eval(position: &Position) -> i32 {
+pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
     let mut middlegame_score = 0;
     let mut endgame_score = 0;
-    let mut phase = 0;
 
     let mut piece_type = 0;
 
@@ -173,7 +172,6 @@ pub fn tapered_eval(position: &Position) -> i32 {
                 + PIECE_PHASE_VALUES[0][piece_type as usize];
             endgame_score += ENDGAME_TABLES[piece_type][flip(square as usize)]
                 + PIECE_PHASE_VALUES[1][piece_type as usize];
-            phase += PHASE_INC[piece_type as usize];
         }
 
         while !black_pieces.is_empty() {
@@ -184,7 +182,6 @@ pub fn tapered_eval(position: &Position) -> i32 {
                 + PIECE_PHASE_VALUES[0][piece_type as usize];
             endgame_score -= ENDGAME_TABLES[piece_type][square as usize]
                 + PIECE_PHASE_VALUES[1][piece_type as usize];
-            phase += PHASE_INC[piece_type as usize];
         }
 
         piece_type += 1;
@@ -194,4 +191,33 @@ pub fn tapered_eval(position: &Position) -> i32 {
     let eg_phase = 24 - mg_phase;
 
     (middlegame_score * mg_phase + endgame_score * eg_phase) / 24
+}
+
+pub fn game_phase(position: &Position) -> i32 {
+    let mut phase = 0;
+
+    let mut piece_type = 0;
+
+    while piece_type < 6 {
+        let mut white_pieces = position.pieces[Color::White as usize][piece_type];
+        let mut black_pieces = position.pieces[Color::Black as usize][piece_type];
+
+        while !white_pieces.is_empty() {
+            let square = white_pieces.lsb();
+            white_pieces.0 ^= square.bitboard().0;
+
+            phase += PHASE_INC[piece_type as usize];
+        }
+
+        while !black_pieces.is_empty() {
+            let square = black_pieces.lsb();
+            black_pieces.0 ^= square.bitboard().0;
+
+            phase += PHASE_INC[piece_type as usize];
+        }
+
+        piece_type += 1;
+    }
+
+    phase
 }

@@ -17,9 +17,13 @@ pub trait Evaluate {
 use self::{
     evaluation_table::EvaluationTable,
     king_safety::calc_king_safety,
-    pawns::{isolated_pawns::penalty_for_isolated_pawns, stacked_pawns::penalty_for_stacked_pawns},
+    pawns::{
+        isolated_pawns::penalty_for_isolated_pawns,
+        protected_passed_pawnes::bonus_for_protected_passed_pawnes,
+        stacked_pawns::penalty_for_stacked_pawns,
+    },
     pin_bonus::bonus_for_absolute_pins,
-    positional_tables::tapered_eval,
+    positional_tables::{game_phase, tapered_eval},
     rooks::{
         battery::bonus_for_rook_battery,
         rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
@@ -43,11 +47,13 @@ pub fn evaluate(
         -1
     };
 
-    let mut score = tapered_eval(position);
+    let phase = game_phase(position);
+    let mut score = tapered_eval(position, phase);
 
     score += calc_king_safety(position, move_gen.clone());
     score += penalty_for_isolated_pawns(position);
     score += penalty_for_stacked_pawns(position);
+    score += bonus_for_protected_passed_pawnes(position);
     score += bonus_rook_for_open_files(position);
     score += bonus_rook_for_semi_open_files(position);
     score += bonus_for_rook_battery(position);

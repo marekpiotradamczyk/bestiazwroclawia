@@ -15,10 +15,11 @@ use crate::{
             material,
             pawns::{
                 isolated_pawns::penalty_for_isolated_pawns,
+                protected_passed_pawnes::bonus_for_protected_passed_pawnes,
                 stacked_pawns::penalty_for_stacked_pawns,
             },
             pin_bonus::bonus_for_absolute_pins,
-            positional_tables::tapered_eval,
+            positional_tables::{game_phase, tapered_eval},
             rooks::{
                 battery::bonus_for_rook_battery,
                 rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
@@ -176,8 +177,10 @@ impl Engine {
         println!();
 
         println!("RAW DIFF: {}", material(&self.root_pos));
+        let phase = game_phase(&self.root_pos);
+        println!("Game phase: {}", phase);
         println!();
-        println!("Tapered eval: {}", tapered_eval(&self.root_pos));
+        println!("Tapered eval: {}", tapered_eval(&self.root_pos, phase));
         println!(
             "Safety bonus: {}",
             calc_king_safety(&self.root_pos, self.move_gen.clone())
@@ -189,6 +192,10 @@ impl Engine {
         println!(
             "Stacked pawns penalty: {}",
             penalty_for_stacked_pawns(&self.root_pos)
+        );
+        println!(
+            "Protected passed pawns bonus: {}",
+            bonus_for_protected_passed_pawnes(&self.root_pos)
         );
         println!(
             "Rook on open file bonus: {}",
