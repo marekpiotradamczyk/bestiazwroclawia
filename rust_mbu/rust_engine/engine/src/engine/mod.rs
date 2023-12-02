@@ -19,8 +19,9 @@ use crate::{
             },
             pin_bonus::bonus_for_absolute_pins,
             positional_tables::tapered_eval,
-            rooks::rook_on_open_files::{
-                bonus_rook_for_open_files, bonus_rook_for_semi_open_files,
+            rooks::{
+                battery::bonus_for_rook_battery,
+                rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
             },
         },
         search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done,
@@ -196,6 +197,10 @@ impl Engine {
         println!(
             "Rook on semi-open file bonus: {}",
             bonus_rook_for_semi_open_files(&self.root_pos)
+        );
+        println!(
+            "Bonus for rook batteries: {}",
+            bonus_for_rook_battery(&self.root_pos)
         );
         println!(
             "Absolute pin bonus: {}",

@@ -17,7 +17,7 @@ pub fn is_lmp_applicable(
         && order > LMP[depth]
         && !pv_node
         && !in_check
-        && alpha.abs() > MATE_SCORE
+        && alpha.abs() < MATE_SCORE
         && !matches!(
             mv.kind(),
             MoveKind::Capture | MoveKind::Promotion | MoveKind::PromotionCapture

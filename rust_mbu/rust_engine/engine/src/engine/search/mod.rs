@@ -91,7 +91,6 @@ impl SearchData {
         // Run quiescence search on horizon
         if depth == 0 {
             return self.quiesce(node, alpha, beta);
-            //return evaluate(node);
         }
 
         // Stop search if we are too deep
@@ -214,9 +213,10 @@ impl SearchData {
             // Late move pruning
             // We assume that moves that are far in the move list, are less likely to be good, so we prune them.
             // Not applicable in PV nodes, in check, in captures and in positions with mate score.
+            /*
             if is_lmp_applicable(moves_tried, depth, pv_node, in_check, alpha, child) {
                 break;
-            }
+            } */
 
             // Check extension
             self.ply += 1;
