@@ -13,19 +13,18 @@ pub enum HashFlag {
 
 pub type TTEntry = [AtomicU64; 2];
 
-const HASH_SIZE: usize = 1 << 20;
 
 pub struct TranspositionTable {
-    inner: [TTEntry; HASH_SIZE],
+    size: usize,
+    inner: Vec<TTEntry>,
 }
 
 impl Default for TranspositionTable {
     fn default() -> Self {
-        Self {
-            inner: [DEFAULT_ENTRY; HASH_SIZE],
-        }
+        TranspositionTable::new(16)
     }
 }
+
 // 32 Bits for score
 pub const SCORE_SHIFT: u64 = 64 - 32;
 pub const SCORE_MASK: u64 = 0b11111111111111111111111111111111 << SCORE_SHIFT;
@@ -64,6 +63,16 @@ const DEFAULT_ENTRY: TTEntry = [AtomicU64::new(0), AtomicU64::new(0)];
 
 #[allow(clippy::too_many_arguments)]
 impl TranspositionTable {
+    pub fn new(size_in_mb: usize) -> Self {
+        let count = 1024 * 1024 * size_in_mb / std::mem::size_of::<TTEntry>();
+
+        let mut inner = Vec::with_capacity(count);
+        for _ in 0..count {
+            inner.push(DEFAULT_ENTRY);
+        }
+
+        Self { inner, size: count }
+    }
     pub fn cashed_value(
         &self,
         node: &Position,
@@ -88,7 +97,7 @@ impl TranspositionTable {
         depth: usize,
         ply: usize,
     ) -> (Option<i32>, Option<Move>) {
-        let [hash_lock, entry_lock] = &self.inner[hash as usize % HASH_SIZE];
+        let [hash_lock, entry_lock] = &self.inner[hash as usize % self.size];
         let tt_hash = hash_lock.load(Ordering::Relaxed);
         let tt_entry = entry_lock.load(Ordering::Relaxed);
         if tt_hash != 0 {
@@ -139,7 +148,7 @@ impl TranspositionTable {
 
         let new_entry = pack_tt_entry(score, mv, depth, age, flag);
 
-        let index = hash as usize % HASH_SIZE;
+        let index = hash as usize % self.size;
 
         let [old_hash_lock, old_entry_lock] = &self.inner[index];
         let old_hash = old_hash_lock.load(Ordering::Relaxed);
@@ -202,8 +211,9 @@ mod tests {
 
     use super::{pack_tt_entry, TranspositionTable};
 
+    #[test]
     fn test_tt() {
-        let tt = TranspositionTable::default();
+        let tt = TranspositionTable::new(1);
         tt.write(11, 5, None, 4, 0, super::HashFlag::EXACT, 0);
         tt.write(11, 6, None, 3, 0, super::HashFlag::EXACT, 1);
         tt.write(11, 7, None, 5, 0, super::HashFlag::EXACT, 1);

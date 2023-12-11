@@ -155,7 +155,7 @@ impl Engine {
     fn position(&mut self, mut pos: Position, moves: Vec<String>) {
         self.repetition_table.clear();
         // TODO: Temp fix
-        self.transposition_table = Arc::new(TranspositionTable::default());
+        self.transposition_table = Arc::new(TranspositionTable::new(self.options.hash));
         self.age += 1;
         match parse_uci_moves(moves, &mut pos, &self.move_gen) {
             Ok(repetition_table) => {
@@ -228,7 +228,7 @@ impl Engine {
     fn uci_new_game(&mut self) {
         self.root_pos = Position::default();
         self.repetition_table.clear();
-        self.transposition_table = Arc::new(TranspositionTable::default());
+        self.transposition_table = Arc::new(TranspositionTable::new(self.options.hash));
         self.age = 0;
     }
 
