@@ -17,6 +17,7 @@ use crate::{
                 isolated_pawns::penalty_for_isolated_pawns,
                 protected_passed_pawnes::bonus_for_protected_passed_pawnes,
                 stacked_pawns::penalty_for_stacked_pawns,
+                strong_squares::{bonus_for_piece_on_strong_squares, bonus_for_strong_squares},
             },
             pin_bonus::bonus_for_absolute_pins,
             positional_tables::{game_phase, tapered_eval},
@@ -196,6 +197,14 @@ impl Engine {
         println!(
             "Protected passed pawns bonus: {}",
             bonus_for_protected_passed_pawnes(&self.root_pos)
+        );
+        println!(
+            "Strong squares bonus: {}",
+            bonus_for_strong_squares(&self.root_pos)
+        );
+        println!(
+            "Pieces on strong squares bonus: {}",
+            bonus_for_piece_on_strong_squares(&self.root_pos)
         );
         println!(
             "Rook on open file bonus: {}",

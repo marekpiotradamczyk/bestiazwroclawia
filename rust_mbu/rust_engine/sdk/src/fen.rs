@@ -23,6 +23,7 @@ impl Fen for Position {
             halfmove_clock: 0,
             fullmove_number: 1,
             hash: 0,
+            mailbox: [None; 64],
         };
         let mut fen = fen.split_whitespace();
         let ranks = fen.next().unwrap().split('/');
@@ -67,6 +68,7 @@ impl Fen for Position {
                     let idx = piece as usize;
 
                     position.pieces[color as usize][idx] |= square.bitboard();
+                    position.mailbox[square as usize] = Some((piece, color));
                 }
             }
         }

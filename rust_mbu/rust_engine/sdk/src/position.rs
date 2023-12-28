@@ -26,6 +26,7 @@ pub struct Position {
     #[derivative(PartialEq = "ignore")]
     pub fullmove_number: u16,
     pub hash: u64,
+    pub mailbox: [Option<(Piece, Color)>; 64],
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
@@ -209,6 +210,7 @@ impl Position {
         let (piece, color) = self.piece_at(square)?;
 
         self.pieces[color as usize][piece as usize] ^= square.bitboard();
+        self.mailbox[*square as usize] = None;
 
         Some((piece, color))
     }
@@ -223,37 +225,21 @@ impl Position {
             return Err(anyhow!("Piece already at {}", square.coords_str()));
         }
         self.pieces[color as usize][piece as usize] |= Into::<Bitboard>::into(square);
+        self.mailbox[square as usize] = Some((piece, color));
 
         Ok(())
     }
 
     #[must_use]
     pub const fn piece_at(&self, square: &Square) -> Option<(Piece, Color)> {
-        let mut color = 0;
-
-        while color < 2 {
-            let mut piece = 0;
-
-            while piece < 6 {
-                if self.pieces[color][piece].has(*square) {
-                    return Some((Piece::all()[piece], Color::all()[color]));
-                }
-
-                piece += 1;
-            }
-
-            color += 1;
-        }
-
-        None
+        self.mailbox[*square as usize]
     }
 
+    #[must_use]
     pub fn open_files(&self) -> Bitboard {
         let mut result = Bitboard::empty();
 
-        for file in 0..8 {
-            let file_mask = FILE_MASKS[file];
-
+        for file_mask in FILE_MASKS {
             let white_pawns = self.pieces[Color::White as usize][Piece::Pawn as usize];
             let black_pawns = self.pieces[Color::Black as usize][Piece::Pawn as usize];
 
@@ -265,12 +251,11 @@ impl Position {
         result
     }
 
+    #[must_use]
     pub fn semi_open_files(&self, color: &Color) -> Bitboard {
         let mut result = Bitboard::empty();
 
-        for file in 0..8 {
-            let file_mask = FILE_MASKS[file];
-
+        for file_mask in FILE_MASKS {
             let our_pawns = self.pieces[*color as usize][Piece::Pawn as usize];
             let enemy_pawns = self.pieces[color.enemy() as usize][Piece::Pawn as usize];
 
@@ -453,6 +438,7 @@ impl Color {
         }
     }
 
+    #[must_use]
     pub const fn all() -> [Color; 2] {
         [Color::White, Color::Black]
     }

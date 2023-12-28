@@ -124,6 +124,7 @@ impl Square {
     }
 
     #[rustfmt::skip]
+    #[must_use]
     pub const fn all() -> [Square; 64] {
         use crate::square::Square::*;
 
@@ -173,12 +174,14 @@ impl Square {
         Some(Square::from_file_rank(file, rank))
     }
 
+    #[must_use]
     pub const fn from_file_rank(file: File, rank: Rank) -> Square {
         let idx = (rank as u8 * 8) + file as u8;
 
         Square::all()[idx as usize]
     }
 
+    #[must_use]
     pub const fn to_file_rank(&self) -> (File, Rank) {
         let file = self.file();
         let rank = self.rank();

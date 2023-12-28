@@ -99,20 +99,14 @@ impl MoveGen {
     }
 
     pub fn is_double_check(&self, position: &Position) -> bool {
-        let mut attacked_bb = self.attacks_to_square(
+        let attacked_bb = self.attacks_to_square(
             position,
             position.pieces[position.turn as usize][Piece::King as usize].msb(),
             position.enemy(),
             position.occupied,
         );
 
-        if !attacked_bb.is_empty() {
-            attacked_bb.pop_lsb();
-
-            !attacked_bb.is_empty()
-        } else {
-            false
-        }
+        attacked_bb.count() == 2
     }
 
     pub fn generate_legal_moves<'a>(

@@ -24,7 +24,6 @@ use lazy_static::lazy_static;
 use self::{
     heuristics::{
         futility_pruning::is_futile,
-        late_move_pruning::is_lmp_applicable,
         late_move_reduction::is_lmr_applicable,
         move_order::MoveUtils,
         static_exchange_evaluation::{
@@ -298,10 +297,8 @@ impl SearchData {
                     }
 
                     return beta;
-                } else {
-                    if depth > 2 && depth < 12 {
-                        reduce = usize::max(reduce, 2);
-                    }
+                } else if depth > 2 && depth < 12 {
+                    reduce = usize::max(reduce, 2);
                 }
             }
         }

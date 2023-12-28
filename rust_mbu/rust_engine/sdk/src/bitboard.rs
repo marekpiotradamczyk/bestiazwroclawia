@@ -186,16 +186,12 @@ impl IntoIterator for Bitboard {
     type IntoIter = BoardIterator;
 
     fn into_iter(self) -> Self::IntoIter {
-        BoardIterator {
-            bitboard: self,
-            index: Square::A1,
-        }
+        BoardIterator { bitboard: self }
     }
 }
 
 pub struct BoardIterator {
     bitboard: Bitboard,
-    index: Square,
 }
 
 impl Iterator for BoardIterator {
@@ -205,8 +201,9 @@ impl Iterator for BoardIterator {
         if self.bitboard.0 == 0 {
             None
         } else {
-            self.index = self.bitboard.pop_lsb();
-            Some(self.index)
+            let index = self.bitboard.0.trailing_zeros();
+            self.bitboard.0 ^= 1 << index;
+            Some(Square::all()[index as usize])
         }
     }
 }

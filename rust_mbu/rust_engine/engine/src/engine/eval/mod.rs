@@ -21,6 +21,7 @@ use self::{
         isolated_pawns::penalty_for_isolated_pawns,
         protected_passed_pawnes::bonus_for_protected_passed_pawnes,
         stacked_pawns::penalty_for_stacked_pawns,
+        strong_squares::{bonus_for_piece_on_strong_squares, bonus_for_strong_squares},
     },
     pin_bonus::bonus_for_absolute_pins,
     positional_tables::{game_phase, tapered_eval},
@@ -49,11 +50,14 @@ pub fn evaluate(
 
     let phase = game_phase(position);
     let mut score = tapered_eval(position, phase);
+    //let score = material(position);
 
     score += calc_king_safety(position, move_gen.clone());
     score += penalty_for_isolated_pawns(position);
     score += penalty_for_stacked_pawns(position);
     score += bonus_for_protected_passed_pawnes(position);
+    score += bonus_for_strong_squares(position);
+    score += bonus_for_piece_on_strong_squares(position);
     score += bonus_rook_for_open_files(position);
     score += bonus_rook_for_semi_open_files(position);
     score += bonus_for_rook_battery(position);
@@ -74,7 +78,7 @@ pub const fn material(position: &Position) -> i32 {
         let white_count = position.pieces[Color::White as usize][piece].count() as i32;
         let black_count = position.pieces[Color::Black as usize][piece].count() as i32;
 
-        score += PIECE_VALUES[piece as usize] * (white_count - black_count);
+        score += PIECE_VALUES[piece] * (white_count - black_count);
 
         piece += 1;
     }
