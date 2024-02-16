@@ -132,14 +132,14 @@ impl MoveGen {
         let mut attackers_to_king =
             self.attacks_to_square(pos, king_square, pos.enemy(), pos.occupied);
 
-        let non_king_moves = pawn_quiet_moves
-            .chain(pawn_capturing_moves)
+        let non_king_moves = pawn_capturing_moves
             .chain(knight_moves)
             .chain(slider_moves)
+            .chain(pawn_quiet_moves)
             .chain(castling_moves);
 
         if attackers_to_king.is_empty() {
-            Box::new(non_king_moves.chain(king_moves))
+            Box::new(king_moves.chain(non_king_moves))
         } else {
             let attacker_sq = attackers_to_king.pop_lsb();
 
