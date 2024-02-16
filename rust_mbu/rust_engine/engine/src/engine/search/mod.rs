@@ -220,7 +220,7 @@ impl SearchData {
 
             // Reduce search on repeated positions
             if self.repetition_table.repetitions() > 0 {
-                reduce += 2;
+                reduce = 2;
             }
 
             // Check extension
@@ -241,7 +241,7 @@ impl SearchData {
                     extend,
                 )
             {
-                reduce = 1;
+                reduce += 1;
             }
 
             // Search move
@@ -330,6 +330,8 @@ impl SearchData {
         if self.stopped() {
             return 0;
         }
+
+        let reduce = usize::min(reduce, 3);
 
         let final_depth = (depth + extend).saturating_sub(reduce + 1);
         // Do the PV search to check whether move is good or not
