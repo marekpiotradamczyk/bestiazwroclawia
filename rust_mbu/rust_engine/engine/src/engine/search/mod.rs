@@ -61,7 +61,7 @@ impl SearchData {
         self.nodes_evaluated += 1;
 
         // Check for draw by repetition
-        if self.repetition_table.is_repeated()
+        if self.repetition_table.repetitions() >= 3
             || self.repetition_table.is_draw_by_fifty_moves_rule()
         {
             return REPEATED_POSITION_SCORE;
@@ -217,6 +217,12 @@ impl SearchData {
                 break;
             } */
 
+
+            // Reduce search on repeated positions
+            if self.repetition_table.repetitions() > 0 {
+                reduce += 2;
+            }
+
             // Check extension
             self.ply += 1;
             self.repetition_table
@@ -325,7 +331,7 @@ impl SearchData {
             return 0;
         }
 
-        let final_depth = depth - reduce + extend - 1;
+        let final_depth = (depth + extend).saturating_sub(reduce + 1);
         // Do the PV search to check whether move is good or not
         let mut score = -self.negamax(child_pos, -alpha - 1, -alpha, final_depth);
 
@@ -357,7 +363,7 @@ impl SearchData {
 
         self.nodes_evaluated += 1;
 
-        if self.repetition_table.is_repeated()
+        if self.repetition_table.repetitions() >= 3
             || self.repetition_table.is_draw_by_fifty_moves_rule()
         {
             return REPEATED_POSITION_SCORE;

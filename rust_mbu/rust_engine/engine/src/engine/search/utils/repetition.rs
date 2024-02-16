@@ -37,7 +37,7 @@ impl RepetitionTable {
         self.idx -= 1;
     }
 
-    pub fn is_repeated(&self) -> bool {
+    pub fn repetitions(&self) -> i32 {
         let mut count = 0;
         for i in 0..self.idx {
             if self.table[i] == self.table[self.idx - 1] {
@@ -45,7 +45,7 @@ impl RepetitionTable {
             }
         }
 
-        count >= 3
+        count
     }
 
     pub fn is_draw_by_fifty_moves_rule(&self) -> bool {
