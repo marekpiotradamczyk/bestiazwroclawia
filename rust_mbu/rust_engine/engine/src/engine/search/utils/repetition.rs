@@ -82,7 +82,7 @@ mod tests {
             let _ = pos.make_move(&Move::new(Square::A6, Square::B8, None, &MoveKind::Quiet));
         }
 
-        assert!(rep.is_repeated());
+        assert!(rep.repetitions() >= 2);
         assert!(rep.is_draw_by_fifty_moves_rule());
     }
 }

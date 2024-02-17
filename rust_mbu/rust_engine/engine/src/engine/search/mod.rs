@@ -61,7 +61,7 @@ impl SearchData {
         self.nodes_evaluated += 1;
 
         // Check for draw by repetition
-        if self.repetition_table.repetitions() >= 3
+        if self.repetition_table.repetitions() >= 2
             || self.repetition_table.is_draw_by_fifty_moves_rule()
         {
             return REPEATED_POSITION_SCORE;
@@ -359,7 +359,7 @@ impl SearchData {
 
         self.nodes_evaluated += 1;
 
-        if self.repetition_table.repetitions() >= 3
+        if self.repetition_table.repetitions() >= 2
             || self.repetition_table.is_draw_by_fifty_moves_rule()
         {
             return REPEATED_POSITION_SCORE;
