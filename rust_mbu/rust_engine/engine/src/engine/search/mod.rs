@@ -217,12 +217,6 @@ impl SearchData {
                 break;
             } */
 
-
-            // Reduce search on repeated positions
-            if self.repetition_table.repetitions() > 0 {
-                reduce = 2;
-            }
-
             // Check extension
             self.ply += 1;
             self.repetition_table
