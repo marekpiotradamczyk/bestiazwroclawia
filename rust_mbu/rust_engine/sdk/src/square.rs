@@ -70,7 +70,7 @@ impl File {
 
     #[must_use]
     pub const fn all() -> [File; 8] {
-        use crate::square::File::*;
+        use crate::square::File::{A, B, C, D, E, F, G, H};
 
         [A, B, C, D, E, F, G, H]
     }
@@ -84,7 +84,7 @@ impl Rank {
 
     #[must_use]
     pub const fn all() -> [Rank; 8] {
-        use crate::square::Rank::*;
+        use crate::square::Rank::{R1, R2, R3, R4, R5, R6, R7, R8};
 
         [R1, R2, R3, R4, R5, R6, R7, R8]
     }
@@ -126,6 +126,7 @@ impl Square {
     #[rustfmt::skip]
     #[must_use]
     pub const fn all() -> [Square; 64] {
+        #[allow(clippy::enum_glob_use)]
         use crate::square::Square::*;
 
         [
@@ -154,6 +155,7 @@ impl Square {
         File::all()[idx as usize]
     }
 
+    #[allow(clippy::cast_sign_loss)]
     #[must_use]
     pub const fn offset(&self, rank_offset: i8, file_offset: i8) -> Option<Square> {
         let (file, rank): (File, Rank) = self.to_file_rank();

@@ -40,7 +40,11 @@ impl Default for MagicEntry {
 
 fn save_magics(slider: Slider, path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let (magics, moves) = generate_magics(slider);
-    let mut file = OpenOptions::new().write(true).create(true).open(path)?;
+    let mut file = OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .open(path)?;
 
     for magic in magics.iter() {
         file.write_all(&magic.mask.0.to_be_bytes())?;

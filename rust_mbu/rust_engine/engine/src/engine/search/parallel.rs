@@ -60,6 +60,7 @@ pub struct SearchData {
     pub age: usize,
 }
 
+#[allow(clippy::too_many_arguments)]
 impl Search {
     pub fn new(
         options: SearchOptions,

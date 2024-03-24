@@ -10,6 +10,7 @@ use std::{
 use crate::{
     engine::{
         eval::{
+            activity::bonus_for_mobility,
             evaluate,
             king_safety::calc_king_safety,
             material,
@@ -222,6 +223,7 @@ impl Engine {
             "Absolute pin bonus: {}",
             bonus_for_absolute_pins(&self.root_pos, self.move_gen.clone())
         );
+        println!("Mobility bonus: {}", bonus_for_mobility(&self.root_pos));
 
         println!();
         println!(

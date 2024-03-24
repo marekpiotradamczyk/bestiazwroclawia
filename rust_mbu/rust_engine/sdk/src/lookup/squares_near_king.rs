@@ -6,6 +6,7 @@ use crate::{
 
 use super::king::mask_king_attacks;
 
+#[must_use]
 pub fn squares_near_king(king_sq: Square, king_color: Color) -> Bitboard {
     let mut squares = mask_king_attacks(king_sq.bitboard());
 
@@ -20,7 +21,8 @@ pub fn squares_near_king(king_sq: Square, king_color: Color) -> Bitboard {
     squares
 }
 
-pub fn generate_squares_near_king() -> [[Bitboard; 64]; 2] {
+#[must_use]
+pub fn generate_square_close_to_king() -> [[Bitboard; 64]; 2] {
     let mut squares = [[Bitboard(0); 64]; 2];
 
     for king_sq in Square::all() {

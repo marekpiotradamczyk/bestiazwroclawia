@@ -17,7 +17,7 @@ fn stacked_pawns_count(pos: &Position, color: Color) -> usize {
 
     let mut count = 0;
 
-    for file in 0..8 {
+    (0..8).for_each(|file| {
         let file_bb = FILE_MASKS[file];
 
         let pawns_on_file = pawns_bb & file_bb;
@@ -26,7 +26,7 @@ fn stacked_pawns_count(pos: &Position, color: Color) -> usize {
         if pawns_count > 1 {
             count += pawns_count as usize - 1;
         }
-    }
+    });
 
     count
 }

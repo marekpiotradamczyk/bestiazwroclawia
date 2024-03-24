@@ -8,7 +8,7 @@ use sdk::{
         knights::gen_knight_attacks,
         pawns::{gen_double_pawn_moves, gen_pawn_attacks, gen_single_pawn_moves},
         rays::generate_rays_attacks,
-        squares_near_king::generate_squares_near_king,
+        squares_near_king::generate_square_close_to_king,
     },
 };
 
@@ -48,7 +48,7 @@ pub fn load_lookup_tables() -> Result<LookupTables> {
     let king_attacks = gen_king_attacks();
     let in_between = generate_in_between_squares();
     let ray_attacks = generate_rays_attacks();
-    let squares_near_king = generate_squares_near_king();
+    let squares_near_king = generate_square_close_to_king();
 
     Ok(LookupTables {
         rook_magics,
