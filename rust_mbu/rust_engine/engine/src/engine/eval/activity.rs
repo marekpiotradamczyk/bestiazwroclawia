@@ -4,8 +4,8 @@ use sdk::{
 };
 
 const MOBILITY_BONUS_BISHOP: i32 = 2;
-const MOBILITY_BONUS_ROOK: i32 = 3;
-const MOBILITY_BONUS_QUEEN: i32 = 4;
+const MOBILITY_BONUS_ROOK: i32 = 2;
+const MOBILITY_BONUS_QUEEN: i32 = 2;
 
 pub fn bonus_for_mobility(position: &Position) -> i32 {
     mobility(position, Color::White) - mobility(position, Color::Black)
