@@ -1,6 +1,7 @@
 ## Silnik szachowy morphebot
 
 Autor: Mateusz Burdyna
+
 Zobacz go w akcji na lichess: [@/morphe157bot/tv](https://lichess.org/@/morphe157bot/tv)
 
 Silnik hostowany jest na maszynce wydzialowej, komunikacja z lichessem odbywa się z pomocą [lichess-bot api](https://github.com/lichess-bot-devs/lichess-bot)
