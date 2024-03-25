@@ -1,0 +1,12 @@
+[package]
+name = "engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.75"
+derivative = "2.2.0"
+itertools = "0.12.0"
+lazy_static = "1.4.0"
+move_gen = { path = "../move-gen" }
+sdk = { path = "../sdk" }

@@ -1,0 +1,153 @@
+{
+  "description": "Test cases involving pawns.",
+  "testCases": [
+    {
+      "start": {
+        "description": "Two possible en passant capture possibilities.",
+        "fen": "7k/8/8/8/pPp5/8/8/7K b - b3 0 1"
+      },
+      "expected": [
+        {
+          "move": "a3",
+          "fen": "7k/8/8/8/1Pp5/p7/8/7K w - - 0 2"
+        },
+        {
+          "move": "axb3",
+          "fen": "7k/8/8/8/2p5/1p6/8/7K w - - 0 2"
+        },
+        {
+          "move": "c3",
+          "fen": "7k/8/8/8/pP6/2p5/8/7K w - - 0 2"
+        },
+        {
+          "move": "cxb3",
+          "fen": "7k/8/8/8/p7/1p6/8/7K w - - 0 2"
+        },
+        {
+          "move": "Kg7",
+          "fen": "8/6k1/8/8/pPp5/8/8/7K w - - 1 2"
+        },
+        {
+          "move": "Kh7",
+          "fen": "8/7k/8/8/pPp5/8/8/7K w - - 1 2"
+        },
+        {
+          "move": "Kg8",
+          "fen": "6k1/8/8/8/pPp5/8/8/7K w - - 1 2"
+        }
+      ]
+    },
+    {
+      "start": {
+        "description": "Same position but without the en passant capture possibilities.",
+        "fen": "7k/8/8/8/pPp5/8/8/7K b - - 0 1"
+      },
+      "expected": [
+        {
+          "move": "a3",
+          "fen": "7k/8/8/8/1Pp5/p7/8/7K w - - 0 2"
+        },
+        {
+          "move": "c3",
+          "fen": "7k/8/8/8/pP6/2p5/8/7K w - - 0 2"
+        },
+        {
+          "move": "Kg7",
+          "fen": "8/6k1/8/8/pPp5/8/8/7K w - - 1 2"
+        },
+        {
+          "move": "Kh7",
+          "fen": "8/7k/8/8/pPp5/8/8/7K w - - 1 2"
+        },
+        {
+          "move": "Kg8",
+          "fen": "6k1/8/8/8/pPp5/8/8/7K w - - 1 2"
+        }
+      ]
+    },
+    {
+      "start": {
+        "description": "Full set of pawns but no moves.",
+        "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/8/5K2/8 w - - 0 1"
+      },
+      "expected": [
+        {
+          "move": "Ke1",
+          "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/8/8/4K3 b - - 1 1"
+        },
+        {
+          "move": "Kf1",
+          "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/8/8/5K2 b - - 1 1"
+        },
+        {
+          "move": "Kg1",
+          "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/8/8/6K1 b - - 1 1"
+        },
+        {
+          "move": "Ke2",
+          "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/8/4K3/8 b - - 1 1"
+        },
+        {
+          "move": "Kg2",
+          "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/8/6K1/8 b - - 1 1"
+        },
+        {
+          "move": "Ke3",
+          "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/4K3/8/8 b - - 1 1"
+        },
+        {
+          "move": "Kf3",
+          "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/5K2/8/8 b - - 1 1"
+        },
+        {
+          "move": "Kg3",
+          "fen": "8/4k3/1p1p1p1p/pPpPpPpP/P1P1P1P1/6K1/8/8 b - - 1 1"
+        }
+      ]
+    },
+    {
+      "start": {
+        "description": "Black has two en passant possibilities, but only one is legal.",
+        "fen": "8/8/4k3/8/2pPp3/8/B7/7K b - d3 0 1"
+      },
+      "expected": [
+        {
+          "move": "e3",
+          "fen": "8/8/4k3/8/2pP4/4p3/B7/7K w - - 0 2"
+        },
+        {
+          "move": "exd3",
+          "fen": "8/8/4k3/8/2p5/3p4/B7/7K w - - 0 2"
+        },
+        {
+          "move": "Kd5",
+          "fen": "8/8/8/3k4/2pPp3/8/B7/7K w - - 1 2"
+        },
+        {
+          "move": "Kf5",
+          "fen": "8/8/8/5k2/2pPp3/8/B7/7K w - - 1 2"
+        },
+        {
+          "move": "Kd6",
+          "fen": "8/8/3k4/8/2pPp3/8/B7/7K w - - 1 2"
+        },
+        {
+          "move": "Kf6",
+          "fen": "8/8/5k2/8/2pPp3/8/B7/7K w - - 1 2"
+        },
+        {
+          "move": "Kd7",
+          "fen": "8/3k4/8/8/2pPp3/8/B7/7K w - - 1 2"
+        },
+        {
+          "move": "Ke7",
+          "fen": "8/4k3/8/8/2pPp3/8/B7/7K w - - 1 2"
+        },
+        {
+          "move": "Kf7",
+          "fen": "8/5k2/8/8/2pPp3/8/B7/7K w - - 1 2"
+        }
+      ]
+    }
+  ]
+}

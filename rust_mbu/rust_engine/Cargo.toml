@@ -1,0 +1,8 @@
+[workspace]
+resolver = "2"
+
+members = ["sdk", "move-gen", "magic", "engine"]
+
+[profile.release]
+opt-level = 3
+lto = "fat"
