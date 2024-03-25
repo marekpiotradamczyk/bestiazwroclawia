@@ -23,8 +23,8 @@ Silnik `target/release/engine`
 
 Skompilowany w ten sposób silnik można uruchamiać z commendline'a:
 `./engine`, ale w katalogu z executable muszą znajdować się pliki:
-- `rooks_magics.bin`
-- `bishops_magics.bin`
+- `rook_magics.bin`
+- `bishop_magics.bin`
 
 ### Testy
 Komenda `cargo test`
@@ -78,3 +78,5 @@ Logika dot. ewaluacji znajduje się niemal w calości w `engine/src/eval/mod.rs`
 Granie w terminalu jest bardzo niewygodne,
 dlatego najlepiej pobrać jakąś implementacje areny szachowej (np. Banksiagui na MacOS) i dodać do niej executable silnika,
 w ten sposób można stworzyć mecz Morphebot vs Czlowiek, a nawet Morphebot vs Morphebot lub Morphebot vs Stockfish
+
+[Odpalanie Morphebot lokalnie w arenie Banksiagui](https://www.youtube.com/watch?v=-VFvT7GfFKk)
