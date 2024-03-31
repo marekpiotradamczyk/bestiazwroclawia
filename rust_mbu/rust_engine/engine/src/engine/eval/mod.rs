@@ -1,10 +1,10 @@
+pub mod activity;
 pub mod evaluation_table;
 pub mod king_safety;
 pub mod pawns;
 pub mod pin_bonus;
 pub mod positional_tables;
 pub mod rooks;
-pub mod activity;
 
 use std::sync::Arc;
 
@@ -16,15 +16,21 @@ pub trait Evaluate {
 }
 
 use self::{
-    activity::bonus_for_mobility, evaluation_table::EvaluationTable, king_safety::calc_king_safety, pawns::{
+    activity::bonus_for_mobility,
+    evaluation_table::EvaluationTable,
+    king_safety::calc_king_safety,
+    pawns::{
         isolated_pawns::penalty_for_isolated_pawns,
         protected_passed_pawnes::bonus_for_protected_passed_pawnes,
         stacked_pawns::penalty_for_stacked_pawns,
         strong_squares::{bonus_for_piece_on_strong_squares, bonus_for_strong_squares},
-    }, pin_bonus::bonus_for_absolute_pins, positional_tables::{game_phase, tapered_eval}, rooks::{
+    },
+    pin_bonus::bonus_for_absolute_pins,
+    positional_tables::{game_phase, tapered_eval},
+    rooks::{
         battery::bonus_for_rook_battery,
         rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
-    }
+    },
 };
 
 pub const PIECE_VALUES: [i32; 6] = [100, 300, 320, 500, 900, 10000];

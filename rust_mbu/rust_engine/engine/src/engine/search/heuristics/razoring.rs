@@ -31,8 +31,8 @@ impl SearchData {
             val += 175;
 
             if val < beta && depth <= 3 && new_score < beta {
-                    return Some(i32::max(new_score, val));
-                }
+                return Some(i32::max(new_score, val));
+            }
         }
 
         None

@@ -277,11 +277,11 @@ impl Move {
     }
 
     pub fn from(&self) -> Square {
-        Square::try_from((self.inner & 0b0000000000111111) as u8).expect("Invalid square")
+        Square::from_u8((self.inner & 0b0000000000111111) as u8)
     }
 
     pub fn to(&self) -> Square {
-        Square::try_from(((self.inner & 0b0000111111000000) >> 6) as u8).expect("Invalid square")
+        Square::from_u8(((self.inner & 0b0000111111000000) >> 6) as u8)
     }
 
     pub fn kind(&self) -> MoveKind {

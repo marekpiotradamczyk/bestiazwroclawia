@@ -338,9 +338,7 @@ impl Display for Position {
         writeln!(f)?;
         for rank in (0..8u8).rev() {
             for file in 0..8u8 {
-                let square: Square = (rank * 8 + file)
-                    .try_into()
-                    .expect("BUG: Square out of bounds");
+                let square = Square::from_u8(rank * 8 + file);
                 if let Some((piece, color)) = self.piece_at(&square) {
                     write!(f, "{} ", piece.to_utf8_symbol(color))?;
                 } else {

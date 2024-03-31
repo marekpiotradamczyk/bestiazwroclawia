@@ -63,7 +63,7 @@ impl Fen for Position {
                     };
 
                     let square: Square =
-                        ((7 - u8::try_from(rank)?) * 8 + u8::try_from(file)?).try_into()?;
+                        Square::from_u8((7 - u8::try_from(rank)?) * 8 + u8::try_from(file)?);
                     file += 1;
                     let idx = piece as usize;
 
@@ -111,7 +111,7 @@ impl Fen for Position {
             let file = file_char as u8 - b'a';
             let rank = rank_char as u8 - b'1';
 
-            (rank * 8 + file).try_into().ok()
+            Some(Square::from_u8(rank * 8 + file))
         };
 
         position.hash = position.calc_hash();
@@ -123,9 +123,7 @@ impl Fen for Position {
         let mut empty = 0;
         for rank in (0..8u8).rev() {
             for file in 0..8u8 {
-                let square: Square = (rank * 8 + file)
-                    .try_into()
-                    .expect("BUG: Square out of bounds");
+                let square = Square::from_u8(rank * 8 + file);
                 let piece = self.piece_at(&square);
                 if let Some((piece, color)) = piece {
                     if empty != 0 {

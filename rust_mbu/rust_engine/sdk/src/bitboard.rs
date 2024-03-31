@@ -49,16 +49,16 @@ impl Bitboard {
 
     #[must_use]
     pub const fn lsb(&self) -> Square {
-        let idx = self.0.trailing_zeros() as usize;
+        let idx = self.0.trailing_zeros() as u8;
 
-        Square::all()[idx]
+        Square::from_u8(idx)
     }
 
     #[must_use]
     pub const fn msb(&self) -> Square {
-        let idx = (63 - self.0.leading_zeros()) as usize;
+        let idx = (63 - self.0.leading_zeros()) as u8;
 
-        Square::all()[idx]
+        Square::from_u8(idx)
     }
 
     pub fn pop_lsb(&mut self) -> Square {
@@ -203,7 +203,7 @@ impl Iterator for BoardIterator {
         } else {
             let index = self.bitboard.0.trailing_zeros();
             self.bitboard.0 ^= 1 << index;
-            Some(Square::all()[index as usize])
+            Some(Square::from_u8(index as u8))
         }
     }
 }

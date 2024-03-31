@@ -149,10 +149,10 @@ impl KingMoveGenerator for MoveGen {
 
         let target_square: Square = match castling_kind {
             CastlingKind::WhiteKingside | CastlingKind::BlackKingside => {
-                (king_square as u8 + 2).try_into().unwrap()
+                Square::from_u8(king_square as u8 + 2)
             }
             CastlingKind::WhiteQueenside | CastlingKind::BlackQueenside => {
-                (king_square as u8 - 2).try_into().unwrap()
+                Square::from_u8(king_square as u8 - 2)
             }
         };
 

@@ -46,7 +46,7 @@ impl NNUE {
 
         let mut sq = 0;
         while sq < 64 {
-            let square = Square::all()[sq];
+            let square = Square::from_u8(sq as u8);
             let piece = pos.piece_at(&square);
 
             if let Some((piece, color)) = piece {
