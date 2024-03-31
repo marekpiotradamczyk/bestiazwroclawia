@@ -2,23 +2,26 @@ use core::fmt;
 use std::{collections::HashSet, fmt::Formatter};
 
 use sdk::{
+    bitboard::Bitboard,
     fen::Fen,
     hash::ZOBRIST_KEYS,
-    position::{CastlingKind, Color, Piece, Position},
+    position::{Castling, CastlingKind, Color, Piece, Position, UndoMove},
     square::{File, Square},
 };
 
 type Result<T> = std::result::Result<T, anyhow::Error>;
 
-#[derive(Clone, Copy, Hash, Eq, PartialEq)]
+#[derive(Clone, Copy, Hash, Eq, PartialEq, Default)]
 pub struct Move {
     pub inner: u16,
 }
 
 pub trait MakeMove {
-    fn make_move(&mut self, mv: &Move) -> Result<Option<Piece>>;
+    fn make_move(&mut self, mv: &Move) -> Result<()>;
+    fn undo_move(&mut self, mv: &Move) -> Result<()>;
     fn make_null_move(&mut self);
 }
+
 
 impl fmt::Debug for Move {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -45,10 +48,15 @@ impl fmt::Display for Move {
 }
 
 impl MakeMove for Position {
-    fn make_move(&mut self, mv: &Move) -> Result<Option<Piece>> {
+    fn make_move(&mut self, mv: &Move) -> Result<()> {
         let from = mv.from();
         let to = mv.to();
         let color = self.turn;
+
+        self.undo_move.castling = self.castling.clone();
+        self.undo_move.en_passant = self.en_passant;
+        self.undo_move.halfmove_clock = self.halfmove_clock;
+        self.undo_move.occupied = self.occupied;
 
         let old_castling = self.castling.inner;
 
@@ -194,6 +202,8 @@ impl MakeMove for Position {
         }
         .map(|(piece, _)| piece);
 
+        self.undo_move.captured = captured;
+
         self.occupied = self.occupation(&Color::White) | self.occupation(&Color::Black);
         if !matches!(mv.kind(), MoveKind::DoublePawnPush) {
             self.en_passant = None;
@@ -212,7 +222,91 @@ impl MakeMove for Position {
             self.fullmove_number += 1;
         }
 
-        Ok(captured)
+        Ok(())
+    }
+
+    fn undo_move(&mut self, mv: &Move) -> Result<()> {
+        println!("{self}");
+        let from = mv.from();
+        let to = mv.to();
+        let to_piece = self.piece_at(&to).expect("BUG: No piece at to square").0;
+
+        let color = self.turn;
+        let enemy = color.enemy();
+
+        match mv.kind() {
+            MoveKind::Castling => {
+                let castling = mv
+                    .castling_kind(&color)
+                    .expect("BUG: Move does not castle.");
+
+                let (rook_from, _) = castling.from_squares();
+                let (rook_to, king_to) = castling.target_squares();
+
+                let (rook, _) = self.remove_piece_at(&rook_to).unwrap();
+                let king = self.remove_piece_at(&king_to).unwrap().0;
+
+                self.add_piece_at(rook_from, rook, color)?;
+                self.add_piece_at(from, king, color)?;
+
+                // Update rook hash as king hash is already updated
+                self.hash ^=
+                    ZOBRIST_KEYS.pieces[color as usize][Piece::Rook as usize][rook_to as usize];
+                self.hash ^=
+                    ZOBRIST_KEYS.pieces[color as usize][Piece::Rook as usize][rook_from as usize];
+            }
+            _ => {
+                // Rollback moved piece
+                self.remove_piece_at(&to)
+                    .expect("BUG: No piece at to square");
+                self.hash ^= ZOBRIST_KEYS.pieces[color as usize][to_piece as usize][to as usize];
+                if matches!(mv.kind(), MoveKind::Promotion | MoveKind::PromotionCapture) {
+                    self.add_piece_at(to, Piece::Pawn, color)?;
+                    self.hash ^=
+                        ZOBRIST_KEYS.pieces[color as usize][Piece::Pawn as usize][to as usize];
+                } else {
+                    self.add_piece_at(to, to_piece, color)?;
+                    self.hash ^=
+                        ZOBRIST_KEYS.pieces[color as usize][to_piece as usize][to as usize];
+                }
+
+                // Rollback captured piece if any
+                if let Some(captured) = self.undo_move.captured {
+                    let captured_sq = if matches!(mv.kind(), MoveKind::EnPassant) {
+                        self.undo_move.en_passant.unwrap()
+                    } else {
+                        to
+                    };
+
+                    self.add_piece_at(captured_sq, captured, enemy)?;
+                    self.hash ^= ZOBRIST_KEYS.pieces[enemy as usize][captured as usize]
+                        [captured_sq as usize];
+                }
+            }
+        }
+
+        // Update castling rights hashes
+        if self.castling.inner != self.undo_move.castling.inner {
+            self.hash ^= ZOBRIST_KEYS.castling_rights[self.castling.inner as usize];
+            self.hash ^= ZOBRIST_KEYS.castling_rights[self.undo_move.castling.inner as usize];
+            self.castling = self.undo_move.castling.clone();
+        }
+
+        // Update en passant hash
+        if let Some(en_passant) = self.undo_move.en_passant {
+            self.hash ^= ZOBRIST_KEYS.en_passant[en_passant as usize];
+        }
+
+        // Update side to move hash
+        self.hash ^= ZOBRIST_KEYS.side_to_move;
+
+        self.turn = color;
+
+        self.halfmove_clock = self.undo_move.halfmove_clock;
+        self.fullmove_number -= if color == Color::White { 1 } else { 0 };
+        println!("{self}");
+
+        Ok(())
     }
 
     fn make_null_move(&mut self) {

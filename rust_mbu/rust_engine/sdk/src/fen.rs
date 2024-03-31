@@ -2,7 +2,7 @@ use anyhow::anyhow;
 
 use crate::{
     bitboard::Bitboard,
-    position::{Castling, Color, Piece, Position},
+    position::{Castling, Color, Piece, Position, UndoMove},
     square::Square,
 };
 
@@ -24,6 +24,7 @@ impl Fen for Position {
             fullmove_number: 1,
             hash: 0,
             mailbox: [None; 64],
+            undo_move: UndoMove::default()
         };
         let mut fen = fen.split_whitespace();
         let ranks = fen.next().unwrap().split('/');
@@ -174,6 +175,7 @@ mod tests {
     use crate::fen::Fen;
     use crate::position::Position;
 
+    #[test]
     fn test_starting_fen() {
         let starting_pos = Position::default();
 

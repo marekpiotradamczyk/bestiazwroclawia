@@ -12,7 +12,7 @@ use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 use crate::square::{File, Square};
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Bitboard(pub u64);
 
 pub const EMPTY: Bitboard = Bitboard(0);

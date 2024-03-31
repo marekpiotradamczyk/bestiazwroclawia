@@ -29,7 +29,7 @@ use crate::{
         },
         search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done,
     },
-    uci::{uci_commands::Command, Result},
+    uci::{perft::perft, uci_commands::Command, Result},
 };
 use move_gen::{
     generators::movegen::MoveGen,
@@ -88,6 +88,7 @@ impl Engine {
             Command::UciNewGame => self.uci_new_game(),
             Command::Test => self.test(),
             Command::Simulate(moves) => self.simulate(moves),
+            Command::Perft(depth) => self.perft(depth),
 
             _ => {}
         };
@@ -152,6 +153,21 @@ impl Engine {
 
     pub fn stop(&mut self) {
         STOPPED.store(true, Ordering::Relaxed);
+    }
+
+    pub fn perft(&mut self, depth: Option<u32>) {
+        let depth = depth.unwrap_or(u32::MAX);
+        let mut pos = Position::default();
+        let move_gen = self.move_gen.clone();
+        for curr_d in 3..=depth {
+            let now = std::time::Instant::now();
+            let nodes = perft(curr_d, &move_gen, &mut pos);
+            let elapsed = now.elapsed().as_millis();
+            let nps = nodes as f64 / (elapsed as f64 / 1000.0);
+            let knps = (nps / 1000.0) as u64;
+            let knodes = nodes / 1000;
+            println!("depth: {curr_d}, knodes: {knodes}, time: {elapsed}ms, knps: {knps}");
+        }
     }
 
     fn position(&mut self, mut pos: Position, moves: Vec<String>) {

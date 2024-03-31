@@ -27,6 +27,18 @@ pub struct Position {
     pub fullmove_number: u16,
     pub hash: u64,
     pub mailbox: [Option<(Piece, Color)>; 64],
+    #[derivative(Hash = "ignore")]
+    #[derivative(PartialEq = "ignore")]
+    pub undo_move: UndoMove,
+}
+
+#[derive(Default, Clone, Debug)]
+pub struct UndoMove {
+    pub captured: Option<Piece>,
+    pub halfmove_clock: u16,
+    pub en_passant: Option<Square>,
+    pub castling: Castling,
+    pub occupied: Bitboard,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
@@ -45,7 +57,7 @@ pub enum Piece {
     King,
 }
 
-#[derive(Debug, Clone, Hash)]
+#[derive(Debug, Clone, Hash, Default)]
 pub struct Castling {
     pub inner: u8,
 }

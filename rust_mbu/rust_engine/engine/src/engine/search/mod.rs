@@ -36,7 +36,7 @@ use self::{
 
 use super::eval::{evaluate, PIECE_VALUES};
 
-type MoveList = SmallVec<[Move; 64]>;
+pub type MoveList = SmallVec<[Move; 64]>;
 
 lazy_static! {
     pub static ref STOPPED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));

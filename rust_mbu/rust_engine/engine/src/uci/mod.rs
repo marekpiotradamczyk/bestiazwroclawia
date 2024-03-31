@@ -1,3 +1,4 @@
+pub mod perft;
 pub mod uci_commands;
 
 use std::io;
@@ -39,6 +40,7 @@ pub fn start_uci() {
                 args.into_iter().map(ToString::to_string).collect_vec(),
             )),
             "quit" => return,
+            "perft" => parse_perft(args),
             any => Command::from_str(any).map_err(|_| anyhow!("Unknown command {any}")),
         };
         match command {
@@ -145,4 +147,24 @@ pub fn parse_set_option(args: Vec<&str>) -> Result<Command> {
     let value = args.get(value_idx + 1).map(|s| s.to_string());
 
     Ok(Command::SetOption(name, value))
+}
+
+fn parse_perft(args: Vec<&str>) -> Result<Command> {
+    if args.len() == 1 {
+        return Err(anyhow!("Use perft depth <depth>"));
+    }
+
+    if args.len() == 2 {
+        if args.first().is_some_and(|first| *first == "depth") {
+            if let Some(depth) = args.get(1).and_then(|s| s.parse().ok()) {
+                return Ok(Command::Perft(Some(depth)));
+            } else {
+                return Err(anyhow!("Invalid depth"));
+            }
+        } else {
+            return Err(anyhow!("Use perft depth <depth>"));
+        }
+    }
+
+    Ok(Command::Perft(None))
 }

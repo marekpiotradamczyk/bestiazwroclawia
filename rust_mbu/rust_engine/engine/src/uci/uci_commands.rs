@@ -16,6 +16,7 @@ pub enum Command {
     Debug,
     Test,
     Simulate(Vec<String>),
+    Perft(Option<u32>),
 }
 
 impl FromStr for Command {
