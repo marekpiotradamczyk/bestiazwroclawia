@@ -267,6 +267,7 @@ macro_rules! impl_math_ops {
         impl $trait<Bitboard> for Bitboard {
             type Output = Self;
 
+            #[inline(always)]
             fn $fn(self, other: Self) -> Self::Output {
                 Self($trait::$fn(self.0, other.0))
             }
@@ -275,6 +276,7 @@ macro_rules! impl_math_ops {
         impl $trait<Bitboard> for &Bitboard {
             type Output = Bitboard;
 
+            #[inline(always)]
             fn $fn(self, other: Bitboard) -> Self::Output {
                 Bitboard($trait::$fn(self.0, other.0))
             }
@@ -283,6 +285,7 @@ macro_rules! impl_math_ops {
         impl $trait<Square> for Bitboard {
             type Output = Self;
 
+            #[inline(always)]
             fn $fn(self, other: Square) -> Self::Output {
                 $trait::$fn(self, other.bitboard())
             }
@@ -291,6 +294,7 @@ macro_rules! impl_math_ops {
         impl $trait<u64> for Bitboard {
             type Output = Self;
 
+            #[inline(always)]
             fn $fn(self, other: u64) -> Self::Output {
                 Self($trait::$fn(self.0, other))
             }
@@ -311,6 +315,7 @@ impl_math_ops! {
 macro_rules! impl_math_assign_ops {
     ($($trait:ident,$fn:ident;)*) => {$(
         impl $trait for Bitboard {
+            #[inline(always)]
             fn $fn(&mut self, other: Self) {
                 $trait::$fn(&mut self.0, other.0)
             }
@@ -331,6 +336,7 @@ impl_math_assign_ops! {
 impl Deref for Bitboard {
     type Target = u64;
 
+    #[inline(always)]
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -339,6 +345,7 @@ impl Deref for Bitboard {
 impl Not for Bitboard {
     type Output = Bitboard;
 
+    #[inline(always)]
     fn not(self) -> Self::Output {
         Bitboard(!self.0)
     }
