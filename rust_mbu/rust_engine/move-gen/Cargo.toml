@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.71"
+arrayvec = "0.7.4"
 flexi_logger = "0.27.3"
 itertools = "0.12.0"
 log = "0.4.20"
