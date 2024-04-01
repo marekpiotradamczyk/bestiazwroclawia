@@ -303,6 +303,7 @@ fn parse_uci_moves(
     for mv_str in moves {
         let mv = move_gen
             .generate_legal_moves(pos)
+            .into_iter()
             .find(|mv| mv.to_string() == mv_str)
             .ok_or(anyhow!("Invalid move: {mv_str}"))?;
 

@@ -79,7 +79,7 @@ fn test_hashes() {
     let move_gen = MoveGen::new();
 
     for _ in 0..1000 {
-        let moves = move_gen.generate_legal_moves(&pos).collect::<Vec<_>>();
+        let moves = move_gen.generate_legal_moves(&pos);
         let fen = pos.to_fen();
 
         if moves.is_empty() {
@@ -110,6 +110,7 @@ fn run_test(json_name: String) {
 
         let actual_moves: HashSet<String> = move_gen
             .generate_legal_moves(&pos)
+            .into_iter()
             .map(|mv| move_gen.to_algebraic_notation(&pos, &mv))
             .collect();
 

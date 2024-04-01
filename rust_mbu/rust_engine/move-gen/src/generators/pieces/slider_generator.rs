@@ -20,7 +20,7 @@ pub trait SliderMoveGenerator {
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
         king_sq: Square,
-    ) -> Box<dyn Iterator<Item = Move> + '_>;
+    ) -> impl Iterator<Item = Move>;
 }
 
 impl SliderMoveGenerator for MoveGen {
@@ -31,8 +31,8 @@ impl SliderMoveGenerator for MoveGen {
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
         king_sq: Square,
-    ) -> Box<dyn Iterator<Item = Move> + '_> {
-        let iter = [Slider::Bishop, Slider::Rook, Slider::Queen]
+    ) -> impl Iterator<Item = Move> {
+        [Slider::Bishop, Slider::Rook, Slider::Queen]
             .into_iter()
             .flat_map(move |slider| {
                 let piece: Piece = slider.into();
@@ -63,8 +63,6 @@ impl SliderMoveGenerator for MoveGen {
                         Move::new(from_square, target_square, None, &kind)
                     })
                 })
-            });
-
-        Box::new(iter)
+            })
     }
 }

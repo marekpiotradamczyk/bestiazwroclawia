@@ -5,9 +5,9 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.75"
+arrayvec = "0.7.4"
 derivative = "2.2.0"
 itertools = "0.12.0"
 lazy_static = "1.4.0"
 move_gen = { path = "../move-gen" }
 sdk = { path = "../sdk" }
-smallvec = { version = "1.13.2", features = ["const_new"] }

@@ -18,9 +18,6 @@ pub const ASPIRATION_WINDOW_OFFSET: i32 = 50;
 pub const REPEATED_POSITION_SCORE: i32 = 0;
 pub const EXTEND_CHECK: usize = 1;
 
-use lazy_static::lazy_static;
-use smallvec::SmallVec;
-
 use self::{
     heuristics::{
         futility_pruning::is_futile,
@@ -33,10 +30,9 @@ use self::{
     },
     parallel::SearchData,
 };
+use lazy_static::lazy_static;
 
 use super::eval::{evaluate, PIECE_VALUES};
-
-type MoveList = SmallVec<[Move; 64]>;
 
 lazy_static! {
     pub static ref STOPPED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
@@ -100,10 +96,8 @@ impl SearchData {
         }
 
         // Generate legal moves for current position
-        let mut child_nodes = self
-            .move_gen
-            .generate_legal_moves(node)
-            .collect::<MoveList>();
+        let mut child_nodes = self.move_gen.generate_legal_moves(node);
+
         let in_check = self.move_gen.is_check(node);
 
         // Null move pruning
@@ -390,10 +384,7 @@ impl SearchData {
             alpha = stand_pat;
         }
 
-        let mut moves = self
-            .move_gen
-            .generate_legal_moves(node)
-            .collect::<MoveList>();
+        let mut moves = self.move_gen.generate_legal_moves(node);
 
         self.order_moves(&mut moves, node, None);
 

@@ -19,7 +19,7 @@ pub trait PawnMoveGenerator {
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
         king_sq: Square,
-    ) -> Box<dyn Iterator<Item = Move> + '_>;
+    ) -> impl Iterator<Item = Move>;
 
     fn generate_pawn_attacks<'a>(
         &'a self,
@@ -28,7 +28,7 @@ pub trait PawnMoveGenerator {
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
         king_sq: Square,
-    ) -> Box<dyn Iterator<Item = Move> + '_>;
+    ) -> impl Iterator<Item = Move>;
 }
 
 impl PawnMoveGenerator for MoveGen {
@@ -39,7 +39,7 @@ impl PawnMoveGenerator for MoveGen {
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
         king_sq: Square,
-    ) -> Box<dyn Iterator<Item = Move> + '_> {
+    ) -> impl Iterator<Item = Move> {
         let color = pos.turn;
         let bb = pos.pieces[color as usize][Piece::Pawn as usize];
         let forward = match color {
@@ -49,7 +49,7 @@ impl PawnMoveGenerator for MoveGen {
         let blockers = friendly_occ | enemy_occ;
         let double_push_blockers = blockers | blockers.shift(&forward);
 
-        let iter = bb.into_iter().flat_map(move |from_square| {
+        bb.into_iter().flat_map(move |from_square| {
             let maybe_pinner_ray = if pinned_pieces.has(from_square) {
                 self.between_pinner_inclusive(from_square, king_sq, blockers)
             } else {
@@ -84,9 +84,7 @@ impl PawnMoveGenerator for MoveGen {
                     }
                     .into_iter()
                 })
-        });
-
-        Box::new(iter)
+        })
     }
 
     fn generate_pawn_attacks<'a>(
@@ -96,12 +94,12 @@ impl PawnMoveGenerator for MoveGen {
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
         king_sq: Square,
-    ) -> Box<dyn Iterator<Item = Move> + '_> {
+    ) -> impl Iterator<Item = Move> {
         let blockers = friendly_occ | enemy_occ;
         let color = pos.turn;
         let bb = pos.pieces[color as usize][Piece::Pawn as usize];
 
-        let iter = bb.into_iter().flat_map(move |from_square| {
+        bb.into_iter().flat_map(move |from_square| {
             let maybe_pinner_ray = if pinned_pieces.has(from_square) {
                 self.between_pinner_inclusive(from_square, king_sq, blockers)
             } else {
@@ -154,9 +152,7 @@ impl PawnMoveGenerator for MoveGen {
                 }
                 .into_iter()
             })
-        });
-
-        Box::new(iter)
+        })
     }
 }
 

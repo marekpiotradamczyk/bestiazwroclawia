@@ -18,7 +18,7 @@ pub trait KingMoveGenerator {
         friendly_occ: Bitboard,
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
-    ) -> Box<dyn Iterator<Item = Move> + '_>;
+    ) -> impl Iterator<Item = Move>;
 
     fn generate_all_castlings<'a>(
         &'a self,
@@ -26,7 +26,7 @@ pub trait KingMoveGenerator {
         friendly_occ: Bitboard,
         enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
-    ) -> Box<dyn Iterator<Item = Move> + '_>;
+    ) -> impl Iterator<Item = Move>;
 
     fn generate_castling<'a>(
         &'a self,
@@ -44,11 +44,11 @@ impl KingMoveGenerator for MoveGen {
         friendly_occ: Bitboard,
         _enemy_occ: Bitboard,
         pinned_pieces: Bitboard,
-    ) -> Box<dyn Iterator<Item = Move> + '_> {
+    ) -> impl Iterator<Item = Move> {
         let color = pos.turn;
         let bb = pos.pieces[color as usize][Piece::King as usize] & !pinned_pieces;
 
-        let iter = bb.into_iter().flat_map(move |from_square| {
+        bb.into_iter().flat_map(move |from_square| {
             let attacks = self.king_attacks(from_square) & !friendly_occ;
 
             attacks.into_iter().filter_map(move |target_square| {
@@ -69,9 +69,7 @@ impl KingMoveGenerator for MoveGen {
 
                 Some(Move::new(from_square, target_square, None, &kind))
             })
-        });
-
-        Box::new(iter)
+        })
     }
 
     fn generate_all_castlings<'a>(
@@ -80,7 +78,7 @@ impl KingMoveGenerator for MoveGen {
         _friendly_occ: Bitboard,
         _enemy_occ: Bitboard,
         _pinned_pieces: Bitboard,
-    ) -> Box<dyn Iterator<Item = Move> + '_> {
+    ) -> impl Iterator<Item = Move> {
         let king_square = pos.pieces[pos.turn as usize][Piece::King as usize].msb();
 
         let occ = pos.occupation(&Color::White) | pos.occupation(&Color::Black);
@@ -100,7 +98,7 @@ impl KingMoveGenerator for MoveGen {
             }
         }
 
-        Box::new(castling_moves.into_iter())
+        castling_moves.into_iter()
     }
 
     fn generate_castling<'a>(
