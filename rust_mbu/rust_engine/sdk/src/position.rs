@@ -1,6 +1,7 @@
 use std::{fmt::Display, str::FromStr};
 
 use anyhow::anyhow;
+use arrayvec::ArrayVec;
 use derivative::Derivative;
 
 use crate::{
@@ -29,7 +30,7 @@ pub struct Position {
     pub mailbox: [Option<(Piece, Color)>; 64],
     #[derivative(Hash = "ignore")]
     #[derivative(PartialEq = "ignore")]
-    pub undo_move: UndoMove,
+    pub history: ArrayVec<UndoMove, 512>
 }
 
 #[derive(Default, Clone, Debug)]
@@ -39,6 +40,7 @@ pub struct UndoMove {
     pub en_passant: Option<Square>,
     pub castling: Castling,
     pub occupied: Bitboard,
+    pub hash: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]

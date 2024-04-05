@@ -60,7 +60,7 @@ impl RepetitionTable {
 
 #[cfg(test)]
 mod tests {
-    use move_gen::r#move::{MakeMove, Move, MoveKind};
+    use move_gen::r#move::{make_move::MakeMove, Move, MoveKind};
     use sdk::{position::Position, square::Square};
 
     use super::RepetitionTable;

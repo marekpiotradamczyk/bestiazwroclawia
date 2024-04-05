@@ -79,7 +79,7 @@ fn parse_position(args: Vec<&str>) -> Result<Command> {
         vec![]
     };
 
-    Ok(Command::Position(pos, moves))
+    Ok(Command::Position(Box::new(pos), moves))
 }
 
 fn parse_go(args: Vec<&str>) -> Result<Command> {

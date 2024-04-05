@@ -1,8 +1,9 @@
 use anyhow::anyhow;
+use arrayvec::ArrayVec;
 
 use crate::{
     bitboard::Bitboard,
-    position::{Castling, Color, Piece, Position, UndoMove},
+    position::{Castling, Color, Piece, Position},
     square::Square,
 };
 
@@ -21,10 +22,10 @@ impl Fen for Position {
             castling: Castling::empty(),
             en_passant: None,
             halfmove_clock: 0,
-            fullmove_number: 1,
+            fullmove_number: 0,
             hash: 0,
             mailbox: [None; 64],
-            undo_move: UndoMove::default()
+            history: ArrayVec::default()
         };
         let mut fen = fen.split_whitespace();
         let ranks = fen.next().unwrap().split('/');

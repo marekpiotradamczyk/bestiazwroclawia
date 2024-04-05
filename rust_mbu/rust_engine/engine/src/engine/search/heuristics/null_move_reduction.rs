@@ -1,4 +1,4 @@
-use move_gen::r#move::MakeMove;
+use move_gen::r#move::make_move::MakeMove;
 use sdk::position::Position;
 
 use crate::engine::search::parallel::SearchData;

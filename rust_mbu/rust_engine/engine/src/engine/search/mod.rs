@@ -1,6 +1,6 @@
 use std::sync::{atomic::AtomicBool, Arc};
 
-use move_gen::r#move::{MakeMove, Move};
+use move_gen::r#move::{make_move::MakeMove, Move};
 use sdk::position::Position;
 
 pub mod heuristics;
@@ -100,7 +100,10 @@ impl SearchData {
         }
 
         // Generate legal moves for current position
-        let mut child_nodes = self.move_gen.generate_legal_moves(node).collect::<MoveList>();
+        let mut child_nodes = self
+            .move_gen
+            .generate_legal_moves(node)
+            .collect::<MoveList>();
         let in_check = self.move_gen.is_check(node);
 
         // Null move pruning
@@ -387,7 +390,10 @@ impl SearchData {
             alpha = stand_pat;
         }
 
-        let mut moves = self.move_gen.generate_legal_moves(node).collect::<MoveList>();
+        let mut moves = self
+            .move_gen
+            .generate_legal_moves(node)
+            .collect::<MoveList>();
 
         self.order_moves(&mut moves, node, None);
 

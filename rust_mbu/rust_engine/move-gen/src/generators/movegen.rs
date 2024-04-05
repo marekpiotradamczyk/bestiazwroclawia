@@ -10,7 +10,7 @@ use core::array;
 
 use crate::{
     lookup::{load_lookup_tables, LookupTables, MagicEntry},
-    r#move::{MakeMove, Move, MoveKind},
+    r#move::{Move, MoveKind},
     xray::XRayGenerator,
 };
 

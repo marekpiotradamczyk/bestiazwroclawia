@@ -33,7 +33,7 @@ use crate::{
 };
 use move_gen::{
     generators::movegen::MoveGen,
-    r#move::{MakeMove, Move, MoveKind},
+    r#move::{make_move::MakeMove, Move, MoveKind},
 };
 use sdk::{
     fen::Fen,
@@ -81,7 +81,7 @@ impl Engine {
             Command::Uci => uci_info(),
             Command::Go(options) => self.go(options),
             Command::Stop => self.stop(),
-            Command::Position(pos, moves) => self.position(pos, moves),
+            Command::Position(pos, moves) => self.position(*pos, moves),
             Command::SetOption(name, value) => self.set_option(name, value),
             Command::IsReady => println!("readyok"),
             Command::Debug => self.debug(),

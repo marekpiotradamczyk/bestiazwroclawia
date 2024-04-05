@@ -8,11 +8,7 @@ use sdk::{
 };
 use serde::Deserialize;
 
-use crate::{
-    generators::movegen::MoveGen,
-    r#move::MakeMove,
-    utils::{chess_notation::ChessNotation, logger::configure_logger},
-};
+use crate::{generators::movegen::MoveGen, r#move::make_move::MakeMove, utils::logger::configure_logger};
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -88,7 +84,7 @@ fn test_hashes() {
 
         let random_move = moves.choose(&mut rand::thread_rng()).unwrap();
 
-        let _ = pos.make_move(random_move).unwrap();
+        pos.make_move(random_move).unwrap();
 
         let hash = pos.calc_hash();
         assert_eq!(hash, pos.hash, "Fen: {fen}, move: {random_move}");
@@ -110,7 +106,7 @@ fn run_test(json_name: String) {
 
         let actual_moves: HashSet<String> = move_gen
             .generate_legal_moves(&pos)
-            .map(|mv| move_gen.to_algebraic_notation(&pos, &mv))
+            .map(|mv| format!("{mv:?}"))
             .collect();
 
         let expected_not_actual: HashSet<String> =

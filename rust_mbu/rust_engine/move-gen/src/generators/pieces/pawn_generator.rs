@@ -48,6 +48,10 @@ impl PawnMoveGenerator for MoveGen {
         };
         let blockers = friendly_occ | enemy_occ;
         let double_push_blockers = blockers | blockers.shift(&forward);
+        let double_push_rank = match color {
+            Color::White => Rank::R4,
+            Color::Black => Rank::R5,
+        };
 
         let iter = bb.into_iter().flat_map(move |from_square| {
             let maybe_pinner_ray = if pinned_pieces.has(from_square) {
@@ -59,6 +63,7 @@ impl PawnMoveGenerator for MoveGen {
             let single_moves =
                 self.pawn_single_moves(color, from_square) & !blockers & maybe_pinner_ray;
             let double_moves = self.pawn_double_moves(color, from_square)
+                & double_push_rank.bitboard()
                 & !double_push_blockers
                 & maybe_pinner_ray;
 

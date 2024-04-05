@@ -6,7 +6,7 @@ use crate::engine::search::utils::time_control::SearchOptions;
 
 pub enum Command {
     Uci,
-    Position(Position, Vec<String>),
+    Position(Box<Position>, Vec<String>),
     SetOption(String, Option<String>),
     Go(SearchOptions),
     Stop,
