@@ -16,6 +16,7 @@ pub struct Move {
 }
 
 impl PartialEq for Move {
+    #[inline(always)]
     fn eq(&self, other: &Self) -> bool {
         self.inner.eq(&other.inner)
     }
