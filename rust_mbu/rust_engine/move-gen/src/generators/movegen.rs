@@ -110,7 +110,7 @@ impl MoveGen {
         attacked_bb.count() == 2
     }
 
-    pub fn generate_legal_moves<'a>(&'a self, pos: &'a Position) -> ArrayVec<Move, 64> {
+    pub fn generate_legal_moves<'a>(&'a self, pos: &'a Position) -> ArrayVec<Move, 128> {
         let friendly_occ = pos.occupation(&pos.turn);
         let enemy_occ = pos.occupation(&pos.enemy());
         let pinned_pieces = self.pinned_pieces(pos, pos.turn);
