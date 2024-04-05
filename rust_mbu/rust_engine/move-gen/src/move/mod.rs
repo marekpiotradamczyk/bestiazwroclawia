@@ -10,9 +10,16 @@ use sdk::{
 
 type Result<T> = std::result::Result<T, anyhow::Error>;
 
-#[derive(Clone, Copy, Hash, Eq, PartialEq)]
+#[derive(Clone, Copy, Hash, Eq)]
 pub struct Move {
     pub inner: u16,
+}
+
+impl PartialEq for Move {
+    #[inline(always)]
+    fn eq(&self, other: &Self) -> bool {
+        self.inner.eq(&other.inner)
+    }
 }
 
 pub trait MakeMove {

@@ -1,3 +1,4 @@
+use arrayvec::ArrayVec;
 use sdk::{
     bitboard::{Bitboard, Direction},
     position::{Color, Piece, Position},
@@ -80,7 +81,7 @@ impl PawnMoveGenerator for MoveGen {
                             MoveKind::Quiet
                         };
 
-                        vec![Move::new(from_square, target_square, None, &kind)]
+                        ArrayVec::from_iter([Move::new(from_square, target_square, None, &kind)])
                     }
                     .into_iter()
                 })
@@ -134,15 +135,15 @@ impl PawnMoveGenerator for MoveGen {
                         cloned.pieces[color.enemy() as usize][Piece::Pawn as usize] &=
                             !captured_square;
                         if self.is_check(&cloned) {
-                            return vec![].into_iter();
+                            return ArrayVec::new().into_iter();
                         }
 
-                        return vec![Move::new(
+                        return ArrayVec::<Move, 4>::from_iter([Move::new(
                             from_square,
                             target_square,
                             None,
                             &MoveKind::EnPassant,
-                        )]
+                        )])
                         .into_iter();
                     }
                 }
@@ -151,8 +152,12 @@ impl PawnMoveGenerator for MoveGen {
                     generate_promotions_vec(from_square, target_square, MoveKind::PromotionCapture)
                 } else {
                     let kind = MoveKind::Capture;
-
-                    vec![Move::new(from_square, target_square, None, &kind)]
+                    ArrayVec::<Move, 4>::from_iter([Move::new(
+                        from_square,
+                        target_square,
+                        None,
+                        &kind,
+                    )])
                 }
                 .into_iter()
             })
@@ -164,11 +169,11 @@ fn generate_promotions_vec(
     from_square: Square,
     target_square: Square,
     kind: MoveKind,
-) -> Vec<Move> {
-    vec![
+) -> ArrayVec<Move, 4> {
+    ArrayVec::from([
         Move::new(from_square, target_square, Some(Piece::Queen), &kind),
         Move::new(from_square, target_square, Some(Piece::Rook), &kind),
         Move::new(from_square, target_square, Some(Piece::Bishop), &kind),
         Move::new(from_square, target_square, Some(Piece::Knight), &kind),
-    ]
+    ])
 }

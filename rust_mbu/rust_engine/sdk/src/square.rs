@@ -205,6 +205,7 @@ impl Square {
     #[must_use]
     #[inline]
     pub const fn from_u8(square: u8) -> Square {
+        // FIXME: not even close to being safe
         unsafe { std::mem::transmute(square) }
     }
 }
