@@ -172,6 +172,7 @@ mod tests {
     use crate::fen::Fen;
     use crate::position::Position;
 
+    #[test]
     fn test_starting_fen() {
         let starting_pos = Position::default();
 
