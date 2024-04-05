@@ -129,6 +129,10 @@ impl PawnMoveGenerator for MoveGen {
                             Color::Black => en_passant.bitboard().shift(&Direction::North),
                         };
                         cloned.occupied &= !(from_square.bitboard() | captured_square);
+                        cloned.pieces[color as usize][Piece::Pawn as usize] &=
+                            !from_square.bitboard();
+                        cloned.pieces[color.enemy() as usize][Piece::Pawn as usize] &=
+                            !captured_square;
                         if self.is_check(&cloned) {
                             return vec![].into_iter();
                         }

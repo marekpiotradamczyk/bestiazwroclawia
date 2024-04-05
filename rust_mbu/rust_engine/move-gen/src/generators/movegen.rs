@@ -149,6 +149,14 @@ impl MoveGen {
                 _ => None,
             };
 
+            let can_enpass_kill_attacker = if let Some(en_passant) = pos.en_passant {
+                let offset = if pos.turn == Color::White { -1 } else { 1 };
+
+                en_passant.offset(offset, 0).unwrap() == attacker_sq
+            } else {
+                false
+            };
+
             return non_king_moves
                 .chain(king_moves)
                 .filter(move |mv| {
@@ -160,6 +168,10 @@ impl MoveGen {
                     } else {
                         Bitboard::empty()
                     };
+
+                    if matches!(mv.kind(), MoveKind::EnPassant) {
+                        return can_enpass_kill_attacker;
+                    }
 
                     mv.to() == attacker_sq
                         || mv.from() == king_square
