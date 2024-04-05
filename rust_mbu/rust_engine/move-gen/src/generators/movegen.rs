@@ -1,3 +1,4 @@
+use arrayvec::ArrayVec;
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use sdk::{
     bitboard::{Bitboard, Direction},
@@ -109,10 +110,7 @@ impl MoveGen {
         attacked_bb.count() == 2
     }
 
-    pub fn generate_legal_moves<'a>(
-        &'a self,
-        pos: &'a Position,
-    ) -> Box<dyn Iterator<Item = Move> + 'a> {
+    pub fn generate_legal_moves<'a>(&'a self, pos: &'a Position) -> impl Iterator<Item = Move> {
         let friendly_occ = pos.occupation(&pos.turn);
         let enemy_occ = pos.occupation(&pos.enemy());
         let pinned_pieces = self.pinned_pieces(pos, pos.turn);
@@ -139,7 +137,7 @@ impl MoveGen {
             .chain(castling_moves);
 
         if attackers_to_king.is_empty() {
-            Box::new(king_moves.chain(non_king_moves))
+            ArrayVec::from_iter(king_moves.chain(non_king_moves)).into_iter()
         } else {
             let attacker_sq = attackers_to_king.pop_lsb();
 
@@ -151,22 +149,26 @@ impl MoveGen {
                     _ => None,
                 };
 
-                Box::new(non_king_moves.chain(king_moves).filter(move |mv| {
-                    let blockable_squares = if slider.is_some() {
-                        let between =
-                            self.lookups.in_between[attacker_sq as usize][king_square as usize];
+                non_king_moves
+                    .chain(king_moves)
+                    .filter(move |mv| {
+                        let blockable_squares = if slider.is_some() {
+                            let between =
+                                self.lookups.in_between[attacker_sq as usize][king_square as usize];
 
-                        between & !pos.occupation(&pos.turn)
-                    } else {
-                        Bitboard::empty()
-                    };
+                            between & !pos.occupation(&pos.turn)
+                        } else {
+                            Bitboard::empty()
+                        };
 
-                    mv.to() == attacker_sq
-                        || mv.from() == king_square
-                        || !(mv.to().bitboard() & blockable_squares).is_empty()
-                }))
+                        mv.to() == attacker_sq
+                            || mv.from() == king_square
+                            || !(mv.to().bitboard() & blockable_squares).is_empty()
+                    })
+                    .collect::<ArrayVec<_, 64>>()
+                    .into_iter()
             } else {
-                Box::new(king_moves)
+                arrayvec::ArrayVec::from_iter(king_moves).into_iter()
             }
         }
     }

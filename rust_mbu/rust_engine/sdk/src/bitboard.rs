@@ -249,12 +249,14 @@ impl Display for Bitboard {
 // CONVERSIONS
 
 impl From<u64> for Bitboard {
+    #[inline(always)]
     fn from(value: u64) -> Self {
         Bitboard(value)
     }
 }
 
 impl From<Square> for Bitboard {
+    #[inline(always)]
     fn from(value: Square) -> Self {
         value.bitboard()
     }

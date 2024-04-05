@@ -231,6 +231,7 @@ impl Position {
     }
 
     #[must_use]
+    #[inline(always)]
     pub const fn piece_at(&self, square: &Square) -> Option<(Piece, Color)> {
         self.mailbox[*square as usize]
     }

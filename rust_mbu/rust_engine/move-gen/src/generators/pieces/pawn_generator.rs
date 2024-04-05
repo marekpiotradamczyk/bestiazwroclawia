@@ -50,7 +50,7 @@ impl PawnMoveGenerator for MoveGen {
         let blockers = friendly_occ | enemy_occ;
         let double_push_blockers = blockers | blockers.shift(&forward);
 
-        let iter = bb.into_iter().flat_map(move |from_square| {
+        bb.into_iter().flat_map(move |from_square| {
             let maybe_pinner_ray = if pinned_pieces.has(from_square) {
                 self.between_pinner_inclusive(from_square, king_sq, blockers)
             } else {
@@ -85,9 +85,7 @@ impl PawnMoveGenerator for MoveGen {
                     }
                     .into_iter()
                 })
-        });
-
-        iter
+        })
     }
 
     fn generate_pawn_attacks<'a>(

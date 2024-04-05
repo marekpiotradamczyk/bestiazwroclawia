@@ -19,8 +19,6 @@ pub const REPEATED_POSITION_SCORE: i32 = 0;
 pub const EXTEND_CHECK: usize = 1;
 
 use lazy_static::lazy_static;
-use smallvec::SmallVec;
-
 use self::{
     heuristics::{
         futility_pruning::is_futile,
@@ -36,7 +34,7 @@ use self::{
 
 use super::eval::{evaluate, PIECE_VALUES};
 
-type MoveList = SmallVec<[Move; 64]>;
+type MoveList = arrayvec::ArrayVec<Move, 64>;
 
 lazy_static! {
     pub static ref STOPPED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));

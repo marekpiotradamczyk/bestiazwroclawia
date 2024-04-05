@@ -18,7 +18,7 @@ pub const MVV_LVA: [[i32; 6]; 6] = [
 pub trait MoveUtils {
     fn score_move(&self, mv: &Move, pos: &Position) -> i32;
     fn order_moves(&self, moves: &mut [Move], pos: &Position, best_move: Option<Move>) {
-        moves.sort_by_key(|m| {
+        moves.sort_by_cached_key(|m| {
             if best_move.is_some_and(|best| best == *m) {
                 -3_000_000
             } else {
