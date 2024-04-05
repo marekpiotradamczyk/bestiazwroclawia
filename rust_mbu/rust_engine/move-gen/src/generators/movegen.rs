@@ -110,7 +110,7 @@ impl MoveGen {
         attacked_bb.count() == 2
     }
 
-    pub fn generate_legal_moves<'a>(&'a self, pos: &'a Position) -> impl Iterator<Item = Move> {
+    pub fn generate_legal_moves<'a>(&'a self, pos: &'a Position) -> ArrayVec<Move, 128> {
         let friendly_occ = pos.occupation(&pos.turn);
         let enemy_occ = pos.occupation(&pos.enemy());
         let pinned_pieces = self.pinned_pieces(pos, pos.turn);
@@ -137,40 +137,49 @@ impl MoveGen {
             .chain(castling_moves);
 
         if attackers_to_king.is_empty() {
-            ArrayVec::from_iter(king_moves.chain(non_king_moves)).into_iter()
-        } else {
-            let attacker_sq = attackers_to_king.pop_lsb();
-
-            if attackers_to_king.is_empty() {
-                let slider = match pos.piece_at(&attacker_sq).unwrap().0 {
-                    Piece::Rook => Some(Slider::Rook),
-                    Piece::Bishop => Some(Slider::Bishop),
-                    Piece::Queen => Some(Slider::Queen),
-                    _ => None,
-                };
-
-                non_king_moves
-                    .chain(king_moves)
-                    .filter(move |mv| {
-                        let blockable_squares = if slider.is_some() {
-                            let between =
-                                self.lookups.in_between[attacker_sq as usize][king_square as usize];
-
-                            between & !pos.occupation(&pos.turn)
-                        } else {
-                            Bitboard::empty()
-                        };
-
-                        mv.to() == attacker_sq
-                            || mv.from() == king_square
-                            || !(mv.to().bitboard() & blockable_squares).is_empty()
-                    })
-                    .collect::<ArrayVec<_, 64>>()
-                    .into_iter()
-            } else {
-                arrayvec::ArrayVec::from_iter(king_moves).into_iter()
-            }
+            return king_moves.chain(non_king_moves).collect();
         }
+        let attacker_sq = attackers_to_king.pop_lsb();
+
+        if attackers_to_king.is_empty() {
+            let slider = match pos.piece_at(&attacker_sq).unwrap().0 {
+                Piece::Rook => Some(Slider::Rook),
+                Piece::Bishop => Some(Slider::Bishop),
+                Piece::Queen => Some(Slider::Queen),
+                _ => None,
+            };
+
+            let can_enpass_kill_attacker = if let Some(en_passant) = pos.en_passant {
+                let offset = if pos.turn == Color::White { -1 } else { 1 };
+
+                en_passant.offset(offset, 0).unwrap() == attacker_sq
+            } else {
+                false
+            };
+
+            return non_king_moves
+                .chain(king_moves)
+                .filter(move |mv| {
+                    let blockable_squares = if slider.is_some() {
+                        let between =
+                            self.lookups.in_between[attacker_sq as usize][king_square as usize];
+
+                        between & !pos.occupation(&pos.turn)
+                    } else {
+                        Bitboard::empty()
+                    };
+
+                    if matches!(mv.kind(), MoveKind::EnPassant) {
+                        return can_enpass_kill_attacker;
+                    }
+
+                    mv.to() == attacker_sq
+                        || mv.from() == king_square
+                        || !(mv.to().bitboard() & blockable_squares).is_empty()
+                })
+                .collect();
+        }
+        king_moves.collect()
     }
 }
 

@@ -100,7 +100,7 @@ impl PawnMoveGenerator for MoveGen {
         let color = pos.turn;
         let bb = pos.pieces[color as usize][Piece::Pawn as usize];
 
-        let iter = bb.into_iter().flat_map(move |from_square| {
+        bb.into_iter().flat_map(move |from_square| {
             let maybe_pinner_ray = if pinned_pieces.has(from_square) {
                 self.between_pinner_inclusive(from_square, king_sq, blockers)
             } else {
@@ -130,6 +130,10 @@ impl PawnMoveGenerator for MoveGen {
                             Color::Black => en_passant.bitboard().shift(&Direction::North),
                         };
                         cloned.occupied &= !(from_square.bitboard() | captured_square);
+                        cloned.pieces[color as usize][Piece::Pawn as usize] &=
+                            !from_square.bitboard();
+                        cloned.pieces[color.enemy() as usize][Piece::Pawn as usize] &=
+                            !captured_square;
                         if self.is_check(&cloned) {
                             return ArrayVec::new().into_iter();
                         }
@@ -157,9 +161,7 @@ impl PawnMoveGenerator for MoveGen {
                 }
                 .into_iter()
             })
-        });
-
-        iter
+        })
     }
 }
 
