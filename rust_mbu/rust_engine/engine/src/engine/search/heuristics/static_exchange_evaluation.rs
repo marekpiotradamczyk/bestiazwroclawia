@@ -1,5 +1,5 @@
 use move_gen::{
-    generators::{movegen::MoveGen, pieces::simple_move_generator::SimpleMoveGenerator},
+    generators::{pieces::simple_move_generator::SimpleMoveGenerator},
     r#move::Move,
 };
 use sdk::{
@@ -9,9 +9,9 @@ use sdk::{
     square::Square,
 };
 
-use crate::engine::eval::PIECE_VALUES;
+use crate::engine::{eval::PIECE_VALUES, MOVE_GEN};
 
-pub fn static_exchange_evaluation(move_gen: &MoveGen, pos: &Position, mv: &Move) -> i32 {
+pub fn static_exchange_evaluation(pos: &Position, mv: &Move) -> i32 {
     let mut gain = [0; 32];
     let mut occupied = pos.occupied;
     let bishop_sliders = pos.pieces[Color::White as usize][Piece::Bishop as usize]
@@ -28,8 +28,8 @@ pub fn static_exchange_evaluation(move_gen: &MoveGen, pos: &Position, mv: &Move)
     let from_sq = mv.from();
     let mut turn = pos.turn;
 
-    let mut attacks = move_gen.attacks_to_square(pos, target_sq, Color::White, occupied)
-        | move_gen.attacks_to_square(pos, target_sq, Color::Black, occupied);
+    let mut attacks = MOVE_GEN.attacks_to_square(pos, target_sq, Color::White, occupied)
+        | MOVE_GEN.attacks_to_square(pos, target_sq, Color::Black, occupied);
 
     let mut attacked_piece_val = PIECE_VALUES[pos.piece_at(&target_sq).unwrap().0 as usize];
     turn = turn.enemy();
@@ -42,11 +42,11 @@ pub fn static_exchange_evaluation(move_gen: &MoveGen, pos: &Position, mv: &Move)
     attacked_piece_val = PIECE_VALUES[piece as usize];
 
     if matches!(piece, Piece::Pawn | Piece::Bishop | Piece::Queen) {
-        attacks |= move_gen.bishop_moves(target_sq, occupied) & bishop_sliders;
+        attacks |= MOVE_GEN.bishop_moves(target_sq, occupied) & bishop_sliders;
     }
 
     if matches!(piece, Piece::Rook | Piece::Queen) {
-        attacks |= move_gen.rook_moves(target_sq, occupied) & rook_sliders;
+        attacks |= MOVE_GEN.rook_moves(target_sq, occupied) & rook_sliders;
     }
 
     let mut counter = 0;
@@ -63,11 +63,11 @@ pub fn static_exchange_evaluation(move_gen: &MoveGen, pos: &Position, mv: &Move)
         occupied ^= least_valuable_piece_sq.bitboard();
 
         if matches!(piece, Piece::Pawn | Piece::Bishop | Piece::Queen) {
-            remaining_attackers |= move_gen.bishop_moves(target_sq, occupied) & bishop_sliders;
+            remaining_attackers |= MOVE_GEN.bishop_moves(target_sq, occupied) & bishop_sliders;
         }
 
         if matches!(piece, Piece::Rook | Piece::Queen) {
-            remaining_attackers |= move_gen.rook_moves(target_sq, occupied) & rook_sliders;
+            remaining_attackers |= MOVE_GEN.rook_moves(target_sq, occupied) & rook_sliders;
         }
 
         counter += 1;
@@ -93,7 +93,7 @@ pub fn static_exchange_evaluation(move_gen: &MoveGen, pos: &Position, mv: &Move)
     gain[0]
 }
 
-pub fn static_exchange_evaluation_move_done(move_gen: &MoveGen, pos: &Position, mv: &Move) -> i32 {
+pub fn static_exchange_evaluation_move_done(pos: &Position, mv: &Move) -> i32 {
     let mut gain = [0; 32];
     let mut occupied = pos.occupied;
     let bishop_sliders = pos.pieces[Color::White as usize][Piece::Bishop as usize]
@@ -112,8 +112,8 @@ pub fn static_exchange_evaluation_move_done(move_gen: &MoveGen, pos: &Position, 
 
     let piece = pos.piece_at(&from_sq).unwrap().0;
 
-    let mut attacks = move_gen.attacks_to_square(pos, target_sq, Color::White, occupied)
-        | move_gen.attacks_to_square(pos, target_sq, Color::Black, occupied);
+    let mut attacks = MOVE_GEN.attacks_to_square(pos, target_sq, Color::White, occupied)
+        | MOVE_GEN.attacks_to_square(pos, target_sq, Color::Black, occupied);
 
     let mut attacked_piece_val = PIECE_VALUES[piece as usize];
 
@@ -129,11 +129,11 @@ pub fn static_exchange_evaluation_move_done(move_gen: &MoveGen, pos: &Position, 
     let lvp_piece = pos.piece_at(&lvp_sq).unwrap().0;
     occupied ^= lvp_sq.bitboard();
     if matches!(lvp_piece, Piece::Pawn | Piece::Bishop | Piece::Queen) {
-        attacks |= move_gen.bishop_moves(target_sq, occupied) & bishop_sliders;
+        attacks |= MOVE_GEN.bishop_moves(target_sq, occupied) & bishop_sliders;
     }
 
     if matches!(lvp_piece, Piece::Rook | Piece::Queen) {
-        attacks |= move_gen.rook_moves(target_sq, occupied) & rook_sliders;
+        attacks |= MOVE_GEN.rook_moves(target_sq, occupied) & rook_sliders;
     }
 
     attacked_piece_val = PIECE_VALUES[lvp_piece as usize];
@@ -153,11 +153,11 @@ pub fn static_exchange_evaluation_move_done(move_gen: &MoveGen, pos: &Position, 
         occupied ^= least_valuable_piece_sq.bitboard();
 
         if matches!(piece, Piece::Pawn | Piece::Bishop | Piece::Queen) {
-            remaining_attackers |= move_gen.bishop_moves(target_sq, occupied) & bishop_sliders;
+            remaining_attackers |= MOVE_GEN.bishop_moves(target_sq, occupied) & bishop_sliders;
         }
 
         if matches!(piece, Piece::Rook | Piece::Queen) {
-            remaining_attackers |= move_gen.rook_moves(target_sq, occupied) & rook_sliders;
+            remaining_attackers |= MOVE_GEN.rook_moves(target_sq, occupied) & rook_sliders;
         }
 
         counter += 1;

@@ -1,7 +1,6 @@
-use std::sync::Arc;
-
-use move_gen::generators::movegen::MoveGen;
 use sdk::position::{Color, Piece, Position};
+
+use crate::engine::MOVE_GEN;
 
 pub const KING_SAFETY_TABLE: [i32; 150] = [
     0, 0, 0, 1, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 36, 42, 48, 55, 62, 70, 80, 90, 100,
@@ -16,22 +15,22 @@ pub const KING_SAFETY_TABLE: [i32; 150] = [
 
 pub const PIECE_ATTACK_UNITS: [i32; 6] = [0, 2, 2, 3, 5, 0];
 
-pub fn calc_king_safety(position: &Position, move_gen: Arc<MoveGen>) -> i32 {
-    let white_units = calc_king_safety_units(position, move_gen.clone(), Color::White);
-    let black_units = calc_king_safety_units(position, move_gen.clone(), Color::Black);
+pub fn calc_king_safety(position: &Position) -> i32 {
+    let white_units = calc_king_safety_units(position, Color::White);
+    let black_units = calc_king_safety_units(position, Color::Black);
 
     -(KING_SAFETY_TABLE[white_units as usize] - KING_SAFETY_TABLE[black_units as usize])
 }
 
-pub fn calc_king_safety_units(position: &Position, move_gen: Arc<MoveGen>, color: Color) -> i32 {
+pub fn calc_king_safety_units(position: &Position, color: Color) -> i32 {
     let king_sq = position.pieces[color as usize][Piece::King as usize].lsb();
 
-    let near_king = move_gen.lookups.squares_near_king[color as usize][king_sq as usize];
+    let near_king = MOVE_GEN.lookups.squares_near_king[color as usize][king_sq as usize];
 
     let mut bonus: i32 = 0;
 
     for sq in near_king {
-        for piece_sq in move_gen.attacks_to_square(position, sq, color.enemy(), position.occupied) {
+        for piece_sq in MOVE_GEN.attacks_to_square(position, sq, color.enemy(), position.occupied) {
             let (piece, _) = position.piece_at(&piece_sq).unwrap();
 
             bonus += PIECE_ATTACK_UNITS[piece as usize];

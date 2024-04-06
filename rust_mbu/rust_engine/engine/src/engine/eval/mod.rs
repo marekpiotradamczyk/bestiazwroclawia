@@ -8,8 +8,8 @@ pub mod rooks;
 
 use std::sync::Arc;
 
-use move_gen::generators::movegen::MoveGen;
-use sdk::position::{Color, Position};
+
+use sdk::{position::{Color, Position}};
 
 pub trait Evaluate {
     fn evaluate(&self, position: &Position) -> f64;
@@ -33,12 +33,13 @@ use self::{
     },
 };
 
+
+
 pub const PIECE_VALUES: [i32; 6] = [100, 300, 320, 500, 900, 10000];
 
 pub fn evaluate(
     position: &Position,
     eval_table: Arc<EvaluationTable>,
-    move_gen: Arc<MoveGen>,
 ) -> i32 {
     if let Some(value) = eval_table.read(position.hash) {
         return value;
@@ -54,7 +55,7 @@ pub fn evaluate(
     let mut score = tapered_eval(position, phase);
     //let score = material(position);
 
-    score += calc_king_safety(position, move_gen.clone());
+    score += calc_king_safety(position);
     score += penalty_for_isolated_pawns(position);
     score += penalty_for_stacked_pawns(position);
     score += bonus_for_protected_passed_pawnes(position);
@@ -63,7 +64,7 @@ pub fn evaluate(
     score += bonus_rook_for_open_files(position);
     score += bonus_rook_for_semi_open_files(position);
     score += bonus_for_rook_battery(position);
-    score += bonus_for_absolute_pins(position, move_gen.clone());
+    score += bonus_for_absolute_pins(position);
     score += bonus_for_mobility(position);
 
     let final_score = score * side_multiplier;

@@ -4,8 +4,8 @@ use crate::{
 };
 
 #[must_use]
-pub fn generate_rays_attacks() -> [[Bitboard; 64]; 8] {
-    let mut attacks = [[Bitboard::empty(); 64]; 8];
+pub fn generate_rays_attacks() -> Vec<Vec<Bitboard>> {
+    let mut attacks = vec![vec![Bitboard(0); 64]; 8];
 
     for direction in Direction::all() {
         let (file_offset, rank_offset) = direction.offsets();

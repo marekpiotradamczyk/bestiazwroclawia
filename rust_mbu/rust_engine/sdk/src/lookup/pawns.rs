@@ -6,8 +6,8 @@ use crate::square::Rank;
 use crate::square::Square;
 
 #[must_use]
-pub fn gen_single_pawn_moves() -> [[Bitboard; 64]; 2] {
-    let mut pawn_moves = [[EMPTY; 64]; 2];
+pub fn gen_single_pawn_moves() -> Vec<Vec<Bitboard>> {
+    let mut pawn_moves = vec![vec![EMPTY; 64]; 2];
     for color in Color::iter() {
         let direction = match color {
             Color::White => Direction::North,
@@ -22,8 +22,8 @@ pub fn gen_single_pawn_moves() -> [[Bitboard; 64]; 2] {
 }
 
 #[must_use]
-pub fn gen_double_pawn_moves() -> [[Bitboard; 64]; 2] {
-    let mut pawn_moves = [[EMPTY; 64]; 2];
+pub fn gen_double_pawn_moves() -> Vec<Vec<Bitboard>> {
+    let mut pawn_moves = vec![vec![EMPTY; 64]; 2];
     for color in Color::iter() {
         let direction = match color {
             Color::White => Direction::North,
@@ -42,8 +42,8 @@ pub fn gen_double_pawn_moves() -> [[Bitboard; 64]; 2] {
 }
 
 #[must_use]
-pub fn gen_pawn_attacks() -> [[Bitboard; 64]; 2] {
-    let mut pawn_attacks = [[EMPTY; 64]; 2];
+pub fn gen_pawn_attacks() -> Vec<Vec<Bitboard>> {
+    let mut pawn_attacks = vec![vec![EMPTY; 64]; 2];
     for color in Color::iter() {
         let (first_dir, second_dir) = match color {
             Color::White => (Direction::NorthEast, Direction::NorthWest),

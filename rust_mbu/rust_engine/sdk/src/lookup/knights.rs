@@ -11,8 +11,8 @@ const FILE_AB: Bitboard = Bitboard(FILE_A.0 | FILE_B.0);
 const FILE_GH: Bitboard = Bitboard(FILE_G.0 | FILE_H.0);
 
 #[must_use]
-pub fn gen_knight_attacks() -> [Bitboard; 64] {
-    let mut knight_attacks = [Bitboard(0); 64];
+pub fn gen_knight_attacks() -> Vec<Bitboard> {
+    let mut knight_attacks = vec![Bitboard(0); 64];
     for sq in Square::iter() {
         knight_attacks[sq as usize] = mask_knights_attacks(sq.into());
     }

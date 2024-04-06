@@ -22,8 +22,8 @@ pub fn squares_near_king(king_sq: Square, king_color: Color) -> Bitboard {
 }
 
 #[must_use]
-pub fn generate_square_close_to_king() -> [[Bitboard; 64]; 2] {
-    let mut squares = [[Bitboard(0); 64]; 2];
+pub fn generate_square_close_to_king() -> Vec<Vec<Bitboard>> {
+    let mut squares = vec![vec![Bitboard(0); 64]; 2];
 
     for king_sq in Square::iter() {
         for king_color in Color::all() {

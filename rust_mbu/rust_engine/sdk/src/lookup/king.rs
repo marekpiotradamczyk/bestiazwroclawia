@@ -9,8 +9,8 @@ const RANK_1: Bitboard = Rank::R1.bitboard();
 const RANK_8: Bitboard = Rank::R8.bitboard();
 
 #[must_use]
-pub fn gen_king_attacks() -> [Bitboard; 64] {
-    let mut king_attacks = [Bitboard(0); 64];
+pub fn gen_king_attacks() -> Vec<Bitboard> {
+    let mut king_attacks = vec![Bitboard(0); 64];
     for sq in crate::square::Square::iter() {
         king_attacks[sq as usize] = mask_king_attacks(sq.bitboard());
     }

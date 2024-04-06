@@ -1,8 +1,8 @@
 use crate::bitboard::Bitboard;
 
 #[must_use]
-pub fn generate_in_between_squares() -> [[Bitboard; 64]; 64] {
-    let mut result = [[Bitboard(0); 64]; 64];
+pub fn generate_in_between_squares() -> Vec<Vec<Bitboard>> {
+    let mut result: Vec<Vec<Bitboard>> = vec![vec![Bitboard(0); 64]; 64];
 
     for sq1 in 0..64u8 {
         for sq2 in 0..64u8 {

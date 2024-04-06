@@ -15,18 +15,18 @@ use sdk::{
 use anyhow::Result;
 
 pub struct LookupTables {
-    pub rook_magics: [MagicEntry; 64],
-    pub rook_moves: [[Bitboard; 1 << 12]; 64],
-    pub bishop_magics: [MagicEntry; 64],
-    pub bishop_moves: [[Bitboard; 1 << 9]; 64],
-    pub knight_attacks: [Bitboard; 64],
-    pub king_attacks: [Bitboard; 64],
-    pub pawn_attacks: [[Bitboard; 64]; 2],
-    pub pawn_single_moves: [[Bitboard; 64]; 2],
-    pub pawn_double_moves: [[Bitboard; 64]; 2],
-    pub in_between: [[Bitboard; 64]; 64],
-    pub ray_attacks: [[Bitboard; 64]; 8],
-    pub squares_near_king: [[Bitboard; 64]; 2],
+    pub rook_magics: Vec<MagicEntry>,
+    pub rook_moves: Vec<Vec<Bitboard>>,
+    pub bishop_magics: Vec<MagicEntry>,
+    pub bishop_moves: Vec<Vec<Bitboard>>,
+    pub knight_attacks: Vec<Bitboard>,
+    pub king_attacks: Vec<Bitboard>,
+    pub pawn_attacks: Vec<Vec<Bitboard>>,
+    pub pawn_single_moves: Vec<Vec<Bitboard>>,
+    pub pawn_double_moves: Vec<Vec<Bitboard>>,
+    pub in_between: Vec<Vec<Bitboard>>,
+    pub ray_attacks: Vec<Vec<Bitboard>>,
+    pub squares_near_king: Vec<Vec<Bitboard>>
 }
 
 #[derive(Clone, Copy)]
@@ -66,8 +66,8 @@ pub fn load_lookup_tables() -> Result<LookupTables> {
     })
 }
 
-pub fn load_rook_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 12]; 64])> {
-    let mut magics = [MagicEntry {
+pub fn load_rook_magics() -> Result<(Vec<MagicEntry>, Vec<Vec<Bitboard>>)> {
+    let mut magics = vec![MagicEntry {
         mask: Bitboard(0),
         magic: 0,
         index_bits: 0,
@@ -104,7 +104,7 @@ pub fn load_rook_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 12]; 64]
     let mut buffer: Vec<u8> = Vec::new();
     file.read_to_end(&mut buffer)?;
 
-    let mut moves = [[Bitboard(0); 1 << 12]; 64];
+    let mut moves = vec![vec![Bitboard(0); 1 << 12]; 64];
 
     let size = 1 << 12;
 
@@ -115,8 +115,8 @@ pub fn load_rook_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 12]; 64]
     Ok((magics, moves))
 }
 
-pub fn load_bishop_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 9]; 64])> {
-    let mut magics = [MagicEntry {
+pub fn load_bishop_magics() -> Result<(Vec<MagicEntry>, Vec<Vec<Bitboard>>)> {
+    let mut magics = vec![MagicEntry {
         mask: Bitboard(0),
         magic: 0,
         index_bits: 0,
@@ -156,7 +156,7 @@ pub fn load_bishop_magics() -> Result<([MagicEntry; 64], [[Bitboard; 1 << 9]; 64
 
     let size = 1 << 9;
 
-    let mut moves = [[Bitboard(0); 1 << 9]; 64];
+    let mut moves = vec![vec![Bitboard(0); 1 << 9]; 64];
 
     for (idx, elem) in buffer.chunks_exact(8).enumerate() {
         moves[idx / size][idx % size] = Bitboard(u64::from_be_bytes(elem.try_into().unwrap()));

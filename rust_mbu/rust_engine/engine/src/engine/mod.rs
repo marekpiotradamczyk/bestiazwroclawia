@@ -55,6 +55,10 @@ use self::{
     },
 };
 
+lazy_static::lazy_static! {
+    pub static ref MOVE_GEN: MoveGen = MoveGen::default();
+}
+
 use derivative::Derivative;
 
 pub mod engine_options;
@@ -65,7 +69,6 @@ pub mod search;
 #[derivative(Default)]
 pub struct Engine {
     pub root_pos: Position,
-    pub move_gen: Arc<MoveGen>,
     pub repetition_table: RepetitionTable,
     pub transposition_table: Arc<TranspositionTable>,
     pub evaluation_table: Arc<EvaluationTable>,
@@ -110,10 +113,7 @@ impl Engine {
             }
         };
 
-        thread::Builder::new()
-            .stack_size(32 * 1024 * 1024 * 4)
-            .spawn(run)
-            .unwrap();
+        thread::Builder::new().spawn(run).unwrap();
 
         tx
     }
@@ -121,7 +121,6 @@ impl Engine {
     pub fn go(&mut self, options: SearchOptions) {
         STOPPED.store(false, Ordering::Relaxed);
         let pos = self.root_pos.clone();
-        let move_gen = self.move_gen.clone();
         let is_white = pos.turn == Color::White;
         let rep_table = self.repetition_table.clone();
         let transposition_table = self.transposition_table.clone();
@@ -133,7 +132,6 @@ impl Engine {
             let mut search = Search::new(
                 options,
                 engine_options,
-                move_gen,
                 is_white,
                 rep_table,
                 transposition_table,
@@ -144,7 +142,6 @@ impl Engine {
         };
 
         thread::Builder::new()
-            .stack_size(32 * 1024 * 1024 * 2 * 8)
             .name("GoThread".to_string())
             .spawn(run)
             .unwrap();
@@ -159,7 +156,7 @@ impl Engine {
         // TODO: Temp fix
         self.transposition_table = Arc::new(TranspositionTable::new(self.options.hash));
         self.age += 1;
-        match parse_uci_moves(moves, &mut pos, &self.move_gen) {
+        match parse_uci_moves(moves, &mut pos) {
             Ok(repetition_table) => {
                 self.root_pos = pos;
                 self.repetition_table = repetition_table;
@@ -170,7 +167,7 @@ impl Engine {
 
     fn debug(&self) {
         println!("{}", self.root_pos);
-        let moves = self.move_gen.generate_legal_moves(&self.root_pos);
+        let moves = MOVE_GEN.generate_legal_moves(&self.root_pos);
         println!("Legal moves: ");
         for mv in moves {
             print!("{} ", mv);
@@ -183,10 +180,7 @@ impl Engine {
         println!("Game phase: {}", phase);
         println!();
         println!("Tapered eval: {}", tapered_eval(&self.root_pos, phase));
-        println!(
-            "Safety bonus: {}",
-            calc_king_safety(&self.root_pos, self.move_gen.clone())
-        );
+        println!("Safety bonus: {}", calc_king_safety(&self.root_pos));
         println!(
             "Isolated pawns penalty: {}",
             penalty_for_isolated_pawns(&self.root_pos)
@@ -221,18 +215,14 @@ impl Engine {
         );
         println!(
             "Absolute pin bonus: {}",
-            bonus_for_absolute_pins(&self.root_pos, self.move_gen.clone())
+            bonus_for_absolute_pins(&self.root_pos)
         );
         println!("Mobility bonus: {}", bonus_for_mobility(&self.root_pos));
 
         println!();
         println!(
             "Eval: {}",
-            evaluate(
-                &self.root_pos,
-                self.evaluation_table.clone(),
-                self.move_gen.clone()
-            )
+            evaluate(&self.root_pos, self.evaluation_table.clone(),)
         );
     }
 
@@ -255,11 +245,7 @@ impl Engine {
         println!("{}", mv);
 
         //dbg!(static_exchange_evaluation(&self.move_gen, &pos, &mv));
-        dbg!(static_exchange_evaluation_move_done(
-            &self.move_gen,
-            &pos,
-            &mv
-        ));
+        dbg!(static_exchange_evaluation_move_done(&pos, &mv));
     }
 
     fn simulate(&mut self, moves: Vec<String>) {
@@ -292,16 +278,12 @@ fn uci_info() {
     println!("uciok");
 }
 
-fn parse_uci_moves(
-    moves: Vec<String>,
-    pos: &mut Position,
-    move_gen: &MoveGen,
-) -> Result<RepetitionTable> {
+fn parse_uci_moves(moves: Vec<String>, pos: &mut Position) -> Result<RepetitionTable> {
     let mut repetition_table = RepetitionTable::default();
     repetition_table.last_irreversible[0] = pos.halfmove_clock as usize;
 
     for mv_str in moves {
-        let mv = move_gen
+        let mv = MOVE_GEN
             .generate_legal_moves(pos)
             .into_iter()
             .find(|mv| mv.to_string() == mv_str)

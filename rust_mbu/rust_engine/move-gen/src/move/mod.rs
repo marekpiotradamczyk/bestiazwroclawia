@@ -10,9 +10,15 @@ use sdk::{
 
 type Result<T> = std::result::Result<T, anyhow::Error>;
 
-#[derive(Clone, Copy, Hash, Eq)]
+#[derive(Clone, Copy, Eq)]
 pub struct Move {
     pub inner: u16,
+}
+
+impl Default for Move {
+    fn default() -> Self {
+        Move::null()
+    }
 }
 
 impl PartialEq for Move {

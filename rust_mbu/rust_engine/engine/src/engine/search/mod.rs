@@ -32,7 +32,7 @@ use self::{
 };
 use lazy_static::lazy_static;
 
-use super::eval::{evaluate, PIECE_VALUES};
+use super::{eval::{evaluate, PIECE_VALUES}, MOVE_GEN};
 
 lazy_static! {
     pub static ref STOPPED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
@@ -92,13 +92,13 @@ impl SearchData {
 
         // Stop search if we are too deep
         if self.ply >= MAX_PLY {
-            return evaluate(node, self.eval_table.clone(), self.move_gen.clone());
+            return evaluate(node, self.eval_table.clone());
         }
 
         // Generate legal moves for current position
-        let mut child_nodes = self.move_gen.generate_legal_moves(node);
+        let mut child_nodes = MOVE_GEN.generate_legal_moves(node);
 
-        let in_check = self.move_gen.is_check(node);
+        let in_check = MOVE_GEN.is_check(node);
 
         // Null move pruning
         if self.null_move_reduction(node, beta, depth, in_check, self.ply) {
@@ -106,7 +106,7 @@ impl SearchData {
         }
 
         // Statically evaluate current position. This is needed for pruning.
-        let static_eval = evaluate(node, self.eval_table.clone(), self.move_gen.clone());
+        let static_eval = evaluate(node, self.eval_table.clone());
 
         // Razoring
         if let Some(score) = self.razoring(node, static_eval, alpha, beta, depth, in_check, pv_node)
@@ -171,7 +171,7 @@ impl SearchData {
                 child_pos
             };
 
-            let gives_check = self.move_gen.is_check(&child_pos);
+            let gives_check = MOVE_GEN.is_check(&child_pos);
 
             // Check extension. We don't extend if check is unsafe, that is oponnent can gain
             // material by series of captures. We check that using `static_exchange_evaluation`.
@@ -180,7 +180,7 @@ impl SearchData {
                     PIECE_VALUES[node.piece_at(&child.from()).unwrap().0 as usize];
 
                 let opponent_recapture_gain =
-                    static_exchange_evaluation_move_done(&self.move_gen, node, child);
+                    static_exchange_evaluation_move_done(node, child);
 
                 let is_safe_check = opponent_recapture_gain <= value_of_moved_piece;
 
@@ -365,10 +365,10 @@ impl SearchData {
         }
 
         if self.ply >= MAX_PLY {
-            return evaluate(node, self.eval_table.clone(), self.move_gen.clone());
+            return evaluate(node, self.eval_table.clone());
         }
 
-        let stand_pat = evaluate(node, self.eval_table.clone(), self.move_gen.clone());
+        let stand_pat = evaluate(node, self.eval_table.clone());
 
         if stand_pat >= beta {
             return beta;
@@ -384,7 +384,7 @@ impl SearchData {
             alpha = stand_pat;
         }
 
-        let mut moves = self.move_gen.generate_legal_moves(node);
+        let mut moves = MOVE_GEN.generate_legal_moves(node);
 
         self.order_moves(&mut moves, node, None);
 
@@ -398,7 +398,7 @@ impl SearchData {
                 let captured_piece = node.piece_at(&mv.to()).unwrap().0;
 
                 if PIECE_VALUES[attacking_piece as usize] > PIECE_VALUES[captured_piece as usize]
-                    && static_exchange_evaluation(&self.move_gen, node, &mv) < 0
+                    && static_exchange_evaluation(node, &mv) < 0
                 {
                     continue;
                 }

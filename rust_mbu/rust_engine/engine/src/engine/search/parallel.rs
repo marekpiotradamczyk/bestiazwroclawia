@@ -3,7 +3,7 @@ use std::{
     time::Instant,
 };
 
-use move_gen::generators::movegen::MoveGen;
+
 use sdk::position::Position;
 
 use super::{
@@ -28,7 +28,6 @@ pub struct Search {
     pub time_control: Arc<TimeControl>,
     pub options: SearchOptions,
     pub engine_options: EngineOptions,
-    pub move_gen: Arc<MoveGen>,
     pub repetion_table: RepetitionTable,
     pub transposition_table: Arc<TranspositionTable>,
     pub eval_table: Arc<EvaluationTable>,
@@ -47,7 +46,6 @@ pub struct SearchThread {
 pub struct SearchData {
     pub nodes_evaluated: usize,
     pub ply: usize,
-    pub move_gen: Arc<MoveGen>,
     pub killer_moves: [[Option<Move>; MAX_PLY]; 2],
     pub history_moves: [[[i32; 64]; 6]; 2],
     pub counter_moves: [[Option<Move>; MAX_PLY]; 2],
@@ -65,7 +63,6 @@ impl Search {
     pub fn new(
         options: SearchOptions,
         engine_options: EngineOptions,
-        move_gen: Arc<MoveGen>,
         is_white: bool,
         rep_table: RepetitionTable,
         transposition_table: Arc<TranspositionTable>,
@@ -75,7 +72,6 @@ impl Search {
         Self {
             time_control: Arc::new(options.time_control(is_white)),
             options,
-            move_gen,
             repetion_table: rep_table,
             transposition_table,
             eval_table,
@@ -91,7 +87,6 @@ impl Search {
             let data = SearchData {
                 nodes_evaluated: 0,
                 ply: 0,
-                move_gen: self.move_gen.clone(),
                 killer_moves: [[None; MAX_PLY]; 2],
                 history_moves: [[[0; 64]; 6]; 2],
                 pv: PrincipalVariation::default(),
