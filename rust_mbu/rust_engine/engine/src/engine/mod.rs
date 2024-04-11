@@ -235,17 +235,12 @@ impl Engine {
 
     fn test(&mut self) {
         let pos = Position::from_fen(
-            "1k1r1br1/p1p1pppp/7q/1PpP4/Q3PPPP/P7/4N2R/R4K2 w - - 1 29".to_string(),
+            "rnb2rk1/pp1p1pp1/4p2p/2b5/2PNN2q/4K3/PP1BP1PP/2RQ1B1R b - - 4 12".to_string(),
         )
         .unwrap();
 
-        let mv = Move::new(Square::E2, Square::D4, None, &MoveKind::Capture);
-
-        println!("{}", pos);
-        println!("{}", mv);
-
-        //dbg!(static_exchange_evaluation(&self.move_gen, &pos, &mv));
-        dbg!(static_exchange_evaluation_move_done(&pos, &mv));
+        self.position(pos, vec![]);
+        self.debug();
     }
 
     fn simulate(&mut self, moves: Vec<String>) {

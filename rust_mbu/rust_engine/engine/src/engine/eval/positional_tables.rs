@@ -4,7 +4,7 @@ use sdk::{
     square::Square,
 };
 
-pub const PIECE_PHASE_VALUES: [[i16; 6]; 2] = [
+pub const PIECE_PHASE_VALUES: [[i32; 6]; 2] = [
     // Middlegame
     [82, 337, 365, 477, 1025, 0],
     // Endgame
@@ -12,7 +12,7 @@ pub const PIECE_PHASE_VALUES: [[i16; 6]; 2] = [
 ];
 
 #[rustfmt::skip]
-pub const MIDDLEGAME_TABLES: [[i16; 64]; 6] = [
+pub const MIDDLEGAME_TABLES: [[i32; 64]; 6] = [
     // Pawn
     [
       0,   0,   0,   0,   0,   0,  0,   0,
@@ -82,7 +82,7 @@ pub const MIDDLEGAME_TABLES: [[i16; 64]; 6] = [
 ];
 
 #[rustfmt::skip]
-pub const ENDGAME_TABLES: [[i16; 64]; 6] = [
+pub const ENDGAME_TABLES: [[i32; 64]; 6] = [
     // Pawn
     [
       0,   0,   0,   0,   0,   0,  0,   0,
@@ -158,69 +158,34 @@ pub const fn flip(sq: usize) -> usize {
 }
 
 pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
-    let mut white_mg_score_lhs = [0_i16; 64];
-    let mut white_mg_score_rhs = [0_i16; 64];
-    let mut white_eg_score_lhs = [0_i16; 64];
-    let mut white_eg_score_rhs = [0_i16; 64];
+    let mut middlegame_score = 0;
+    let mut endgame_score = 0;
 
-    let mut black_mg_score_lhs = [0_i16; 64];
-    let mut black_mg_score_rhs = [0_i16; 64];
-    let mut black_eg_score_lhs = [0_i16; 64];
-    let mut black_eg_score_rhs = [0_i16; 64];
-
-    for sq in 0..64 {
-        let Some((piece, color)) = position.piece_at(&Square::from_u8(sq)) else {
+    for sq in Square::iter() {
+        let Some((piece, color)) = position.piece_at(&sq) else {
             continue;
         };
 
         match color {
             Color::White => {
-                white_mg_score_lhs[sq as usize] =
-                    MIDDLEGAME_TABLES[piece as usize][flip(sq as usize)];
-                white_mg_score_rhs[sq as usize] = PIECE_PHASE_VALUES[0][piece as usize];
-                white_eg_score_lhs[sq as usize] = ENDGAME_TABLES[piece as usize][flip(sq as usize)];
-                white_eg_score_rhs[sq as usize] = PIECE_PHASE_VALUES[1][piece as usize];
+                middlegame_score += MIDDLEGAME_TABLES[piece as usize][flip(sq as usize)]
+                    + PIECE_PHASE_VALUES[0][piece as usize];
+                endgame_score += ENDGAME_TABLES[piece as usize][flip(sq as usize)]
+                    + PIECE_PHASE_VALUES[1][piece as usize];
             }
             Color::Black => {
-                black_mg_score_lhs[sq as usize] = MIDDLEGAME_TABLES[piece as usize][sq as usize];
-                black_mg_score_rhs[sq as usize] = PIECE_PHASE_VALUES[0][piece as usize];
-                black_eg_score_lhs[sq as usize] = ENDGAME_TABLES[piece as usize][sq as usize];
-                black_eg_score_rhs[sq as usize] = PIECE_PHASE_VALUES[1][piece as usize];
+                middlegame_score -= MIDDLEGAME_TABLES[piece as usize][sq as usize]
+                    + PIECE_PHASE_VALUES[0][piece as usize];
+                endgame_score -= ENDGAME_TABLES[piece as usize][sq as usize]
+                    + PIECE_PHASE_VALUES[1][piece as usize];
             }
         }
     }
 
-    let white_mg_score: i16 = white_mg_score_lhs
-        .iter()
-        .zip(white_mg_score_rhs.iter())
-        .map(|(a, b)| a + b)
-        .sum();
-
-    let white_eg_score: i16 = white_eg_score_lhs
-        .iter()
-        .zip(white_eg_score_rhs.iter())
-        .map(|(a, b)| a + b)
-        .sum();
-
-    let black_mg_score: i16 = black_mg_score_lhs
-        .iter()
-        .zip(black_mg_score_rhs.iter())
-        .map(|(a, b)| a + b)
-        .sum();
-
-    let black_eg_score: i16 = black_eg_score_lhs
-        .iter()
-        .zip(black_eg_score_rhs.iter())
-        .map(|(a, b)| a + b)
-        .sum();
-
-    let mg_score = white_mg_score - black_mg_score;
-    let eg_score = white_eg_score - black_eg_score;
-
-    let mg_phase = i16::min(phase as i16, 24);
+    let mg_phase = i32::min(phase, 24);
     let eg_phase = 24 - mg_phase;
 
-    ((mg_score * mg_phase + eg_score * eg_phase) / 24) as i32
+    (middlegame_score * mg_phase + endgame_score * eg_phase) / 24
 }
 
 pub fn game_phase(position: &Position) -> i32 {
