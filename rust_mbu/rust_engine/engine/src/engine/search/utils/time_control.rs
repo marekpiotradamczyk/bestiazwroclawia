@@ -10,10 +10,12 @@ pub struct TimeControl {
 }
 
 impl TimeControl {
+    #[must_use]
     pub fn search_time(&self, now: Instant) -> isize {
         now.duration_since(self.start_time).as_millis() as isize
     }
 
+    #[must_use]
     pub fn remaining_time(&self, now: Instant) -> isize {
         if self.is_infinite {
             return isize::MAX;
@@ -21,6 +23,7 @@ impl TimeControl {
         self.limit.unwrap_or_default() - self.search_time(now)
     }
 
+    #[must_use]
     pub fn is_over(&self) -> bool {
         if self.is_infinite {
             return false;
@@ -46,6 +49,7 @@ pub struct SearchOptions {
 }
 
 impl SearchOptions {
+    #[must_use]
     pub fn time_control(&self, is_white: bool) -> TimeControl {
         if self.infinite {
             return TimeControl {

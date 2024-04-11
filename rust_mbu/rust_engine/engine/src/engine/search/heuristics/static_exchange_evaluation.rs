@@ -1,7 +1,4 @@
-use move_gen::{
-    generators::{pieces::simple_move_generator::SimpleMoveGenerator},
-    r#move::Move,
-};
+use move_gen::{generators::pieces::simple_move_generator::SimpleMoveGenerator, r#move::Move};
 use sdk::{
     bitboard::Bitboard,
     fen::Fen,
@@ -11,6 +8,7 @@ use sdk::{
 
 use crate::engine::{eval::PIECE_VALUES, MOVE_GEN};
 
+#[must_use]
 pub fn static_exchange_evaluation(pos: &Position, mv: &Move) -> i32 {
     let mut gain = [0; 32];
     let mut occupied = pos.occupied;
@@ -52,12 +50,10 @@ pub fn static_exchange_evaluation(pos: &Position, mv: &Move) -> i32 {
     let mut counter = 0;
     let mut remaining_attackers = attacks & occupied;
     while !remaining_attackers.is_empty() {
-        let least_valuable_piece_sq =
-            if let Some(sq) = least_valuable_piece(pos, remaining_attackers, turn) {
-                sq
-            } else {
-                break;
-            };
+        let Some(least_valuable_piece_sq) = least_valuable_piece(pos, remaining_attackers, turn)
+        else {
+            break;
+        };
         let piece = pos.piece_at(&least_valuable_piece_sq).unwrap().0;
 
         occupied ^= least_valuable_piece_sq.bitboard();
@@ -93,7 +89,8 @@ pub fn static_exchange_evaluation(pos: &Position, mv: &Move) -> i32 {
     gain[0]
 }
 
-pub fn static_exchange_evaluation_move_done(pos: &Position, mv: &Move) -> i32 {
+#[must_use]
+pub fn see_move_done(pos: &Position, mv: &Move) -> i32 {
     let mut gain = [0; 32];
     let mut occupied = pos.occupied;
     let bishop_sliders = pos.pieces[Color::White as usize][Piece::Bishop as usize]
@@ -120,9 +117,7 @@ pub fn static_exchange_evaluation_move_done(pos: &Position, mv: &Move) -> i32 {
     turn = turn.enemy();
     gain[0] = attacked_piece_val;
 
-    let lvp_sq = if let Some(sq) = least_valuable_piece(pos, attacks, turn) {
-        sq
-    } else {
+    let Some(lvp_sq) = least_valuable_piece(pos, attacks, turn) else {
         return 0;
     };
 
@@ -142,12 +137,10 @@ pub fn static_exchange_evaluation_move_done(pos: &Position, mv: &Move) -> i32 {
     let mut counter = 0;
     let mut remaining_attackers = attacks & occupied;
     while !remaining_attackers.is_empty() {
-        let least_valuable_piece_sq =
-            if let Some(sq) = least_valuable_piece(pos, remaining_attackers, turn) {
-                sq
-            } else {
-                break;
-            };
+        let Some(least_valuable_piece_sq) = least_valuable_piece(pos, remaining_attackers, turn)
+        else {
+            break;
+        };
         let piece = pos.piece_at(&least_valuable_piece_sq).unwrap().0;
 
         occupied ^= least_valuable_piece_sq.bitboard();

@@ -26,20 +26,20 @@ impl Default for TranspositionTable {
 
 // 32 Bits for score
 pub const SCORE_SHIFT: u64 = 64 - 32;
-pub const SCORE_MASK: u64 = 0b11111111111111111111111111111111 << SCORE_SHIFT;
+pub const SCORE_MASK: u64 = 0b1111_1111_1111_1111_1111_1111_1111_1111 << SCORE_SHIFT;
 
 // 7 Bits for depth
 pub const DEPTH_SHIFT: u64 = 64 - 32 - 7;
-pub const DEPTH_MASK: u64 = 0b1111111 << DEPTH_SHIFT;
+pub const DEPTH_MASK: u64 = 0b111_1111 << DEPTH_SHIFT;
 
 // 16 Bits for move
 pub const MOVE_SHIFT: u64 = 64 - 32 - 7 - 16;
-pub const MOVE_MASK: u64 = 0b1111111111111111 << MOVE_SHIFT;
+pub const MOVE_MASK: u64 = 0b1111_1111_1111_1111 << MOVE_SHIFT;
 
 //TODO: MORE???
 // 7 Bits for age
 pub const AGE_SHIFT: u64 = 64 - 32 - 7 - 16 - 7;
-pub const AGE_MASK: u64 = 0b1111111 << AGE_SHIFT;
+pub const AGE_MASK: u64 = 0b111_1111 << AGE_SHIFT;
 
 // 2 Bits for flag
 pub const FLAG_MASK: u64 = 0b11;
@@ -50,7 +50,7 @@ fn pack_tt_entry(score: i32, mv: Option<Move>, depth: usize, age: usize, flag: H
     // Bits 0-13
     packed |= (score as u64) << SCORE_SHIFT;
     packed |= (depth as u64) << DEPTH_SHIFT;
-    packed |= (mv.unwrap_or(Move::null()).inner as u64) << MOVE_SHIFT;
+    packed |= u64::from(mv.unwrap_or(Move::null()).inner) << MOVE_SHIFT;
     packed |= (age as u64) << AGE_SHIFT;
     packed |= flag as u64;
 
@@ -72,6 +72,7 @@ impl TranspositionTable {
 
         Self { inner, size: count }
     }
+    #[must_use]
     pub fn cashed_value(
         &self,
         node: &Position,
@@ -88,6 +89,7 @@ impl TranspositionTable {
         }
     }
 
+    #[must_use]
     pub fn read(
         &self,
         hash: u64,
@@ -170,14 +172,17 @@ impl TranspositionTable {
     }
 }
 
+#[must_use]
 pub fn get_depth(packed: u64) -> usize {
     ((packed & DEPTH_MASK) >> DEPTH_SHIFT) as usize
 }
 
+#[must_use]
 pub fn get_score(packed: u64) -> i32 {
     ((packed & SCORE_MASK) >> SCORE_SHIFT) as i32
 }
 
+#[must_use]
 pub fn get_move(packed: u64) -> Option<Move> {
     let inner = (packed & MOVE_MASK) >> MOVE_SHIFT;
 
@@ -190,10 +195,12 @@ pub fn get_move(packed: u64) -> Option<Move> {
     }
 }
 
+#[must_use]
 pub fn get_age(packed: u64) -> usize {
     ((packed & AGE_MASK) >> AGE_SHIFT) as usize
 }
 
+#[must_use]
 pub fn get_flag(packed: u64) -> HashFlag {
     match packed & FLAG_MASK {
         0 => HashFlag::EXACT,

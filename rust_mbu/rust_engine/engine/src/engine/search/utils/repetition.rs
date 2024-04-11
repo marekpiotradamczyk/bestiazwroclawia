@@ -5,13 +5,13 @@ use crate::engine::search::MAX_PLY;
 pub const DEFAULT_TABLE_SIZE: usize = MAX_PLY * 10;
 
 #[derive(Clone)]
-pub struct RepetitionTable {
+pub struct Table {
     pub table: [u64; DEFAULT_TABLE_SIZE],
     pub last_irreversible: [usize; DEFAULT_TABLE_SIZE],
     pub idx: usize,
 }
 
-impl Default for RepetitionTable {
+impl Default for Table {
     fn default() -> Self {
         Self {
             table: [0; DEFAULT_TABLE_SIZE],
@@ -21,7 +21,7 @@ impl Default for RepetitionTable {
     }
 }
 
-impl RepetitionTable {
+impl Table {
     pub fn push(&mut self, pos: &Position, is_irreversible: bool) {
         self.table[self.idx] = pos.hash;
         self.idx += 1;
@@ -37,6 +37,7 @@ impl RepetitionTable {
         self.idx -= 1;
     }
 
+    #[must_use]
     pub fn repetitions(&self) -> i32 {
         let mut count = 0;
         for i in 0..self.idx {
@@ -48,6 +49,7 @@ impl RepetitionTable {
         count
     }
 
+    #[must_use]
     pub fn is_draw_by_fifty_moves_rule(&self) -> bool {
         self.idx - self.last_irreversible[self.idx] >= 100
     }
@@ -63,11 +65,11 @@ mod tests {
     use move_gen::r#move::{MakeMove, Move, MoveKind};
     use sdk::{position::Position, square::Square};
 
-    use super::RepetitionTable;
+    use super::Table;
 
     #[test]
     fn test_repetition() {
-        let mut rep = RepetitionTable::default();
+        let mut rep = Table::default();
 
         let mut pos = Position::default();
 

@@ -2,7 +2,8 @@ use sdk::position::{Color, Piece, Position};
 
 pub const BATTERY_BONUS: i32 = 15;
 
-pub fn bonus_for_rook_battery(pos: &Position) -> i32 {
+#[must_use]
+pub fn bonus_for_rook_batteries(pos: &Position) -> i32 {
     let white_batteries = count_batteries(pos, Color::White);
     let black_batteries = count_batteries(pos, Color::Black);
 

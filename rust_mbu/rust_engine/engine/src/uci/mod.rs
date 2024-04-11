@@ -1,4 +1,4 @@
-pub mod uci_commands;
+pub mod commands;
 
 use std::io;
 use std::str::FromStr;
@@ -9,11 +9,13 @@ use sdk::{fen::Fen, position::Position};
 
 use crate::engine::search::utils::time_control::SearchOptions;
 use crate::engine::Engine;
-use crate::uci::uci_commands::Command;
+use crate::uci::commands::Command;
 
 pub type Result<T> = anyhow::Result<T>;
 
-pub fn start_uci() {
+/// # Panics
+/// Panics if the command is invalid
+pub fn start() {
     let tx = Engine::start_loop_thread();
 
     println!("ready");
@@ -28,13 +30,12 @@ pub fn start_uci() {
 
         let (command, args) = split
             .split_first()
-            .map(|(cmd, args)| (cmd, args.to_vec()))
-            .unwrap_or((&"", vec![]));
+            .map_or((&"", vec![]), |(cmd, args)| (cmd, args.to_vec()));
 
         let command = match command.to_lowercase().as_str() {
-            "position" => parse_position(args),
-            "go" => parse_go(args),
-            "setoption" => parse_set_option(args),
+            "position" => parse_position(&args),
+            "go" => parse_go(&args),
+            "setoption" => parse_set_option(&args),
             "simulate" => Ok(Command::Simulate(
                 args.into_iter().map(ToString::to_string).collect_vec(),
             )),
@@ -48,7 +49,7 @@ pub fn start_uci() {
     }
 }
 
-fn parse_position(args: Vec<&str>) -> Result<Command> {
+fn parse_position(args: &[&str]) -> Result<Command> {
     if args.is_empty() {
         return Err(anyhow!("Missing FEN or startpos"));
     }
@@ -67,20 +68,18 @@ fn parse_position(args: Vec<&str>) -> Result<Command> {
 
     let moves = args.iter().skip(idx).map(ToString::to_string).collect_vec();
 
-    let moves = if !moves.is_empty() {
-        if moves[0] == "moves" {
-            moves[1..].to_vec()
-        } else {
-            return Err(anyhow!("Expected 'moves'"));
-        }
-    } else {
+    let moves = if moves.is_empty() {
         vec![]
+    } else if moves[0] == "moves" {
+        moves[1..].to_vec()
+    } else {
+        return Err(anyhow!("Expected 'moves'"));
     };
 
     Ok(Command::Position(pos, moves))
 }
 
-fn parse_go(args: Vec<&str>) -> Result<Command> {
+fn parse_go(args: &[&str]) -> Result<Command> {
     let mut idx = 0;
     let mut search_options = SearchOptions::default();
 
@@ -130,7 +129,11 @@ fn parse_go(args: Vec<&str>) -> Result<Command> {
     Ok(Command::Go(search_options))
 }
 
-pub fn parse_set_option(args: Vec<&str>) -> Result<Command> {
+/// # Panics
+/// Panics if the command is invalid
+/// # Errors
+/// Returns an error if the command is invalid
+pub fn parse_set_option(args: &[&str]) -> Result<Command> {
     if args.len() < 2 {
         return Err(anyhow!("Missing option name"));
     }
@@ -142,7 +145,7 @@ pub fn parse_set_option(args: Vec<&str>) -> Result<Command> {
     let value_idx = args.iter().take_while(|s| **s != "value").count();
 
     let name = args[1..value_idx].join(" ");
-    let value = args.get(value_idx + 1).map(|s| s.to_string());
+    let value = args.get(value_idx + 1).map(ToString::to_string);
 
     Ok(Command::SetOption(name, value))
 }

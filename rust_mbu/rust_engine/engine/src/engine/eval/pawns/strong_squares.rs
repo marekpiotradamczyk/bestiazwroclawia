@@ -7,14 +7,16 @@ use sdk::{
 pub const STRONG_SQUARE_BONUS: i32 = 20;
 pub const STRONG_SQUARE_PIECE_BONUS: i32 = 20;
 
-pub fn bonus_for_strong_squares(pos: &Position) -> i32 {
-    let white_strong_squares = strong_squares(pos, Color::White).count() as i32;
-    let black_strong_squares = strong_squares(pos, Color::Black).count() as i32;
+#[must_use]
+pub fn bonus(pos: &Position) -> i32 {
+    let white_strong_squares = i32::from(strong_squares(pos, Color::White).count());
+    let black_strong_squares = i32::from(strong_squares(pos, Color::Black).count());
 
     (white_strong_squares - black_strong_squares) * STRONG_SQUARE_BONUS
 }
 
-pub fn bonus_for_piece_on_strong_squares(pos: &Position) -> i32 {
+#[must_use]
+pub fn bonus_for_piece(pos: &Position) -> i32 {
     let white_strong_squares = strong_squares(pos, Color::White);
     let black_strong_squares = strong_squares(pos, Color::Black);
 
@@ -41,6 +43,7 @@ pub fn bonus_for_piece_on_strong_squares(pos: &Position) -> i32 {
     bonus
 }
 
+#[must_use]
 pub fn strong_squares(pos: &Position, color: Color) -> Bitboard {
     let pawns = pos.pieces[color as usize][Piece::Pawn as usize];
 

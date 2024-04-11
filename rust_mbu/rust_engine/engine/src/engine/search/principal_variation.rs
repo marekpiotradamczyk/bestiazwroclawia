@@ -33,6 +33,7 @@ impl PrincipalVariation {
         self.length[ply] = self.length[ply + 1];
     }
 
+    #[must_use]
     pub fn best(&self) -> Option<Move> {
         self.table[0][0]
     }

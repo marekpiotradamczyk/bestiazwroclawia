@@ -42,6 +42,7 @@ impl SearchData {
     }
 }
 
+#[must_use]
 pub fn is_null_move_reduction_applicable(
     pos: &Position,
     depth: usize,

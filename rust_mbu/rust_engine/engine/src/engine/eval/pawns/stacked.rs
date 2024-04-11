@@ -5,7 +5,8 @@ use sdk::{
 
 pub const STACKED_PAWN_PENALTY: i32 = -5;
 
-pub fn penalty_for_stacked_pawns(pos: &Position) -> i32 {
+#[must_use]
+pub fn stacked_pawns(pos: &Position) -> i32 {
     let white_stacked_pawns = stacked_pawns_count(pos, Color::White);
     let black_stacked_pawns = stacked_pawns_count(pos, Color::Black);
 

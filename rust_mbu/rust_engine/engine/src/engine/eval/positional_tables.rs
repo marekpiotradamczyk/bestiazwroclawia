@@ -1,4 +1,4 @@
-/// values from Rofchade: http://www.talkchess.com/forum3/viewtopic.php?f=2&t=68311&start=19
+/// values from Rofchade: `http://www.talkchess.com/forum3/viewtopic.php?f=2&t=68311&start=19`
 use sdk::{
     position::{Color, Position},
     square::Square,
@@ -153,10 +153,12 @@ pub const ENDGAME_TABLES: [[i32; 64]; 6] = [
 
 pub const PHASE_INC: [i32; 6] = [0, 1, 1, 2, 4, 0];
 
+#[must_use]
 pub const fn flip(sq: usize) -> usize {
     sq ^ 56
 }
 
+#[must_use]
 pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
     let mut middlegame_score = 0;
     let mut endgame_score = 0;
@@ -182,12 +184,13 @@ pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
         }
     }
 
-    let mg_phase = i32::min(phase, 24);
-    let eg_phase = 24 - mg_phase;
+    let middlegame_phase = i32::min(phase, 24);
+    let endgame_phase = 24 - middlegame_phase;
 
-    (middlegame_score * mg_phase + endgame_score * eg_phase) / 24
+    (middlegame_score * middlegame_phase + endgame_score * endgame_phase) / 24
 }
 
+#[must_use]
 pub fn game_phase(position: &Position) -> i32 {
     let mut phase = 0;
 

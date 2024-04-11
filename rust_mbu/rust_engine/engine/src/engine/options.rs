@@ -4,7 +4,7 @@ use derivative::Derivative;
 
 #[derive(Derivative, Copy, Clone)]
 #[derivative(Default)]
-pub struct EngineOptions {
+pub struct Options {
     #[derivative(Default(value = "5"))]
     pub move_overhead: usize,
     #[derivative(Default(value = "1"))]
@@ -15,7 +15,7 @@ pub struct EngineOptions {
 }
 
 impl Engine {
-    pub fn set_option(&mut self, name: String, value: Option<String>) {
+    pub fn set_option(&mut self, name: &str, value: Option<String>) {
         macro_rules! parse_set_field {
             ($field:ident, $min:expr, $max:expr) => {{
                 let value = value
@@ -43,7 +43,7 @@ impl Engine {
         match name.replace(' ', "").to_lowercase().as_str() {
             "moveoverhead" => parse_set_field!(move_overhead, 0, 1000),
             "threads" => parse_set_field!(threads, 1, 1024),
-            "hash" => parse_set_field!(hash, 1, 33554432),
+            "hash" => parse_set_field!(hash, 1, 33_554_432),
             "debug" => self.options.debug = true,
             _ => println!("Unknown option {name}"),
         }

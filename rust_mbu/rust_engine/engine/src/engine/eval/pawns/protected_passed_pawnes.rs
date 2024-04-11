@@ -6,15 +6,17 @@ use sdk::{
 
 pub const PROTECTED_PASSED_PAWNS_BONUS: i32 = 20;
 
-pub fn bonus_for_protected_passed_pawnes(pos: &Position) -> i32 {
+#[must_use]
+pub fn protected_passed_pawnes(pos: &Position) -> i32 {
     let white_protected_passed_pawns =
-        mask_protected_passed_pawns(pos, Color::White).count() as i32;
+        i32::from(mask_protected_passed_pawns(pos, Color::White).count());
     let black_protected_passed_pawns =
-        mask_protected_passed_pawns(pos, Color::Black).count() as i32;
+        i32::from(mask_protected_passed_pawns(pos, Color::Black).count());
 
     (white_protected_passed_pawns - black_protected_passed_pawns) * PROTECTED_PASSED_PAWNS_BONUS
 }
 
+#[must_use]
 pub fn mask_protected_passed_pawns(pos: &Position, color: Color) -> Bitboard {
     let our_pawns = pos.pieces[color as usize][Piece::Pawn as usize];
     let enemy_pawns = pos.pieces[color.enemy() as usize][Piece::Pawn as usize];

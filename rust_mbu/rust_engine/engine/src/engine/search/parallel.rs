@@ -3,21 +3,20 @@ use std::{
     time::Instant,
 };
 
-
 use sdk::position::Position;
 
 use super::{
     heuristics::transposition_table::TranspositionTable,
     principal_variation::PrincipalVariation,
     utils::{
-        repetition::RepetitionTable,
+        repetition::Table,
         time_control::{SearchOptions, TimeControl},
     },
     MATE_VALUE,
 };
 
-use crate::engine::{engine_options::EngineOptions, search::MAX_PLY};
 use crate::engine::{eval::evaluation_table::EvaluationTable, search::STOPPED};
+use crate::engine::{options::Options, search::MAX_PLY};
 use move_gen::r#move::Move;
 pub const INF: i32 = 1_000_000;
 pub const DEFAULT_ALPHA: i32 = -INF;
@@ -27,8 +26,8 @@ pub const ASPIRATION_WINDOW_OFFSET: i32 = 50;
 pub struct Search {
     pub time_control: Arc<TimeControl>,
     pub options: SearchOptions,
-    pub engine_options: EngineOptions,
-    pub repetion_table: RepetitionTable,
+    pub engine_options: Options,
+    pub repetion_table: Table,
     pub transposition_table: Arc<TranspositionTable>,
     pub eval_table: Arc<EvaluationTable>,
     pub age: usize,
@@ -51,7 +50,7 @@ pub struct SearchData {
     pub counter_moves: [[Option<Move>; MAX_PLY]; 2],
     pub pair_moves: [[Option<Move>; MAX_PLY]; 2],
     pub pv: PrincipalVariation,
-    pub repetition_table: RepetitionTable,
+    pub repetition_table: Table,
     pub transposition_table: Arc<TranspositionTable>,
     pub eval_table: Arc<EvaluationTable>,
     pub time_control: Arc<TimeControl>,
@@ -60,11 +59,12 @@ pub struct SearchData {
 
 #[allow(clippy::too_many_arguments)]
 impl Search {
+    #[must_use]
     pub fn new(
         options: SearchOptions,
-        engine_options: EngineOptions,
+        engine_options: Options,
         is_white: bool,
-        rep_table: RepetitionTable,
+        rep_table: Table,
         transposition_table: Arc<TranspositionTable>,
         eval_table: Arc<EvaluationTable>,
         age: usize,
@@ -110,7 +110,7 @@ impl Search {
             let pos = position.clone();
 
             threads.push(std::thread::spawn(move || {
-                thread.go(pos);
+                thread.go(&pos);
             }));
         }
 
@@ -121,7 +121,7 @@ impl Search {
 }
 
 impl SearchThread {
-    pub fn go(&mut self, position: Position) {
+    pub fn go(&mut self, position: &Position) {
         let is_prime_thread = self.id == 0;
         let (mut alpha, mut beta) = (DEFAULT_ALPHA, DEFAULT_BETA);
 
@@ -131,13 +131,13 @@ impl SearchThread {
                 break;
             }
             self.data.reset();
-            let mut best_score = self.data.negamax(&position, alpha, beta, depth);
+            let mut best_score = self.data.negamax(position, alpha, beta, depth);
 
             // Try full search if aspiration window failed
             if best_score <= alpha || best_score >= beta {
                 alpha = DEFAULT_ALPHA;
                 beta = DEFAULT_BETA;
-                best_score = self.data.negamax(&position, alpha, beta, depth);
+                best_score = self.data.negamax(position, alpha, beta, depth);
                 //continue;
             }
 
@@ -156,9 +156,10 @@ impl SearchThread {
                     (current_nodes_count as f64 / (time as f64 / 1000.0)) as usize
                 };
 
-                let score_str = mate_score(best_score)
-                    .map(|score| format!("mate {}", score))
-                    .unwrap_or_else(|| format!("cp {}", best_score));
+                let score_str = mate_score(best_score).map_or_else(
+                    || format!("cp {best_score}"),
+                    |score| format!("mate {score}"),
+                );
 
                 if self.data.stopped() {
                     break;
@@ -180,7 +181,7 @@ impl SearchThread {
         }
         if is_prime_thread {
             if let Some(best_move) = best_move {
-                println!("bestmove {}", best_move);
+                println!("bestmove {best_move}");
             } else {
                 // Log null move, just to satisfy the protocol
                 println!("bestmove 0000");
@@ -199,6 +200,7 @@ impl SearchData {
         //self.age += 1;
     }
 
+    #[must_use]
     pub fn stopped(&self) -> bool {
         self.time_control.is_over() || STOPPED.load(Ordering::Relaxed)
     }

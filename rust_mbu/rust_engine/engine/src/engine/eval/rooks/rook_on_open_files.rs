@@ -3,6 +3,7 @@ use sdk::position::{Color, Piece, Position};
 pub const BONUS_ROOK_OPEN_FILE: i32 = 30;
 pub const BONUS_ROOK_SEMI_OPEN_FILE: i32 = 18;
 
+#[must_use]
 pub fn bonus_rook_for_open_files(position: &Position) -> i32 {
     let white_rooks = position.pieces[Color::White as usize][Piece::Rook as usize];
     let black_rooks = position.pieces[Color::Black as usize][Piece::Rook as usize];
@@ -12,9 +13,10 @@ pub fn bonus_rook_for_open_files(position: &Position) -> i32 {
     let white_rooks_on_open_files = (white_rooks & open_files).count();
     let black_rooks_on_open_files = (black_rooks & open_files).count();
 
-    (white_rooks_on_open_files as i32 - black_rooks_on_open_files as i32) * BONUS_ROOK_OPEN_FILE
+    (i32::from(white_rooks_on_open_files) - i32::from(black_rooks_on_open_files)) * BONUS_ROOK_OPEN_FILE
 }
 
+#[must_use]
 pub fn bonus_rook_for_semi_open_files(position: &Position) -> i32 {
     let white_rooks = position.pieces[Color::White as usize][Piece::Rook as usize];
     let black_rooks = position.pieces[Color::Black as usize][Piece::Rook as usize];
@@ -25,7 +27,7 @@ pub fn bonus_rook_for_semi_open_files(position: &Position) -> i32 {
     let white_rooks_on_semi_open_files = (white_rooks & semi_open_files_white).count();
     let black_rooks_on_semi_open_files = (black_rooks & semi_open_files_black).count();
 
-    (white_rooks_on_semi_open_files as i32 - black_rooks_on_semi_open_files as i32)
+    (i32::from(white_rooks_on_semi_open_files) - i32::from(black_rooks_on_semi_open_files))
         * BONUS_ROOK_SEMI_OPEN_FILE
 }
 

@@ -3,6 +3,7 @@ use move_gen::r#move::{Move, MoveKind};
 pub const LMR_MIN_MOVES: usize = 4;
 pub const LMR_LIMIT: usize = 3;
 
+#[must_use]
 pub fn is_lmr_applicable(
     mv: &Move,
     depth: usize,

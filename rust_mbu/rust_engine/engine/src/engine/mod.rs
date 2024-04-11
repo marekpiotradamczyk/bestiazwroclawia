@@ -8,40 +8,30 @@ use std::{
 };
 
 use crate::{
-    engine::{
-        eval::{
-            activity::bonus_for_mobility,
-            evaluate,
-            king_safety::calc_king_safety,
-            material,
-            pawns::{
-                isolated_pawns::penalty_for_isolated_pawns,
-                protected_passed_pawnes::bonus_for_protected_passed_pawnes,
-                stacked_pawns::penalty_for_stacked_pawns,
-                strong_squares::{bonus_for_piece_on_strong_squares, bonus_for_strong_squares},
-            },
-            pin_bonus::bonus_for_absolute_pins,
-            positional_tables::{game_phase, tapered_eval},
-            rooks::{
-                battery::bonus_for_rook_battery,
-                rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
-            },
+    engine::eval::{
+        activity::bonus_for_mobility,
+        evaluate,
+        king_safety::calc_king_safety,
+        material,
+        pawns::{
+            isolated::isolated_pawns, protected_passed_pawnes::protected_passed_pawnes, stacked::stacked_pawns, strong_squares::{bonus_for_piece, strong_squares}
         },
-        search::heuristics::static_exchange_evaluation::static_exchange_evaluation_move_done,
+        pin_bonus::bonus_for_absolute_pins,
+        positional_tables::{game_phase, tapered_eval},
+        rooks::{
+            battery::bonus_for_rook_batteries,
+            rook_on_open_files::{bonus_rook_for_open_files, bonus_rook_for_semi_open_files},
+        },
     },
-    uci::{uci_commands::Command, Result},
+    uci::{commands::Command, Result},
 };
-use move_gen::{
-    generators::movegen::MoveGen,
-    r#move::{MakeMove, Move, MoveKind},
-};
+use move_gen::{generators::movegen::MoveGen, r#move::MakeMove};
 use sdk::{
     fen::Fen,
     position::{Color, Position},
-    square::Square,
 };
 
-use crate::engine::engine_options::EngineOptions;
+use crate::engine::options::Options;
 
 use anyhow::anyhow;
 
@@ -50,7 +40,7 @@ use self::{
     search::{
         heuristics::transposition_table::TranspositionTable,
         parallel::Search,
-        utils::{repetition::RepetitionTable, time_control::SearchOptions},
+        utils::{repetition::Table, time_control::SearchOptions},
         STOPPED,
     },
 };
@@ -61,18 +51,18 @@ lazy_static::lazy_static! {
 
 use derivative::Derivative;
 
-pub mod engine_options;
 pub mod eval;
+pub mod options;
 pub mod search;
 
 #[derive(Derivative)]
 #[derivative(Default)]
 pub struct Engine {
     pub root_pos: Position,
-    pub repetition_table: RepetitionTable,
+    pub repetition_table: Table,
     pub transposition_table: Arc<TranspositionTable>,
     pub evaluation_table: Arc<EvaluationTable>,
-    pub options: EngineOptions,
+    pub options: Options,
     pub age: usize,
     #[derivative(Default(value = "true"))]
     pub ready: bool,
@@ -85,17 +75,17 @@ impl Engine {
             Command::Go(options) => self.go(options),
             Command::Stop => self.stop(),
             Command::Position(pos, moves) => self.position(pos, moves),
-            Command::SetOption(name, value) => self.set_option(name, value),
+            Command::SetOption(name, value) => self.set_option(&name, value),
             Command::IsReady => println!("readyok"),
             Command::Debug => self.debug(),
             Command::UciNewGame => self.uci_new_game(),
             Command::Test => self.test(),
-            Command::Simulate(moves) => self.simulate(moves),
-
-            _ => {}
+            Command::Simulate(moves) => self.simulate(&moves),
+            Command::Quit => {}
         };
     }
 
+    #[must_use]
     pub fn start_loop_thread() -> Sender<Command> {
         let (tx, rx) = channel();
 
@@ -170,36 +160,27 @@ impl Engine {
         let moves = MOVE_GEN.generate_legal_moves(&self.root_pos);
         println!("Legal moves: ");
         for mv in moves {
-            print!("{} ", mv);
+            print!("{mv} ");
         }
         println!();
         println!();
 
         println!("RAW DIFF: {}", material(&self.root_pos));
         let phase = game_phase(&self.root_pos);
-        println!("Game phase: {}", phase);
+        println!("Game phase: {phase}");
         println!();
         println!("Tapered eval: {}", tapered_eval(&self.root_pos, phase));
         println!("Safety bonus: {}", calc_king_safety(&self.root_pos));
-        println!(
-            "Isolated pawns penalty: {}",
-            penalty_for_isolated_pawns(&self.root_pos)
-        );
-        println!(
-            "Stacked pawns penalty: {}",
-            penalty_for_stacked_pawns(&self.root_pos)
-        );
+        println!("Isolated pawns penalty: {}", isolated_pawns(&self.root_pos));
+        println!("Stacked pawns penalty: {}", stacked_pawns(&self.root_pos));
         println!(
             "Protected passed pawns bonus: {}",
-            bonus_for_protected_passed_pawnes(&self.root_pos)
+            protected_passed_pawnes(&self.root_pos)
         );
-        println!(
-            "Strong squares bonus: {}",
-            bonus_for_strong_squares(&self.root_pos)
-        );
+        println!("Strong squares bonus: {}", strong_squares(&self.root_pos, self.root_pos.turn));
         println!(
             "Pieces on strong squares bonus: {}",
-            bonus_for_piece_on_strong_squares(&self.root_pos)
+            bonus_for_piece(&self.root_pos)
         );
         println!(
             "Rook on open file bonus: {}",
@@ -211,7 +192,7 @@ impl Engine {
         );
         println!(
             "Bonus for rook batteries: {}",
-            bonus_for_rook_battery(&self.root_pos)
+            bonus_for_rook_batteries(&self.root_pos)
         );
         println!(
             "Absolute pin bonus: {}",
@@ -222,7 +203,7 @@ impl Engine {
         println!();
         println!(
             "Eval: {}",
-            evaluate(&self.root_pos, self.evaluation_table.clone(),)
+            evaluate(&self.root_pos, &self.evaluation_table,)
         );
     }
 
@@ -243,7 +224,7 @@ impl Engine {
         self.debug();
     }
 
-    fn simulate(&mut self, moves: Vec<String>) {
+    fn simulate(&mut self, moves: &[String]) {
         for i in 0..moves.len() {
             let opts = SearchOptions {
                 wtime: Some(50000),
@@ -273,8 +254,8 @@ fn uci_info() {
     println!("uciok");
 }
 
-fn parse_uci_moves(moves: Vec<String>, pos: &mut Position) -> Result<RepetitionTable> {
-    let mut repetition_table = RepetitionTable::default();
+fn parse_uci_moves(moves: Vec<String>, pos: &mut Position) -> Result<Table> {
+    let mut repetition_table = Table::default();
     repetition_table.last_irreversible[0] = pos.halfmove_clock as usize;
 
     for mv_str in moves {

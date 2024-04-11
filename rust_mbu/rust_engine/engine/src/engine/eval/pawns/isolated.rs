@@ -6,11 +6,12 @@ use sdk::{
 
 pub const ISOLATED_PAWN_PENALTY: i32 = -12;
 
-pub fn penalty_for_isolated_pawns(pos: &Position) -> i32 {
+#[must_use]
+pub fn isolated_pawns(pos: &Position) -> i32 {
     let white_isolated_pawns = find_isolated_pawns(pos, Color::White).count();
     let black_isolated_pawns = find_isolated_pawns(pos, Color::Black).count();
 
-    (white_isolated_pawns as i32 - black_isolated_pawns as i32) * ISOLATED_PAWN_PENALTY
+    (i32::from(white_isolated_pawns) - i32::from(black_isolated_pawns)) * ISOLATED_PAWN_PENALTY
 }
 
 fn find_isolated_pawns(pos: &Position, color: Color) -> Bitboard {

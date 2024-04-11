@@ -10,6 +10,8 @@ pub const FUTILITY_MARGIN: [i32; 16] = [
 pub const FUTILITY_DEPTH: usize = 6;
 
 #[allow(clippy::too_many_arguments)]
+#[allow(clippy::fn_params_excessive_bools)] // TODO: Fix this lint
+#[must_use]
 pub fn is_futile(
     mv: &Move,
     pos: &Position,

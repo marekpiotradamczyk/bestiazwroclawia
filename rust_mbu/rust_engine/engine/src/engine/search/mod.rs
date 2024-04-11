@@ -1,8 +1,9 @@
-use std::sync::{atomic::AtomicBool, Arc};
+use std::sync::atomic::AtomicBool;
 
 use move_gen::r#move::{MakeMove, Move};
 use sdk::position::Position;
 
+pub mod draw;
 pub mod heuristics;
 pub mod parallel;
 pub mod principal_variation;
@@ -17,28 +18,31 @@ pub const DEFAULT_BETA: i32 = INF;
 pub const ASPIRATION_WINDOW_OFFSET: i32 = 50;
 pub const REPEATED_POSITION_SCORE: i32 = 0;
 pub const EXTEND_CHECK: usize = 1;
+pub const DRAW_SCORE: i32 = 0;
 
 use self::{
+    draw::can_win,
     heuristics::{
         futility_pruning::is_futile,
         late_move_reduction::is_lmr_applicable,
         move_order::MoveUtils,
-        static_exchange_evaluation::{
-            static_exchange_evaluation, static_exchange_evaluation_move_done,
-        },
+        static_exchange_evaluation::{see_move_done, static_exchange_evaluation},
         transposition_table::HashFlag,
     },
     parallel::SearchData,
 };
 use lazy_static::lazy_static;
 
-use super::{eval::{evaluate, PIECE_VALUES}, MOVE_GEN};
+use super::{
+    eval::{evaluate, PIECE_VALUES},
+    MOVE_GEN,
+};
 
 lazy_static! {
-    pub static ref STOPPED: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
+    pub static ref STOPPED: AtomicBool = AtomicBool::new(false);
 }
 
-pub trait SearchEngine {
+pub trait Engine {
     fn search(&mut self, position: &Position, depth: usize) -> Option<BestMove>;
 }
 
@@ -49,7 +53,7 @@ pub struct BestMove {
 }
 
 impl SearchData {
-    fn negamax(&mut self, node: &Position, alpha: i32, beta: i32, depth: usize) -> i32 {
+    fn negamax(&mut self, node: &Position, mut alpha: i32, mut beta: i32, depth: usize) -> i32 {
         if self.stopped() {
             return 0;
         }
@@ -58,11 +62,29 @@ impl SearchData {
 
         self.nodes_evaluated += 1;
 
+        let repetitions = self.repetition_table.repetitions();
+        if repetitions > 1 {
+            if repetitions >= 3 {
+                return REPEATED_POSITION_SCORE;
+            }
+
+            if alpha < DRAW_SCORE {
+                return DRAW_SCORE;
+            }
+        }
         // Check for draw by repetition
-        if self.repetition_table.repetitions() >= 3
-            || self.repetition_table.is_draw_by_fifty_moves_rule()
-        {
+        if self.repetition_table.is_draw_by_fifty_moves_rule() {
             return REPEATED_POSITION_SCORE;
+        }
+
+        // If we can't win the game, the best score (alpha) is 0
+        if !can_win(node, node.turn) {
+            alpha = i32::min(alpha, DRAW_SCORE);
+        }
+
+        // If enemy can't win the game, the worst score is 0
+        if !can_win(node, node.turn.enemy()) {
+            beta = i32::min(beta, DRAW_SCORE);
         }
 
         // Prune mate distance
@@ -92,11 +114,8 @@ impl SearchData {
 
         // Stop search if we are too deep
         if self.ply >= MAX_PLY {
-            return evaluate(node, self.eval_table.clone());
+            return evaluate(node, &self.eval_table);
         }
-
-        // Generate legal moves for current position
-        let mut child_nodes = MOVE_GEN.generate_legal_moves(node);
 
         let in_check = MOVE_GEN.is_check(node);
 
@@ -106,13 +125,16 @@ impl SearchData {
         }
 
         // Statically evaluate current position. This is needed for pruning.
-        let static_eval = evaluate(node, self.eval_table.clone());
+        let static_eval = evaluate(node, &self.eval_table);
 
         // Razoring
         if let Some(score) = self.razoring(node, static_eval, alpha, beta, depth, in_check, pv_node)
         {
             return score;
         }
+
+        // Generate legal moves for current position
+        let mut child_nodes = MOVE_GEN.generate_legal_moves(node);
 
         // Order moves by probability of being good in order to improve alpha-beta pruning.
         self.order_moves(&mut child_nodes, node, best_move);
@@ -121,9 +143,9 @@ impl SearchData {
         if child_nodes.is_empty() {
             if in_check {
                 return -MATE_VALUE + self.ply as i32;
-            } else {
-                return 0;
             }
+
+            return 0;
         }
 
         // At this point we couldn't prune anything, so we need to start searching through legal
@@ -142,6 +164,7 @@ impl SearchData {
     }
 
     #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::too_many_lines)]
     fn search_move_list(
         &mut self,
         node: &Position,
@@ -179,8 +202,7 @@ impl SearchData {
                 let value_of_moved_piece =
                     PIECE_VALUES[node.piece_at(&child.from()).unwrap().0 as usize];
 
-                let opponent_recapture_gain =
-                    static_exchange_evaluation_move_done(node, child);
+                let opponent_recapture_gain = see_move_done(node, child);
 
                 let is_safe_check = opponent_recapture_gain <= value_of_moved_piece;
 
@@ -358,17 +380,26 @@ impl SearchData {
 
         self.nodes_evaluated += 1;
 
-        if self.repetition_table.repetitions() >= 3
-            || self.repetition_table.is_draw_by_fifty_moves_rule()
-        {
+        let repetitions = self.repetition_table.repetitions();
+        if repetitions > 1 {
+            if repetitions >= 3 {
+                return REPEATED_POSITION_SCORE;
+            }
+
+            if alpha < DRAW_SCORE {
+                return DRAW_SCORE;
+            }
+        }
+        // Check for draw by repetition
+        if self.repetition_table.is_draw_by_fifty_moves_rule() {
             return REPEATED_POSITION_SCORE;
         }
 
         if self.ply >= MAX_PLY {
-            return evaluate(node, self.eval_table.clone());
+            return evaluate(node, &self.eval_table);
         }
 
-        let stand_pat = evaluate(node, self.eval_table.clone());
+        let stand_pat = evaluate(node, &self.eval_table);
 
         if stand_pat >= beta {
             return beta;
