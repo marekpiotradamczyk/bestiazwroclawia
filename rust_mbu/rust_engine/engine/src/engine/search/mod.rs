@@ -69,7 +69,7 @@ impl SearchData {
             }
 
             if alpha < DRAW_SCORE {
-                return DRAW_SCORE;
+                alpha = DRAW_SCORE;
             }
         }
         // Check for draw by repetition
@@ -387,7 +387,7 @@ impl SearchData {
             }
 
             if alpha < DRAW_SCORE {
-                return DRAW_SCORE;
+                alpha = DRAW_SCORE;
             }
         }
         // Check for draw by repetition
