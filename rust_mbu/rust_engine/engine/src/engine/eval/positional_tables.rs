@@ -4,7 +4,90 @@ use sdk::{
     square::Square,
 };
 
-pub const PIECE_PHASE_VALUES: [[i32; 6]; 2] = [
+#[must_use]
+pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
+    let mut middlegame_score = 0;
+    let mut endgame_score = 0;
+
+    for sq in Square::iter() {
+        let Some((piece, color)) = position.piece_at(sq) else {
+            continue;
+        };
+
+        match color {
+            Color::White => {
+                middlegame_score += MIDDLEGAME_TABLES[piece as usize][flip(sq as usize)]
+                    + PIECE_PHASE_VALUES[0][piece as usize];
+                endgame_score += ENDGAME_TABLES[piece as usize][flip(sq as usize)]
+                    + PIECE_PHASE_VALUES[1][piece as usize];
+            }
+            Color::Black => {
+                middlegame_score -= MIDDLEGAME_TABLES[piece as usize][sq as usize]
+                    + PIECE_PHASE_VALUES[0][piece as usize];
+                endgame_score -= ENDGAME_TABLES[piece as usize][sq as usize]
+                    + PIECE_PHASE_VALUES[1][piece as usize];
+            }
+        }
+    }
+
+    let middlegame_phase = i32::min(phase, 24);
+    let endgame_phase = 24 - middlegame_phase;
+
+    (middlegame_score * middlegame_phase + endgame_score * endgame_phase) / 24
+}
+
+#[must_use]
+pub fn game_phase(position: &Position) -> i32 {
+    //     let mut phase = 0;
+    //     phase += (boards[0][1].count_ones()) as i32;
+    //     phase += (boards[0][2].count_ones()) as i32;
+    //     phase += (boards[0][3].count_ones()) as i32 * 2;
+    //     phase += (boards[0][4] != 0) as i32 * 4;
+    //     phase += (boards[1][1].count_ones()) as i32;
+    //     phase += (boards[1][2].count_ones()) as i32;
+    //     phase += (boards[1][3].count_ones()) as i32 * 2;
+    //     phase += (boards[1][4] != 0) as i32 * 4;
+    //     phase
+
+    fn with_simd(boards: &[[sdk::bitboard::Bitboard; 6]; 2]) -> i32 {
+        let a: [i32; 4] = [
+            (boards[0][1].count_ones()) as i32,
+            (boards[0][2].count_ones()) as i32,
+            (boards[0][3].count_ones()) as i32 * 2,
+            (boards[0][4].0 != 0) as i32 * 4,
+        ];
+
+        let b: [i32; 4] = [
+            (boards[1][1].count_ones()) as i32,
+            (boards[1][2].count_ones()) as i32,
+            (boards[1][3].count_ones()) as i32 * 2,
+            (boards[1][4].0 != 0) as i32 * 4,
+        ];
+
+        use std::arch::x86_64::*;
+        use std::mem::transmute;
+
+        unsafe {
+            let a: __m128i = transmute(a);
+            let b: __m128i = transmute(b);
+            let xyzw = _mm_add_epi32(a, b);
+            let yxwz = _mm_shuffle_epi32(xyzw, 0b_10_11_00_01);
+            let xy_xy_zw_zw = _mm_add_epi32(xyzw, yxwz);
+            let zw_zw_xy_xy = _mm_shuffle_epi32(xy_xy_zw_zw, 0b_00_01_10_11);
+            let result = _mm_add_epi32(xy_xy_zw_zw, zw_zw_xy_xy);
+            _mm_cvtsi128_si32(result)
+        }
+    }
+
+    with_simd(&position.pieces)
+}
+
+#[must_use]
+const fn flip(sq: usize) -> usize {
+    sq ^ 56
+}
+
+static PIECE_PHASE_VALUES: [[i32; 6]; 2] = [
     // Middlegame
     [82, 337, 365, 477, 1025, 0],
     // Endgame
@@ -12,7 +95,7 @@ pub const PIECE_PHASE_VALUES: [[i32; 6]; 2] = [
 ];
 
 #[rustfmt::skip]
-pub const MIDDLEGAME_TABLES: [[i32; 64]; 6] = [
+static MIDDLEGAME_TABLES: [[i32; 64]; 6] = [
     // Pawn
     [
       0,   0,   0,   0,   0,   0,  0,   0,
@@ -82,7 +165,7 @@ pub const MIDDLEGAME_TABLES: [[i32; 64]; 6] = [
 ];
 
 #[rustfmt::skip]
-pub const ENDGAME_TABLES: [[i32; 64]; 6] = [
+static ENDGAME_TABLES: [[i32; 64]; 6] = [
     // Pawn
     [
       0,   0,   0,   0,   0,   0,  0,   0,
@@ -150,57 +233,3 @@ pub const ENDGAME_TABLES: [[i32; 64]; 6] = [
     -53, -34, -21, -11, -28, -14, -24, -43
     ]
 ];
-
-pub const PHASE_INC: [i32; 6] = [0, 1, 1, 2, 4, 0];
-
-#[must_use]
-pub const fn flip(sq: usize) -> usize {
-    sq ^ 56
-}
-
-#[must_use]
-pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
-    let mut middlegame_score = 0;
-    let mut endgame_score = 0;
-
-    for sq in Square::iter() {
-        let Some((piece, color)) = position.piece_at(sq) else {
-            continue;
-        };
-
-        match color {
-            Color::White => {
-                middlegame_score += MIDDLEGAME_TABLES[piece as usize][flip(sq as usize)]
-                    + PIECE_PHASE_VALUES[0][piece as usize];
-                endgame_score += ENDGAME_TABLES[piece as usize][flip(sq as usize)]
-                    + PIECE_PHASE_VALUES[1][piece as usize];
-            }
-            Color::Black => {
-                middlegame_score -= MIDDLEGAME_TABLES[piece as usize][sq as usize]
-                    + PIECE_PHASE_VALUES[0][piece as usize];
-                endgame_score -= ENDGAME_TABLES[piece as usize][sq as usize]
-                    + PIECE_PHASE_VALUES[1][piece as usize];
-            }
-        }
-    }
-
-    let middlegame_phase = i32::min(phase, 24);
-    let endgame_phase = 24 - middlegame_phase;
-
-    (middlegame_score * middlegame_phase + endgame_score * endgame_phase) / 24
-}
-
-#[must_use]
-pub fn game_phase(position: &Position) -> i32 {
-    let mut phase = 0;
-
-    for sq in Square::iter() {
-        let Some((piece, _)) = position.piece_at(sq) else {
-            continue;
-        };
-
-        phase += PHASE_INC[piece as usize];
-    }
-
-    phase
-}
