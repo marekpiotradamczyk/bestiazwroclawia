@@ -6,7 +6,7 @@ use crate::engine::search::parallel::SearchData;
 /// Less valuable victim (LVA) and more valuable victim (MVV) tables
 /// Effectively this is a set of priorities for moves.
 /// For example Queen capturing a pawn would score lower (101) than a pawn capturing a pawn (105).
-pub const MVV_LVA: [[i32; 6]; 6] = [
+static MVV_LVA: [[i32; 6]; 6] = [
     [105, 205, 305, 405, 505, 605],
     [104, 204, 304, 404, 504, 604],
     [103, 203, 303, 403, 503, 603],
