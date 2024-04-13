@@ -142,7 +142,7 @@ impl MoveGen {
         let attacker_sq = attackers_to_king.pop_lsb();
 
         if attackers_to_king.is_empty() {
-            let slider = match pos.piece_at(&attacker_sq).unwrap().0 {
+            let slider = match pos.piece_at(attacker_sq).unwrap().0 {
                 Piece::Rook => Some(Slider::Rook),
                 Piece::Bishop => Some(Slider::Bishop),
                 Piece::Queen => Some(Slider::Queen),

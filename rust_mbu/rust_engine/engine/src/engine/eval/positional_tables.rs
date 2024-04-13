@@ -164,7 +164,7 @@ pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
     let mut endgame_score = 0;
 
     for sq in Square::iter() {
-        let Some((piece, color)) = position.piece_at(&sq) else {
+        let Some((piece, color)) = position.piece_at(sq) else {
             continue;
         };
 
@@ -195,7 +195,7 @@ pub fn game_phase(position: &Position) -> i32 {
     let mut phase = 0;
 
     for sq in Square::iter() {
-        let Some((piece, _)) = position.piece_at(&sq) else {
+        let Some((piece, _)) = position.piece_at(sq) else {
             continue;
         };
 

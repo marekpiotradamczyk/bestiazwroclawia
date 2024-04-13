@@ -41,7 +41,7 @@ pub fn is_futile(
         return false;
     }
 
-    let piece = pos.piece_at(&mv.from()).unwrap().0;
+    let piece = pos.piece_at(mv.from()).unwrap().0;
 
     if piece == Piece::Pawn {
         let rank = mv.from().rank();
