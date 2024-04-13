@@ -35,7 +35,7 @@ impl KnightMoveGenerator for MoveGen {
             let attacks = self.knight_attacks(from_square) & !friendly_occ;
 
             attacks.into_iter().map(move |target_square| {
-                let captured_piece = pos.piece_at(&target_square).map(|piece| piece.0);
+                let captured_piece = pos.piece_at(target_square).map(|piece| piece.0);
                 let kind = if captured_piece.is_some() {
                     MoveKind::Capture
                 } else {

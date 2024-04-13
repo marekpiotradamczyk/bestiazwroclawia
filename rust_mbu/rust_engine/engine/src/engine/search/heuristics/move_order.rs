@@ -6,7 +6,7 @@ use crate::engine::search::parallel::SearchData;
 /// Less valuable victim (LVA) and more valuable victim (MVV) tables
 /// Effectively this is a set of priorities for moves.
 /// For example Queen capturing a pawn would score lower (101) than a pawn capturing a pawn (105).
-pub const MVV_LVA: [[i32; 6]; 6] = [
+static MVV_LVA: [[i32; 6]; 6] = [
     [105, 205, 305, 405, 505, 605],
     [104, 204, 304, 404, 504, 604],
     [103, 203, 303, 403, 503, 603],
@@ -32,13 +32,13 @@ impl MoveUtils for SearchData {
     fn score_move(&self, mv: &Move, pos: &Position) -> i32 {
         // We prioritze captures
         if mv.is_capture() {
-            let attacker = pos.piece_at(&mv.from()).unwrap().0;
+            let attacker = pos.piece_at(mv.from()).unwrap().0;
             let victim = if mv.is_enpass_capture() {
                 let rank_offset = if pos.turn == Color::White { -1 } else { 1 };
                 let sq = mv.to().offset(rank_offset, 0).unwrap();
-                pos.piece_at(&sq).unwrap().0
+                pos.piece_at(sq).unwrap().0
             } else {
-                pos.piece_at(&mv.to()).unwrap().0
+                pos.piece_at(mv.to()).unwrap().0
             };
 
             return MVV_LVA[attacker as usize][victim as usize] + 1_000_000;
@@ -62,7 +62,7 @@ impl MoveUtils for SearchData {
         } else if self.ply > 2 && self.pair_moves[1][self.ply - 2].is_some_and(|pair| pair == *mv) {
             450_000
         } else {
-            let (piece, color) = pos.piece_at(&mv.from()).unwrap();
+            let (piece, color) = pos.piece_at(mv.from()).unwrap();
 
             self.history_moves[color as usize][piece as usize][mv.to() as usize]
         }

@@ -31,7 +31,7 @@ pub fn calc_king_safety_units(position: &Position, color: Color) -> i32 {
 
     for sq in near_king {
         for piece_sq in MOVE_GEN.attacks_to_square(position, sq, color.enemy(), position.occupied) {
-            let (piece, _) = position.piece_at(&piece_sq).unwrap();
+            let (piece, _) = position.piece_at(piece_sq).unwrap();
 
             bonus += PIECE_ATTACK_UNITS[piece as usize];
         }

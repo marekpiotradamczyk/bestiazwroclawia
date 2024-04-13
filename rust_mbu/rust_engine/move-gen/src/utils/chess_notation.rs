@@ -17,13 +17,13 @@ pub trait ChessNotation {
 impl ChessNotation for MoveGen {
     fn get_from_notation(&self, pos: &Position, mv: &Move) -> (String, String) {
         let from_square = mv.from();
-        let from_piece = pos.piece_at(&from_square);
+        let from_piece = pos.piece_at(from_square);
         let is_pawn = matches!(from_piece.map(|p| p.0), Some(Piece::Pawn));
 
         let squares = self
             .attacks_to_square(pos, mv.to(), pos.turn, pos.occupied)
             .into_iter()
-            .filter(|sq| sq != &from_square && pos.piece_at(sq) == from_piece)
+            .filter(|sq| sq != &from_square && pos.piece_at(*sq) == from_piece)
             .collect_vec();
 
         let mut can_distinguish_by_file = true;
@@ -58,7 +58,7 @@ impl ChessNotation for MoveGen {
     }
 
     fn to_algebraic_notation(&self, pos: &Position, mv: &Move) -> String {
-        let (piece, _) = pos.piece_at(&mv.from()).expect("No piece at from square.");
+        let (piece, _) = pos.piece_at(mv.from()).expect("No piece at from square.");
 
         if piece == Piece::King
             && matches!(mv.kind(), MoveKind::Castling)

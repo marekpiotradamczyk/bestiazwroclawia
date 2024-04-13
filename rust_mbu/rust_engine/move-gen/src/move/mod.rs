@@ -79,7 +79,7 @@ impl MakeMove for Position {
         }
 
         let (from_piece, from_color) = self
-            .remove_piece_at(&from)
+            .remove_piece_at(from)
             .expect("BUG: No piece at from square");
 
         if from_piece == Piece::King {
@@ -112,7 +112,7 @@ impl MakeMove for Position {
                 None
             }
             MoveKind::Capture => {
-                let (target_piece, target_color) = self.remove_piece_at(&to).unwrap();
+                let (target_piece, target_color) = self.remove_piece_at(to).unwrap();
 
                 self.add_piece_at(to, from_piece, from_color)?;
 
@@ -129,7 +129,7 @@ impl MakeMove for Position {
                     .expect("BUG: Invalid en passant square");
 
                 let (target_piece, target_color) = self
-                    .remove_piece_at(&captured_sq)
+                    .remove_piece_at(captured_sq)
                     .expect("BUG: No piece at to square");
 
                 self.add_piece_at(to, from_piece, from_color)?;
@@ -148,7 +148,7 @@ impl MakeMove for Position {
                 let (rook_from, _) = castling.from_squares();
                 let (rook_to, king_to) = castling.target_squares();
 
-                let (rook, _) = self.remove_piece_at(&rook_from).unwrap_or_else(|| {
+                let (rook, _) = self.remove_piece_at(rook_from).unwrap_or_else(|| {
                     panic!(
                         "BUG: No piece at {rook_from} from square\n{self}, FEN: {}",
                         self.to_fen()
@@ -168,7 +168,7 @@ impl MakeMove for Position {
             }
             MoveKind::Promotion | MoveKind::PromotionCapture => {
                 let promotion = mv.promotion().expect("BUG: No promotion piece");
-                let captured = self.remove_piece_at(&to);
+                let captured = self.remove_piece_at(to);
 
                 self.add_piece_at(to, promotion, from_color)?;
 
@@ -188,7 +188,7 @@ impl MakeMove for Position {
                 captured
             }
             MoveKind::DoublePawnPush => {
-                let captured = self.remove_piece_at(&to);
+                let captured = self.remove_piece_at(to);
 
                 self.add_piece_at(to, from_piece, from_color)?;
 
@@ -374,7 +374,7 @@ impl Move {
             return true;
         }
 
-        let (piece, _) = pos.piece_at(&self.from()).unwrap();
+        let (piece, _) = pos.piece_at(self.from()).unwrap();
 
         piece == Piece::Pawn
     }

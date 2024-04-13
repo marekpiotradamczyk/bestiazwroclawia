@@ -124,7 +124,7 @@ impl Fen for Position {
         for rank in (0..8u8).rev() {
             for file in 0..8u8 {
                 let square = Square::from_u8(rank * 8 + file);
-                let piece = self.piece_at(&square);
+                let piece = self.piece_at(square);
                 if let Some((piece, color)) = piece {
                     if empty != 0 {
                         fen.push_str(&format!("{empty}"));

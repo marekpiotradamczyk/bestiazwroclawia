@@ -200,7 +200,7 @@ impl SearchData {
             // material by series of captures. We check that using `static_exchange_evaluation`.
             if gives_check {
                 let value_of_moved_piece =
-                    PIECE_VALUES[node.piece_at(&child.from()).unwrap().0 as usize];
+                    PIECE_VALUES[node.piece_at(child.from()).unwrap().0 as usize];
 
                 let opponent_recapture_gain = see_move_done(node, child);
 
@@ -272,7 +272,7 @@ impl SearchData {
             // If we found better move, update alpha and best move
             if score > alpha {
                 if !child.is_capture() {
-                    let (piece, color) = node.piece_at(&child.from()).expect("No piece found");
+                    let (piece, color) = node.piece_at(child.from()).expect("No piece found");
                     // Update history moves, so we can order moves better next time
                     self.history_moves[color as usize][piece as usize][child.to() as usize] +=
                         (depth * depth) as i32;
@@ -425,8 +425,8 @@ impl SearchData {
             }
 
             if !mv.is_enpass_capture() {
-                let attacking_piece = node.piece_at(&mv.from()).unwrap().0;
-                let captured_piece = node.piece_at(&mv.to()).unwrap().0;
+                let attacking_piece = node.piece_at(mv.from()).unwrap().0;
+                let captured_piece = node.piece_at(mv.to()).unwrap().0;
 
                 if PIECE_VALUES[attacking_piece as usize] > PIECE_VALUES[captured_piece as usize]
                     && static_exchange_evaluation(node, &mv) < 0

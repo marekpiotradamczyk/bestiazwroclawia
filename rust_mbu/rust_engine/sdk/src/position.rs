@@ -206,11 +206,11 @@ impl Position {
         self.turn
     }
 
-    pub fn remove_piece_at(&mut self, square: &Square) -> Option<(Piece, Color)> {
+    pub fn remove_piece_at(&mut self, square: Square) -> Option<(Piece, Color)> {
         let (piece, color) = self.piece_at(square)?;
 
         self.pieces[color as usize][piece as usize] ^= square.bitboard();
-        self.mailbox[*square as usize] = None;
+        self.mailbox[square as usize] = None;
 
         Some((piece, color))
     }
@@ -221,7 +221,7 @@ impl Position {
         piece: Piece,
         color: Color,
     ) -> Result<(), anyhow::Error> {
-        if self.piece_at(&square).is_some() {
+        if self.piece_at(square).is_some() {
             return Err(anyhow!("Piece already at {}", square.coords_str()));
         }
         self.pieces[color as usize][piece as usize] |= Into::<Bitboard>::into(square);
@@ -232,8 +232,8 @@ impl Position {
 
     #[must_use]
     #[inline(always)]
-    pub const fn piece_at(&self, square: &Square) -> Option<(Piece, Color)> {
-        self.mailbox[*square as usize]
+    pub const fn piece_at(&self, square: Square) -> Option<(Piece, Color)> {
+        self.mailbox[square as usize]
     }
 
     #[must_use]
@@ -340,7 +340,7 @@ impl Display for Position {
         for rank in (0..8u8).rev() {
             for file in 0..8u8 {
                 let square = Square::from_u8(rank * 8 + file);
-                if let Some((piece, color)) = self.piece_at(&square) {
+                if let Some((piece, color)) = self.piece_at(square) {
                     write!(f, "{} ", piece.to_utf8_symbol(color))?;
                 } else {
                     write!(f, "x ")?;

@@ -29,12 +29,12 @@ pub fn static_exchange_evaluation(pos: &Position, mv: &Move) -> i32 {
     let mut attacks = MOVE_GEN.attacks_to_square(pos, target_sq, Color::White, occupied)
         | MOVE_GEN.attacks_to_square(pos, target_sq, Color::Black, occupied);
 
-    let mut attacked_piece_val = PIECE_VALUES[pos.piece_at(&target_sq).unwrap().0 as usize];
+    let mut attacked_piece_val = PIECE_VALUES[pos.piece_at(target_sq).unwrap().0 as usize];
     turn = turn.enemy();
 
     gain[0] = attacked_piece_val;
 
-    let piece = pos.piece_at(&from_sq).unwrap().0;
+    let piece = pos.piece_at(from_sq).unwrap().0;
     occupied ^= from_sq.bitboard();
 
     attacked_piece_val = PIECE_VALUES[piece as usize];
@@ -54,7 +54,7 @@ pub fn static_exchange_evaluation(pos: &Position, mv: &Move) -> i32 {
         else {
             break;
         };
-        let piece = pos.piece_at(&least_valuable_piece_sq).unwrap().0;
+        let piece = pos.piece_at(least_valuable_piece_sq).unwrap().0;
 
         occupied ^= least_valuable_piece_sq.bitboard();
 
@@ -107,7 +107,7 @@ pub fn see_move_done(pos: &Position, mv: &Move) -> i32 {
     let from_sq = mv.from();
     let mut turn = pos.turn;
 
-    let piece = pos.piece_at(&from_sq).unwrap().0;
+    let piece = pos.piece_at(from_sq).unwrap().0;
 
     let mut attacks = MOVE_GEN.attacks_to_square(pos, target_sq, Color::White, occupied)
         | MOVE_GEN.attacks_to_square(pos, target_sq, Color::Black, occupied);
@@ -121,7 +121,7 @@ pub fn see_move_done(pos: &Position, mv: &Move) -> i32 {
         return 0;
     };
 
-    let lvp_piece = pos.piece_at(&lvp_sq).unwrap().0;
+    let lvp_piece = pos.piece_at(lvp_sq).unwrap().0;
     occupied ^= lvp_sq.bitboard();
     if matches!(lvp_piece, Piece::Pawn | Piece::Bishop | Piece::Queen) {
         attacks |= MOVE_GEN.bishop_moves(target_sq, occupied) & bishop_sliders;
@@ -141,7 +141,7 @@ pub fn see_move_done(pos: &Position, mv: &Move) -> i32 {
         else {
             break;
         };
-        let piece = pos.piece_at(&least_valuable_piece_sq).unwrap().0;
+        let piece = pos.piece_at(least_valuable_piece_sq).unwrap().0;
 
         occupied ^= least_valuable_piece_sq.bitboard();
 
