@@ -1,4 +1,4 @@
-use std::sync::atomic::AtomicBool;
+use std::{mem::MaybeUninit, sync::atomic::AtomicBool};
 
 use move_gen::r#move::{MakeMove, Move};
 use sdk::position::Position;
@@ -68,7 +68,11 @@ impl SearchData {
                 return REPEATED_POSITION_SCORE;
             }
 
-            if alpha < DRAW_SCORE {
+            if self.ply > 0 && alpha < DRAW_SCORE {
+                unsafe {
+                    self.pv
+                        .push_pv_move(self.ply, self.current_move.assume_init());
+                }
                 alpha = DRAW_SCORE;
             }
         }
@@ -193,6 +197,7 @@ impl SearchData {
                 let _ = child_pos.make_move(child);
                 child_pos
             };
+            self.current_move = MaybeUninit::new(*child);
 
             let gives_check = MOVE_GEN.is_check(&child_pos);
 

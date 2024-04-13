@@ -1,4 +1,5 @@
 use std::{
+    mem::MaybeUninit,
     sync::{atomic::Ordering, Arc},
     time::Instant,
 };
@@ -55,6 +56,7 @@ pub struct SearchData {
     pub eval_table: Arc<EvaluationTable>,
     pub time_control: Arc<TimeControl>,
     pub age: usize,
+    pub current_move: MaybeUninit<Move>,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -97,6 +99,7 @@ impl Search {
                 eval_table: self.eval_table.clone(),
                 counter_moves: [[None; MAX_PLY]; 2],
                 pair_moves: [[None; MAX_PLY]; 2],
+                current_move: MaybeUninit::uninit(),
             };
 
             let mut thread = SearchThread {

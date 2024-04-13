@@ -13,7 +13,8 @@ pub fn bonus_rook_for_open_files(position: &Position) -> i32 {
     let white_rooks_on_open_files = (white_rooks & open_files).count();
     let black_rooks_on_open_files = (black_rooks & open_files).count();
 
-    (i32::from(white_rooks_on_open_files) - i32::from(black_rooks_on_open_files)) * BONUS_ROOK_OPEN_FILE
+    (i32::from(white_rooks_on_open_files) - i32::from(black_rooks_on_open_files))
+        * BONUS_ROOK_OPEN_FILE
 }
 
 #[must_use]

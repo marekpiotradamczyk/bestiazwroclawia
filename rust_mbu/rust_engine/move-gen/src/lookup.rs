@@ -26,7 +26,7 @@ pub struct LookupTables {
     pub pawn_double_moves: Vec<Vec<Bitboard>>,
     pub in_between: Vec<Vec<Bitboard>>,
     pub ray_attacks: Vec<Vec<Bitboard>>,
-    pub squares_near_king: Vec<Vec<Bitboard>>
+    pub squares_near_king: Vec<Vec<Bitboard>>,
 }
 
 #[derive(Clone, Copy)]
@@ -67,11 +67,14 @@ pub fn load_lookup_tables() -> Result<LookupTables> {
 }
 
 pub fn load_rook_magics() -> Result<(Vec<MagicEntry>, Vec<Vec<Bitboard>>)> {
-    let mut magics = vec![MagicEntry {
-        mask: Bitboard(0),
-        magic: 0,
-        index_bits: 0,
-    }; 64];
+    let mut magics = vec![
+        MagicEntry {
+            mask: Bitboard(0),
+            magic: 0,
+            index_bits: 0,
+        };
+        64
+    ];
 
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
@@ -116,11 +119,14 @@ pub fn load_rook_magics() -> Result<(Vec<MagicEntry>, Vec<Vec<Bitboard>>)> {
 }
 
 pub fn load_bishop_magics() -> Result<(Vec<MagicEntry>, Vec<Vec<Bitboard>>)> {
-    let mut magics = vec![MagicEntry {
-        mask: Bitboard(0),
-        magic: 0,
-        index_bits: 0,
-    }; 64];
+    let mut magics = vec![
+        MagicEntry {
+            mask: Bitboard(0),
+            magic: 0,
+            index_bits: 0,
+        };
+        64
+    ];
 
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()

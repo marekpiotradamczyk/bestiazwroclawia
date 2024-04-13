@@ -14,7 +14,10 @@ use crate::{
         king_safety::calc_king_safety,
         material,
         pawns::{
-            isolated::isolated_pawns, protected_passed_pawnes::protected_passed_pawnes, stacked::stacked_pawns, strong_squares::{bonus_for_piece, strong_squares}
+            isolated::isolated_pawns,
+            protected_passed_pawnes::protected_passed_pawnes,
+            stacked::stacked_pawns,
+            strong_squares::{bonus_for_piece, strong_squares},
         },
         pin_bonus::bonus_for_absolute_pins,
         positional_tables::{game_phase, tapered_eval},
@@ -177,7 +180,10 @@ impl Engine {
             "Protected passed pawns bonus: {}",
             protected_passed_pawnes(&self.root_pos)
         );
-        println!("Strong squares bonus: {}", strong_squares(&self.root_pos, self.root_pos.turn));
+        println!(
+            "Strong squares bonus: {}",
+            strong_squares(&self.root_pos, self.root_pos.turn)
+        );
         println!(
             "Pieces on strong squares bonus: {}",
             bonus_for_piece(&self.root_pos)

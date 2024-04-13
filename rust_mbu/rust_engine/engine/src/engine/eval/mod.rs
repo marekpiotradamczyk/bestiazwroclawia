@@ -19,7 +19,12 @@ use self::{
     evaluation_table::EvaluationTable,
     king_safety::calc_king_safety,
     pawns::{
-        isolated::isolated_pawns, protected_passed_pawnes::protected_passed_pawnes, stacked::stacked_pawns, strong_squares::{bonus as bonus_for_strong_squares, bonus_for_piece as bonus_for_piece_on_strong_squares}
+        isolated::isolated_pawns,
+        protected_passed_pawnes::protected_passed_pawnes,
+        stacked::stacked_pawns,
+        strong_squares::{
+            bonus as bonus_for_strong_squares, bonus_for_piece as bonus_for_piece_on_strong_squares,
+        },
     },
     pin_bonus::bonus_for_absolute_pins,
     positional_tables::{game_phase, tapered_eval},

@@ -16,4 +16,3 @@ pub fn can_win(pos: &Position, side: Color) -> bool {
 
     !matches!((bishops, knights), (0 | 1, 0) | (0, _))
 }
-

@@ -7,7 +7,6 @@ pub struct EvaluationTable {
     pub size: usize,
 }
 
-
 impl Default for EvaluationTable {
     fn default() -> Self {
         Self::new(16)
