@@ -141,7 +141,6 @@ impl SearchThread {
                 alpha = DEFAULT_ALPHA;
                 beta = DEFAULT_BETA;
                 best_score = self.data.negamax(position, alpha, beta, depth);
-                //continue;
             }
 
             // Adjust aspiration window
@@ -167,6 +166,7 @@ impl SearchThread {
                 if self.data.stopped() {
                     break;
                 }
+
                 println!(
                     "info score {} depth {} nodes {} nps {} time {} pv {}",
                     score_str,
@@ -187,7 +187,7 @@ impl SearchThread {
                 println!("bestmove {best_move}");
             } else {
                 // Log null move, just to satisfy the protocol
-                println!("bestmove 0000");
+                println!("bestmove {}", self.data.pv.best().unwrap());
             }
         }
     }

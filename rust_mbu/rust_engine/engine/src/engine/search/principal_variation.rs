@@ -37,6 +37,11 @@ impl PrincipalVariation {
     pub fn best(&self) -> Option<Move> {
         self.table[0][0]
     }
+
+    #[must_use]
+    pub fn is_only_legal_move(&self) -> bool {
+        self.length[0] == 1
+    }
 }
 
 impl ToString for PrincipalVariation {

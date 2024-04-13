@@ -1,4 +1,7 @@
-use std::{mem::MaybeUninit, sync::atomic::AtomicBool};
+use std::{
+    mem::MaybeUninit,
+    sync::atomic::{AtomicBool, Ordering},
+};
 
 use move_gen::r#move::{MakeMove, Move};
 use sdk::position::Position;
@@ -139,6 +142,13 @@ impl SearchData {
 
         // Generate legal moves for current position
         let mut child_nodes = MOVE_GEN.generate_legal_moves(node);
+
+        // No need to search the only move in root position.
+        if self.is_root() && child_nodes.len() == 1 {
+            self.pv.push_pv_move(self.ply, child_nodes[0]);
+            stop();
+            return 0;
+        }
 
         // Order moves by probability of being good in order to improve alpha-beta pruning.
         self.order_moves(&mut child_nodes, node, best_move);
@@ -463,4 +473,14 @@ impl SearchData {
 
         alpha
     }
+
+    #[must_use]
+    #[inline]
+    pub const fn is_root(&self) -> bool {
+        self.ply == 0
+    }
+}
+
+pub fn stop() {
+    STOPPED.store(true, Ordering::Relaxed);
 }
