@@ -18,13 +18,44 @@ static MVV_LVA: [[i32; 6]; 6] = [
 pub trait MoveUtils {
     fn score_move(&self, mv: &Move, pos: &Position) -> i32;
     fn order_moves(&self, moves: &mut [Move], pos: &Position, best_move: Option<Move>) {
-        moves.sort_by_cached_key(|m| {
-            if best_move.is_some_and(|best| best == *m) {
+        let mut scores = [i32::MIN; 128];
+        for i in 0..moves.len() {
+            let mov = moves[i];
+            let score = if best_move.is_some_and(|best| best == mov) {
                 -3_000_000
             } else {
-                -self.score_move(m, pos)
+                -self.score_move(&mov, pos)
+            };
+
+            scores[i] = score;
+
+            // Sort the moves by score
+            let mut c = i;
+            let mut j = i;
+            loop {
+                if c > 0 {
+                    c -= 1;
+                } else {
+                    break;
+                }
+
+                if scores[j] < scores[c] {
+                    unsafe {
+                        std::ptr::swap(
+                            std::ptr::addr_of_mut!(moves[j]),
+                            std::ptr::addr_of_mut!(moves[c]),
+                        );
+                        std::ptr::swap(
+                            std::ptr::addr_of_mut!(scores[j]),
+                            std::ptr::addr_of_mut!(scores[c]),
+                        );
+                    };
+                    j -= 1;
+                } else {
+                    break;
+                }
             }
-        });
+        }
     }
 }
 
