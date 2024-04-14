@@ -4,7 +4,7 @@ use sdk::{
     square::FILE_MASKS,
 };
 
-pub const PROTECTED_PASSED_PAWNS_BONUS: i32 = 20;
+const PROTECTED_PASSED_PAWNS_BONUS: i32 = 30;
 
 #[must_use]
 pub fn protected_passed_pawnes(pos: &Position) -> i32 {
