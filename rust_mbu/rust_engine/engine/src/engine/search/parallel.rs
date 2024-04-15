@@ -187,7 +187,9 @@ impl SearchThread {
                 println!("bestmove {best_move}");
             } else {
                 // Log null move, just to satisfy the protocol
-                println!("bestmove {}", self.data.pv.best().unwrap());
+                if let Some(best) = self.data.pv.best() {
+                    println!("bestmove {best}");
+                }
             }
         }
     }

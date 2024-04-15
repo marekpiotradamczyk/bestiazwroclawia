@@ -20,11 +20,11 @@ pub trait MoveUtils {
     fn order_moves(&self, moves: &mut [Move], pos: &Position, best_move: Option<Move>) {
         let mut scores = [i32::MIN; 128];
         for i in 0..moves.len() {
-            let mov = moves[i];
-            let score = if best_move.is_some_and(|best| best == mov) {
+            let mov = &moves[i];
+            let score = if best_move.as_ref().is_some_and(|best| best == mov) {
                 -3_000_000
             } else {
-                -self.score_move(&mov, pos)
+                -self.score_move(mov, pos)
             };
 
             scores[i] = score;
