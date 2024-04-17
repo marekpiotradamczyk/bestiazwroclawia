@@ -46,10 +46,10 @@ pub struct SearchThread {
 pub struct SearchData {
     pub nodes_evaluated: usize,
     pub ply: usize,
-    pub killer_moves: [[Option<Move>; MAX_PLY]; 2],
-    pub history_moves: [[[i32; 64]; 6]; 2],
-    pub counter_moves: [[Option<Move>; MAX_PLY]; 2],
-    pub pair_moves: [[Option<Move>; MAX_PLY]; 2],
+    pub killer_moves: Vec<Vec<Option<Move>>>,
+    pub history_moves: Vec<Vec<Vec<i32>>>,
+    pub counter_moves: Vec<Vec<Option<Move>>>,
+    pub pair_moves: Vec<Vec<Option<Move>>>,
     pub pv: PrincipalVariation,
     pub repetition_table: Table,
     pub transposition_table: Arc<TranspositionTable>,
@@ -89,16 +89,16 @@ impl Search {
             let data = SearchData {
                 nodes_evaluated: 0,
                 ply: 0,
-                killer_moves: [[None; MAX_PLY]; 2],
-                history_moves: [[[0; 64]; 6]; 2],
+                killer_moves: vec![vec![None; MAX_PLY]; 2],
+                history_moves: vec![vec![vec![0; 64]; 6]; 2],
                 pv: PrincipalVariation::default(),
                 repetition_table: self.repetion_table.clone(),
                 transposition_table: self.transposition_table.clone(),
                 time_control: self.time_control.clone(),
                 age: self.age,
                 eval_table: self.eval_table.clone(),
-                counter_moves: [[None; MAX_PLY]; 2],
-                pair_moves: [[None; MAX_PLY]; 2],
+                counter_moves: vec![vec![None; MAX_PLY]; 2],
+                pair_moves: vec![vec![None; MAX_PLY]; 2],
                 current_move: MaybeUninit::uninit(),
             };
 
@@ -202,8 +202,8 @@ impl SearchData {
     pub fn reset(&mut self) {
         //*self.nodes_evaluated.lock().unwrap() = 0;
         self.ply = 0;
-        self.killer_moves = [[None; MAX_PLY]; 2];
-        self.history_moves = [[[0; 64]; 6]; 2];
+        self.killer_moves = vec![vec![None; MAX_PLY]; 2];
+        self.history_moves = vec![vec![vec![0; 64]; 6]; 2];
         self.pv = PrincipalVariation::default();
         //self.age += 1;
     }

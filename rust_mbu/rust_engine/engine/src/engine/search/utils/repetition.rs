@@ -6,17 +6,17 @@ pub const DEFAULT_TABLE_SIZE: usize = MAX_PLY * 10;
 
 #[derive(Clone)]
 pub struct Table {
-    pub table: [u64; DEFAULT_TABLE_SIZE],
-    pub last_irreversible: [usize; DEFAULT_TABLE_SIZE],
+    pub table: Vec<u64>,
+    pub last_irreversible: Vec<usize>,
     pub idx: usize,
 }
 
 impl Default for Table {
     fn default() -> Self {
         Self {
-            table: [0; DEFAULT_TABLE_SIZE],
+            table: vec![0; DEFAULT_TABLE_SIZE],
             idx: 0,
-            last_irreversible: [0; DEFAULT_TABLE_SIZE],
+            last_irreversible: vec![0; DEFAULT_TABLE_SIZE],
         }
     }
 }
@@ -56,7 +56,7 @@ impl Table {
 
     pub fn clear(&mut self) {
         self.idx = 0;
-        self.table = [0; DEFAULT_TABLE_SIZE];
+        self.table = vec![0; DEFAULT_TABLE_SIZE];
     }
 }
 

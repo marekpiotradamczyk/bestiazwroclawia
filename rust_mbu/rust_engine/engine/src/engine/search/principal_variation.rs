@@ -5,15 +5,15 @@ const PV_TABLE_SIZE: usize = MAX_PLY;
 
 #[derive(Clone)]
 pub struct PrincipalVariation {
-    table: [[Option<Move>; PV_TABLE_SIZE]; PV_TABLE_SIZE],
-    length: [usize; PV_TABLE_SIZE],
+    table: Vec<Vec<Option<Move>>>,
+    length: Vec<usize>,
 }
 
 impl Default for PrincipalVariation {
     fn default() -> Self {
         Self {
-            table: [[None; PV_TABLE_SIZE]; PV_TABLE_SIZE],
-            length: [0; PV_TABLE_SIZE],
+            table: vec![vec![None; PV_TABLE_SIZE]; PV_TABLE_SIZE],
+            length: vec![0; PV_TABLE_SIZE],
         }
     }
 }
