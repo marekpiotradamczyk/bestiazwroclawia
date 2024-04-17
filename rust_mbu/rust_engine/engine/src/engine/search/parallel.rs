@@ -167,15 +167,18 @@ impl SearchThread {
                     break;
                 }
 
-                println!(
-                    "info score {} depth {} nodes {} nps {} time {} pv {}",
-                    score_str,
-                    depth,
-                    current_nodes_count,
-                    nps,
-                    time,
-                    self.data.pv.to_string()
-                );
+                // Fix lichess draw bug
+                if best_move.is_some() {
+                    println!(
+                        "info score {} depth {} nodes {} nps {} time {} pv {}",
+                        score_str,
+                        depth,
+                        current_nodes_count,
+                        nps,
+                        time,
+                        self.data.pv.to_string()
+                    );
+                }
             }
 
             if self.data.pv.best().is_some() && !self.data.stopped() {
