@@ -20,7 +20,7 @@ use self::{
     king_safety::{bonus_for_pieces_close_to_king, calc_king_safety},
     pawns::{
         isolated::isolated_pawns,
-        protected_passed_pawnes::protected_passed_pawnes,
+        protected_passed_pawnes::passed_pawns,
         stacked::stacked_pawns,
         strong_squares::{
             bonus as bonus_for_strong_squares, bonus_for_piece as bonus_for_piece_on_strong_squares,
@@ -52,11 +52,12 @@ pub fn evaluate(position: &Position, eval_table: &Arc<EvaluationTable>) -> i32 {
     let mut score = tapered_eval(position, phase);
     //let score = material(position);
     let phase_factor = f64::from(phase) / 24.0;
+    let inverse_phase_factor = 1.0 - phase_factor;
 
     score += calc_king_safety(position);
     score += isolated_pawns(position);
     score += stacked_pawns(position);
-    score += protected_passed_pawnes(position);
+    score += (f64::from(passed_pawns(position)) * (1.0 + inverse_phase_factor)) as i32;
     score += bonus_for_strong_squares(position);
     score += bonus_for_piece_on_strong_squares(position);
     score += bonus_rook_for_open_files(position);

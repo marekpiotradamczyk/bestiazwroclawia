@@ -15,7 +15,7 @@ use crate::{
         material,
         pawns::{
             isolated::isolated_pawns,
-            protected_passed_pawnes::protected_passed_pawnes,
+            protected_passed_pawnes::passed_pawns,
             stacked::stacked_pawns,
             strong_squares::{bonus_for_piece, strong_squares},
         },
@@ -182,7 +182,7 @@ impl Engine {
         println!("Stacked pawns penalty: {}", stacked_pawns(&self.root_pos));
         println!(
             "Protected passed pawns bonus: {}",
-            protected_passed_pawnes(&self.root_pos)
+            passed_pawns(&self.root_pos)
         );
         println!(
             "Strong squares bonus: {}",

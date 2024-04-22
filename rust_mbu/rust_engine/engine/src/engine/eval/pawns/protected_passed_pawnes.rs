@@ -5,19 +5,22 @@ use sdk::{
 };
 
 const PROTECTED_PASSED_PAWNS_BONUS: i32 = 30;
+const PASSED_PAWNS_BONUS: i32 = 20;
 
 #[must_use]
-pub fn protected_passed_pawnes(pos: &Position) -> i32 {
-    let white_protected_passed_pawns =
-        i32::from(mask_protected_passed_pawns(pos, Color::White).count());
-    let black_protected_passed_pawns =
-        i32::from(mask_protected_passed_pawns(pos, Color::Black).count());
+pub fn passed_pawns(pos: &Position) -> i32 {
+    let (white_passed, white_protected) = mask_protected_passed_pawns(pos, Color::White);
+    let (black_passed, black_protected) = mask_protected_passed_pawns(pos, Color::Black);
 
-    (white_protected_passed_pawns - black_protected_passed_pawns) * PROTECTED_PASSED_PAWNS_BONUS
+    let passed_bonus = i32::from(white_passed - black_passed) * PASSED_PAWNS_BONUS;
+    let protected_bonus =
+        i32::from(white_protected - black_protected) * PROTECTED_PASSED_PAWNS_BONUS;
+
+    passed_bonus + protected_bonus
 }
 
 #[must_use]
-pub fn mask_protected_passed_pawns(pos: &Position, color: Color) -> Bitboard {
+pub fn mask_protected_passed_pawns(pos: &Position, color: Color) -> (u8, u8) {
     let our_pawns = pos.pieces[color as usize][Piece::Pawn as usize];
     let enemy_pawns = pos.pieces[color.enemy() as usize][Piece::Pawn as usize];
 
@@ -27,10 +30,10 @@ pub fn mask_protected_passed_pawns(pos: &Position, color: Color) -> Bitboard {
         [Direction::SouthEast, Direction::SouthWest]
     };
 
-    let protected_pawns = (our_pawns.shift(&dirs[0]) | our_pawns.shift(&dirs[1])) & our_pawns;
+    let protected_pawns = our_pawns.shift(&dirs[0]) | our_pawns.shift(&dirs[1]);
 
-    let mut protected_passed_pawns = Bitboard::empty();
-    for pawn in protected_pawns {
+    let mut passed_pawns = Bitboard::empty();
+    for pawn in our_pawns {
         let file = pawn.file() as usize;
 
         let no_enemy_pawns_on_left_file =
@@ -39,9 +42,12 @@ pub fn mask_protected_passed_pawns(pos: &Position, color: Color) -> Bitboard {
             file == 7 || (enemy_pawns & FILE_MASKS[file + 1]).is_empty();
 
         if no_enemy_pawns_on_left_file && no_enemy_pawns_on_right_file {
-            protected_passed_pawns |= pawn.bitboard();
+            passed_pawns |= pawn.bitboard();
         }
     }
 
-    protected_passed_pawns
+    let passed_pawns_not_protected = (passed_pawns & !protected_pawns).count();
+    let passed_pawns_protected = (passed_pawns & protected_pawns).count();
+
+    (passed_pawns_not_protected, passed_pawns_protected)
 }
