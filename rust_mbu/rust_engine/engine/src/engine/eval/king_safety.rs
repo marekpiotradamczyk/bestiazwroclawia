@@ -14,6 +14,8 @@ pub const KING_SAFETY_TABLE: [i32; 150] = [
 ];
 
 pub const PIECE_ATTACK_UNITS: [i32; 6] = [0, 2, 2, 3, 5, 0];
+const BONUS_FOR_UNIT: i32 = 15;
+const MAX_BONUS_FOR_UNIT: i32 = 60;
 
 pub fn calc_king_safety(position: &Position) -> i32 {
     let white_units = calc_king_safety_units(position, Color::White);
@@ -22,6 +24,25 @@ pub fn calc_king_safety(position: &Position) -> i32 {
     -(KING_SAFETY_TABLE[white_units as usize] - KING_SAFETY_TABLE[black_units as usize])
 }
 
+#[must_use]
+pub fn bonus_for_pieces_close_to_king(position: &Position) -> i32 {
+    let white_count = pieces_close_to_king_count(position, Color::White);
+    let black_count = pieces_close_to_king_count(position, Color::Black);
+
+    ((white_count - black_count) * BONUS_FOR_UNIT).clamp(-MAX_BONUS_FOR_UNIT, MAX_BONUS_FOR_UNIT)
+}
+
+fn pieces_close_to_king_count(position: &Position, color: Color) -> i32 {
+    let king_sq = position.pieces[color as usize][Piece::King as usize].lsb();
+
+    let near_king = MOVE_GEN.lookups.squares_near_king[color as usize][king_sq as usize];
+    let friendly_pieces_count = i32::from((position.occupation(&color) & near_king).count()) - 1;
+    let enemy_pieces = i32::from((position.occupation(&color.enemy()) & near_king).count());
+
+    friendly_pieces_count - enemy_pieces
+}
+
+#[must_use]
 pub fn calc_king_safety_units(position: &Position, color: Color) -> i32 {
     let king_sq = position.pieces[color as usize][Piece::King as usize].lsb();
 

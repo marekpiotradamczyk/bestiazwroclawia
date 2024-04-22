@@ -38,48 +38,55 @@ pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
 
 #[must_use]
 pub fn game_phase(position: &Position) -> i32 {
-    //     let mut phase = 0;
-    //     phase += (boards[0][1].count_ones()) as i32;
-    //     phase += (boards[0][2].count_ones()) as i32;
-    //     phase += (boards[0][3].count_ones()) as i32 * 2;
-    //     phase += (boards[0][4] != 0) as i32 * 4;
-    //     phase += (boards[1][1].count_ones()) as i32;
-    //     phase += (boards[1][2].count_ones()) as i32;
-    //     phase += (boards[1][3].count_ones()) as i32 * 2;
-    //     phase += (boards[1][4] != 0) as i32 * 4;
-    //     phase
-
-    fn with_simd(boards: &[[sdk::bitboard::Bitboard; 6]; 2]) -> i32 {
-        let a: [i32; 4] = [
-            (boards[0][1].count_ones()) as i32,
-            (boards[0][2].count_ones()) as i32,
-            (boards[0][3].count_ones()) as i32 * 2,
-            (boards[0][4].0 != 0) as i32 * 4,
-        ];
-
-        let b: [i32; 4] = [
-            (boards[1][1].count_ones()) as i32,
-            (boards[1][2].count_ones()) as i32,
-            (boards[1][3].count_ones()) as i32 * 2,
-            (boards[1][4].0 != 0) as i32 * 4,
-        ];
-
-        use std::arch::x86_64::*;
-        use std::mem::transmute;
-
-        unsafe {
-            let a: __m128i = transmute(a);
-            let b: __m128i = transmute(b);
-            let xyzw = _mm_add_epi32(a, b);
-            let yxwz = _mm_shuffle_epi32(xyzw, 0b_10_11_00_01);
-            let xy_xy_zw_zw = _mm_add_epi32(xyzw, yxwz);
-            let zw_zw_xy_xy = _mm_shuffle_epi32(xy_xy_zw_zw, 0b_00_01_10_11);
-            let result = _mm_add_epi32(xy_xy_zw_zw, zw_zw_xy_xy);
-            _mm_cvtsi128_si32(result)
-        }
+    #[cfg(not(feature = "simd"))]
+    {
+        let boards = position.pieces;
+        let mut phase = 0;
+        phase += (boards[0][1].count_ones()) as i32;
+        phase += (boards[0][2].count_ones()) as i32;
+        phase += (boards[0][3].count_ones()) as i32 * 2;
+        phase += i32::from(!boards[0][4].is_empty()) * 4;
+        phase += (boards[1][1].count_ones()) as i32;
+        phase += (boards[1][2].count_ones()) as i32;
+        phase += (boards[1][3].count_ones()) as i32 * 2;
+        phase += i32::from(!boards[1][4].is_empty()) * 4;
+        phase
     }
 
-    with_simd(&position.pieces)
+    #[cfg(feature = "simd")]
+    {
+        fn with_simd(boards: &[[sdk::bitboard::Bitboard; 6]; 2]) -> i32 {
+            let a: [i32; 4] = [
+                (boards[0][1].count_ones()) as i32,
+                (boards[0][2].count_ones()) as i32,
+                (boards[0][3].count_ones()) as i32 * 2,
+                (boards[0][4].0 != 0) as i32 * 4,
+            ];
+
+            let b: [i32; 4] = [
+                (boards[1][1].count_ones()) as i32,
+                (boards[1][2].count_ones()) as i32,
+                (boards[1][3].count_ones()) as i32 * 2,
+                (boards[1][4].0 != 0) as i32 * 4,
+            ];
+
+            use std::arch::x86_64::*;
+            use std::mem::transmute;
+
+            unsafe {
+                let a: __m128i = transmute(a);
+                let b: __m128i = transmute(b);
+                let xyzw = _mm_add_epi32(a, b);
+                let yxwz = _mm_shuffle_epi32(xyzw, 0b_10_11_00_01);
+                let xy_xy_zw_zw = _mm_add_epi32(xyzw, yxwz);
+                let zw_zw_xy_xy = _mm_shuffle_epi32(xy_xy_zw_zw, 0b_00_01_10_11);
+                let result = _mm_add_epi32(xy_xy_zw_zw, zw_zw_xy_xy);
+                _mm_cvtsi128_si32(result)
+            }
+        }
+
+        with_simd(&position.pieces)
+    }
 }
 
 #[must_use]

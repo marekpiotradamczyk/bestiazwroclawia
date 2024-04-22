@@ -11,9 +11,9 @@ pub fn squares_near_king(king_sq: Square, king_color: Color) -> Bitboard {
     let mut squares = mask_king_attacks(king_sq.bitboard());
 
     let direction = if king_color == Color::White {
-        Direction::South
-    } else {
         Direction::North
+    } else {
+        Direction::South
     };
 
     squares |= squares.shift(&direction);

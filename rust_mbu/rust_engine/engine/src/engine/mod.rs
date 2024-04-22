@@ -11,7 +11,7 @@ use crate::{
     engine::eval::{
         activity::bonus_for_mobility,
         evaluate,
-        king_safety::calc_king_safety,
+        king_safety::{bonus_for_pieces_close_to_king, calc_king_safety},
         material,
         pawns::{
             isolated::isolated_pawns,
@@ -174,6 +174,10 @@ impl Engine {
         println!();
         println!("Tapered eval: {}", tapered_eval(&self.root_pos, phase));
         println!("Safety bonus: {}", calc_king_safety(&self.root_pos));
+        println!(
+            "Safety pieces bonus: {}",
+            bonus_for_pieces_close_to_king(&self.root_pos)
+        );
         println!("Isolated pawns penalty: {}", isolated_pawns(&self.root_pos));
         println!("Stacked pawns penalty: {}", stacked_pawns(&self.root_pos));
         println!(

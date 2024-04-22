@@ -17,7 +17,7 @@ pub trait Evaluate {
 use self::{
     activity::bonus_for_mobility,
     evaluation_table::EvaluationTable,
-    king_safety::calc_king_safety,
+    king_safety::{bonus_for_pieces_close_to_king, calc_king_safety},
     pawns::{
         isolated::isolated_pawns,
         protected_passed_pawnes::protected_passed_pawnes,
@@ -51,6 +51,7 @@ pub fn evaluate(position: &Position, eval_table: &Arc<EvaluationTable>) -> i32 {
     let phase = game_phase(position);
     let mut score = tapered_eval(position, phase);
     //let score = material(position);
+    let phase_factor = f64::from(phase) / 24.0;
 
     score += calc_king_safety(position);
     score += isolated_pawns(position);
@@ -63,6 +64,7 @@ pub fn evaluate(position: &Position, eval_table: &Arc<EvaluationTable>) -> i32 {
     score += bonus_for_rook_batteries(position);
     score += bonus_for_absolute_pins(position);
     score += bonus_for_mobility(position);
+    score += (f64::from(bonus_for_pieces_close_to_king(position)) * phase_factor) as i32;
 
     let final_score = score * side_multiplier;
 
