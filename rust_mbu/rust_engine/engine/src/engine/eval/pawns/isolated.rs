@@ -42,7 +42,7 @@ mod tests {
         position::{Color, Position},
     };
 
-    use crate::engine::eval::pawns::isolated_pawns::find_isolated_pawns;
+    use crate::engine::eval::pawns::isolated::find_isolated_pawns;
 
     #[test]
     fn test_find_isolated_pawns() {

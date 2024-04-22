@@ -39,7 +39,7 @@ mod tests {
         position::{Color, Position},
     };
 
-    use crate::engine::eval::pawns::stacked_pawns::stacked_pawns_count;
+    use crate::engine::eval::pawns::stacked::stacked_pawns_count;
 
     #[test]
     fn test_find_doubled_pawns() {
