@@ -186,7 +186,7 @@ impl Engine {
         );
         println!(
             "Strong squares bonus: {}",
-            bonus_for_strong_squares(&self.root_pos, self.root_pos.turn)
+            bonus(&self.root_pos)
         );
         println!(
             "Pieces on strong squares bonus: {}",
