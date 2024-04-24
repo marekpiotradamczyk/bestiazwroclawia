@@ -13,9 +13,9 @@ pub fn passed_pawns(pos: &Position) -> i32 {
     let (white_passed, white_protected) = mask_protected_passed_pawns(pos, Color::White);
     let (black_passed, black_protected) = mask_protected_passed_pawns(pos, Color::Black);
 
-    let passed_bonus = i32::from(white_passed) - i32::from(black_passed) * PASSED_PAWNS_BONUS;
+    let passed_bonus = (i32::from(white_passed) - i32::from(black_passed)) * PASSED_PAWNS_BONUS;
     let protected_bonus =
-        i32::from(white_protected) - i32::from(black_protected) * PROTECTED_PASSED_PAWNS_BONUS;
+        (i32::from(white_protected) - i32::from(black_protected)) * PROTECTED_PASSED_PAWNS_BONUS;
 
     passed_bonus + protected_bonus
 }
