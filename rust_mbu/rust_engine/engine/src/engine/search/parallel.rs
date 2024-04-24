@@ -163,21 +163,19 @@ impl SearchThread {
                     |score| format!("mate {score}"),
                 );
 
+                // Fix lichess draw bug
+                println!(
+                    "info score {} depth {} nodes {} nps {} time {} pv {}",
+                    score_str,
+                    depth,
+                    current_nodes_count,
+                    nps,
+                    time,
+                    self.data.pv.to_string()
+                );
+
                 if self.data.stopped() {
                     break;
-                }
-
-                // Fix lichess draw bug
-                if best_move.is_some() {
-                    println!(
-                        "info score {} depth {} nodes {} nps {} time {} pv {}",
-                        score_str,
-                        depth,
-                        current_nodes_count,
-                        nps,
-                        time,
-                        self.data.pv.to_string()
-                    );
                 }
             }
 
@@ -192,6 +190,8 @@ impl SearchThread {
                 // Log null move, just to satisfy the protocol
                 if let Some(best) = self.data.pv.best() {
                     println!("bestmove {best}");
+                } else {
+                    println!("bestmove a1a1");
                 }
             }
         }

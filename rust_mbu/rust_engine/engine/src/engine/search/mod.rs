@@ -68,6 +68,10 @@ impl SearchData {
         let repetitions = self.repetition_table.repetitions();
         if repetitions > 1 {
             if repetitions >= 3 {
+                unsafe {
+                    self.pv
+                        .push_pv_move(self.ply, self.current_move.assume_init());
+                }
                 return REPEATED_POSITION_SCORE;
             }
 
