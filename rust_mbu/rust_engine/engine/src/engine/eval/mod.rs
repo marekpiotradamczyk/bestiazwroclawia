@@ -57,7 +57,7 @@ pub fn evaluate(position: &Position, eval_table: &Arc<EvaluationTable>) -> i32 {
     score += calc_king_safety(position);
     score += isolated_pawns(position);
     score += stacked_pawns(position);
-    score += (f64::from(passed_pawns(position)) * (1.0 + inverse_phase_factor)) as i32;
+    score += passed_pawns(position);
     score += bonus_for_strong_squares(position);
     score += bonus_for_piece_on_strong_squares(position);
     score += bonus_rook_for_open_files(position);
