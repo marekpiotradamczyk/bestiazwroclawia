@@ -38,7 +38,7 @@ pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
 
 #[must_use]
 pub fn game_phase(position: &Position) -> i32 {
-    #[cfg(not(feature = "simd"))]
+    #[cfg(not(target_feature = "sse2"))]
     {
         let boards = position.pieces;
         let mut phase = 0;
@@ -53,25 +53,24 @@ pub fn game_phase(position: &Position) -> i32 {
         phase
     }
 
-    #[cfg(feature = "simd")]
+    #[cfg(target_feature = "sse2")]
     {
         fn with_simd(boards: &[[sdk::bitboard::Bitboard; 6]; 2]) -> i32 {
+            use std::arch::x86_64::{__m128i, _mm_add_epi32, _mm_cvtsi128_si32, _mm_shuffle_epi32};
+            use std::mem::transmute;
             let a: [i32; 4] = [
                 (boards[0][1].count_ones()) as i32,
                 (boards[0][2].count_ones()) as i32,
                 (boards[0][3].count_ones()) as i32 * 2,
-                (boards[0][4].0 != 0) as i32 * 4,
+                i32::from(boards[0][4].0 != 0) * 4,
             ];
 
             let b: [i32; 4] = [
                 (boards[1][1].count_ones()) as i32,
                 (boards[1][2].count_ones()) as i32,
                 (boards[1][3].count_ones()) as i32 * 2,
-                (boards[1][4].0 != 0) as i32 * 4,
+                i32::from(boards[1][4].0 != 0) * 4,
             ];
-
-            use std::arch::x86_64::*;
-            use std::mem::transmute;
 
             unsafe {
                 let a: __m128i = transmute(a);
@@ -88,7 +87,6 @@ pub fn game_phase(position: &Position) -> i32 {
         with_simd(&position.pieces)
     }
 }
-
 #[must_use]
 const fn flip(sq: usize) -> usize {
     sq ^ 56
