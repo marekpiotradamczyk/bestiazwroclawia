@@ -117,19 +117,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "11157ac094ffbdde99aa67b23417ebdd801842852b500e395a45a9c0aac03e4a"
 
 [[package]]
-name = "engine"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "arrayvec",
- "derivative",
- "itertools",
- "lazy_static",
- "move_gen",
- "sdk",
-]
-
-[[package]]
 name = "env_logger"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -314,6 +301,19 @@ name = "memchr"
 version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "523dc4f511e55ab87b694dc30d0f820d60906ef06413f93d4d7a1385599cc149"
+
+[[package]]
+name = "morphebot"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arrayvec",
+ "derivative",
+ "itertools",
+ "lazy_static",
+ "move_gen",
+ "sdk",
+]
 
 [[package]]
 name = "move_gen"
