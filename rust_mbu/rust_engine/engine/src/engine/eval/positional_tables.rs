@@ -38,6 +38,7 @@ pub fn tapered_eval(position: &Position, phase: i32) -> i32 {
 
 #[must_use]
 pub fn game_phase(position: &Position) -> i32 {
+    /*
     #[cfg(not(target_feature = "sse2"))]
     {
         let boards = position.pieces;
@@ -52,8 +53,9 @@ pub fn game_phase(position: &Position) -> i32 {
         phase += i32::from(!boards[1][4].is_empty()) * 4;
         phase
     }
+    */
 
-    #[cfg(target_feature = "sse2")]
+    //#[cfg(target_feature = "sse2")]
     {
         fn with_simd(boards: &[[sdk::bitboard::Bitboard; 6]; 2]) -> i32 {
             use std::arch::x86_64::{__m128i, _mm_add_epi32, _mm_cvtsi128_si32, _mm_shuffle_epi32};
