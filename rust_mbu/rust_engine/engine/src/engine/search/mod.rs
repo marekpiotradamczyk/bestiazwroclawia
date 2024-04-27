@@ -76,10 +76,6 @@ impl SearchData {
             }
 
             if self.ply > 0 && alpha < DRAW_SCORE {
-                unsafe {
-                    self.pv
-                        .push_pv_move(self.ply, self.current_move.assume_init());
-                }
                 alpha = DRAW_SCORE;
             }
         }

@@ -39,7 +39,8 @@ mod tests {
         position::{Color, Position},
     };
 
-    use crate::engine::eval::pawns::stacked::stacked_pawns_count;
+    use crate::engine::eval::pawns::stacked::{stacked_pawns_count, STACKED_PAWN_PENALTY};
+    use sdk::position::tests::*;
 
     #[test]
     fn test_find_doubled_pawns() {
@@ -51,5 +52,24 @@ mod tests {
         )
         .unwrap();
         assert_eq!(stacked_pawns_count(&pos, Color::White), 3);
+    }
+
+    #[test]
+    fn test_stacked_pawns() {
+        #[rustfmt::skip]
+        let board = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, p, 0, 0, 0, 0, 
+            p, p, p, p, p, 0, 0, 0,
+            0, 0, 0, p, 0, 0, 0, 0,
+            0, P, P, P, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, P, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+
+        let pos = test_board(&board);
+
+        assert_eq!(super::stacked_pawns(&pos), -STACKED_PAWN_PENALTY * 2);
     }
 }

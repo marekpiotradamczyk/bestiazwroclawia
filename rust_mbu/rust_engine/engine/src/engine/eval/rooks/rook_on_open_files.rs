@@ -40,6 +40,7 @@ mod tests {
         bonus_rook_for_open_files, bonus_rook_for_semi_open_files, BONUS_ROOK_OPEN_FILE,
         BONUS_ROOK_SEMI_OPEN_FILE,
     };
+    use sdk::position::tests::*;
 
     #[test]
     fn test_rooks_on_open_files() {
@@ -68,7 +69,29 @@ mod tests {
 
         assert_eq!(
             bonus_rook_for_semi_open_files(&pos),
-            BONUS_ROOK_SEMI_OPEN_FILE * 1
+            BONUS_ROOK_SEMI_OPEN_FILE
+        );
+    }
+
+    #[test]
+    fn test_rooks_open_files_and_semi_open_files() {
+        #[rustfmt::skip]
+        let board = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            p, p, p, p, p, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, P, 0, 0, 0,
+            0, 0, 0, R, R, R, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+
+        let pos = test_board(&board);
+        assert_eq!(super::bonus_rook_for_open_files(&pos), BONUS_ROOK_OPEN_FILE);
+        assert_eq!(
+            super::bonus_rook_for_semi_open_files(&pos),
+            BONUS_ROOK_SEMI_OPEN_FILE
         );
     }
 }

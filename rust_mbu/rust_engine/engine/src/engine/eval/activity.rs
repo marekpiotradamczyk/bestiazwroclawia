@@ -1,12 +1,14 @@
 use sdk::{
     bitboard::{Bitboard, Direction},
     position::{Color, Piece, Position},
+    square::File,
 };
 
 const MOBILITY_BONUS_BISHOP: i32 = 2;
 const MOBILITY_BONUS_ROOK: i32 = 2;
 const MOBILITY_BONUS_QUEEN: i32 = 2;
 
+#[must_use]
 pub fn bonus_for_mobility(position: &Position) -> i32 {
     mobility(position, Color::White) - mobility(position, Color::Black)
 }
@@ -19,9 +21,9 @@ fn mobility(position: &Position, color: Color) -> i32 {
     let rook_attacks = rooks_fill(position, color) & !friendly_pieces;
     let queen_attacks = queen_fill(position, color) & !friendly_pieces;
 
-    bonus += bishop_attacks.count() as i32 * MOBILITY_BONUS_BISHOP;
-    bonus += rook_attacks.count() as i32 * MOBILITY_BONUS_ROOK;
-    bonus += queen_attacks.count() as i32 * MOBILITY_BONUS_QUEEN;
+    bonus += i32::from(bishop_attacks.count()) * MOBILITY_BONUS_BISHOP;
+    bonus += i32::from(rook_attacks.count()) * MOBILITY_BONUS_ROOK;
+    bonus += i32::from(queen_attacks.count()) * MOBILITY_BONUS_QUEEN;
 
     bonus
 }
@@ -39,6 +41,7 @@ fn bishops_fill(position: &Position, color: Color) -> Bitboard {
     gen
 }
 
+#[must_use]
 pub fn rooks_fill(position: &Position, color: Color) -> Bitboard {
     let rooks = position.pieces[color as usize][Piece::Rook as usize];
     let empty = !position.occupied;
@@ -69,83 +72,73 @@ fn queen_fill(position: &Position, color: Color) -> Bitboard {
     gen
 }
 
-fn attack_fill(gen: Bitboard, pro: Bitboard, direction: Direction) -> Bitboard {
-    occluded_fill(gen, pro, direction).shift(&direction)
+fn attack_fill(mut gen: Bitboard, mut empty: Bitboard, direction: Direction) -> Bitboard {
+    let mut flood = gen;
+
+    macro_rules! fill {
+        ($op:tt, $shift:expr) => {
+            {
+                for _ in 0..5 {
+                    gen = (gen $op $shift) & empty;
+                    flood |= gen;
+                }
+                flood |= (gen $op $shift) & empty;
+
+                flood $op $shift
+            }
+        };
+        ($op:tt, $shift:expr, $not:expr) => {
+            {
+                empty &= $not;
+                for _ in 0..5 {
+                    gen = (gen $op $shift) & empty;
+                    flood |= gen;
+                }
+                flood |= (gen $op $shift) & empty;
+
+                (flood $op $shift) & $not
+            }
+        };
+    }
+
+    match direction {
+        Direction::South => fill!(>>, 8),
+        Direction::North => fill!(<<, 8),
+        Direction::East => fill!(<<, 1, !File::A.bitboard()),
+        Direction::NorthEast => fill!(<<, 9, !File::A.bitboard()),
+        Direction::SouthEast => fill!(>>, 7, !File::A.bitboard()),
+        Direction::West => fill!(>>, 1, !File::H.bitboard()),
+        Direction::SouthWest => fill!(>>, 9, !File::H.bitboard()),
+        Direction::NorthWest => fill!(<<, 7, !File::H.bitboard()),
+    }
 }
 
-fn occluded_fill(mut gen: Bitboard, mut pro: Bitboard, direction: Direction) -> Bitboard {
-    match direction {
-        Direction::South => {
-            gen |= pro & (gen >> 8);
-            pro &= pro >> 8;
-            gen |= pro & (gen >> 16);
-            pro &= pro >> 16;
-            gen |= pro & (gen >> 32);
+#[cfg(test)]
+mod tests {
+    use sdk::position::tests::*;
 
-            gen
-        }
-        Direction::North => {
-            gen |= pro & (gen << 8);
-            pro &= pro << 8;
-            gen |= pro & (gen << 16);
-            pro &= pro << 16;
-            gen |= pro & (gen << 32);
+    use crate::engine::eval::activity::{
+        MOBILITY_BONUS_BISHOP, MOBILITY_BONUS_QUEEN, MOBILITY_BONUS_ROOK,
+    };
 
-            gen
-        }
-        Direction::East => {
-            gen |= pro & (gen << 1);
-            pro &= pro << 1;
-            gen |= pro & (gen << 2);
-            pro &= pro << 2;
-            gen |= pro & (gen << 4);
+    #[test]
+    fn test_activity() {
+        #[rustfmt::skip]
+        let board = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            Q, 0, 0, 0, 0, 0, 0, 0, 
+            p, p, p, 0, 0, 0, 0, 0,
+            P, 0, P, 0, 0, 0, 0, 0,
+            0, b, p, 0, 0, 0, 0, 0,
+            P, p, p, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, R, 0, 0, 0, 0, 0, 0,
+        ];
 
-            gen
-        }
-        Direction::West => {
-            gen |= pro & (gen >> 1);
-            pro &= pro >> 1;
-            gen |= pro & (gen >> 2);
-            pro &= pro >> 2;
-            gen |= pro & (gen >> 4);
-
-            gen
-        }
-        Direction::NorthEast => {
-            gen |= pro & (gen << 9);
-            pro &= pro << 9;
-            gen |= pro & (gen << 18);
-            pro &= pro << 18;
-            gen |= pro & (gen << 36);
-
-            gen
-        }
-        Direction::NorthWest => {
-            gen |= pro & (gen << 7);
-            pro &= pro << 7;
-            gen |= pro & (gen << 14);
-            pro &= pro << 14;
-            gen |= pro & (gen << 28);
-
-            gen
-        }
-        Direction::SouthEast => {
-            gen |= pro & (gen >> 9);
-            pro &= pro >> 9;
-            gen |= pro & (gen >> 18);
-            pro &= pro >> 18;
-            gen |= pro & (gen >> 36);
-
-            gen
-        }
-        Direction::SouthWest => {
-            gen |= pro & (gen >> 7);
-            pro &= pro >> 7;
-            gen |= pro & (gen >> 14);
-            pro &= pro >> 14;
-            gen |= pro & (gen >> 28);
-
-            gen
-        }
+        let pos = test_board(&board);
+        assert_eq!(
+            super::bonus_for_mobility(&pos),
+            MOBILITY_BONUS_ROOK * 9 - MOBILITY_BONUS_BISHOP * 3 + MOBILITY_BONUS_QUEEN * 11
+        );
     }
 }

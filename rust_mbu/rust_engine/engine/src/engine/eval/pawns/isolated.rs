@@ -42,7 +42,8 @@ mod tests {
         position::{Color, Position},
     };
 
-    use crate::engine::eval::pawns::isolated::find_isolated_pawns;
+    use crate::engine::eval::pawns::isolated::{find_isolated_pawns, ISOLATED_PAWN_PENALTY};
+    use sdk::position::tests::*;
 
     #[test]
     fn test_find_isolated_pawns() {
@@ -54,5 +55,23 @@ mod tests {
         )
         .unwrap();
         assert_eq!(find_isolated_pawns(&pos, Color::White).count(), 2);
+    }
+
+    #[test]
+    fn test_isolated_pawns() {
+        #[rustfmt::skip]
+        let board = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, p, 0, 0, 0, 0, 
+            p, p, p, p, p, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, P, P, P, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, P, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+
+        let pos = test_board(&board);
+        assert_eq!(super::isolated_pawns(&pos), ISOLATED_PAWN_PENALTY);
     }
 }

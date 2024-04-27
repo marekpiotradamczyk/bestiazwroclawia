@@ -30,3 +30,28 @@ fn count_batteries(pos: &Position, side: Color) -> usize {
 
     count
 }
+
+#[cfg(test)]
+mod tests {
+    use sdk::position::tests::*;
+
+    use crate::engine::eval::rooks::battery::BATTERY_BONUS;
+
+    #[test]
+    fn test_battery() {
+        #[rustfmt::skip]
+        let board = [
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, R, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, R, R, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+
+        let pos = test_board(&board);
+        assert_eq!(super::bonus_for_rook_batteries(&pos), BATTERY_BONUS);
+    }
+}

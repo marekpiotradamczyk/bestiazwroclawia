@@ -49,7 +49,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_mask_passer_square() {
+    fn test_mask_passer_square_black() {
         let sq = Square::B3;
         let color = Color::Black;
         let mask = mask_passer_square(sq, color);
@@ -62,5 +62,21 @@ mod tests {
         assert!(mask.has(Square::A2));
         assert!(mask.has(Square::B2));
         assert!(mask.has(Square::C2));
+    }
+
+    #[test]
+    fn test_mask_passer_square_white() {
+        let sq = Square::G2;
+        let color = Color::White;
+        let mask = mask_passer_square(sq, color);
+        assert!(!mask.has(sq));
+        assert!(!mask.has(Square::F1));
+        assert!(!mask.has(Square::H1));
+        assert!(mask.has(Square::F8));
+        assert!(mask.has(Square::G8));
+        assert!(mask.has(Square::H8));
+        assert!(mask.has(Square::F7));
+        assert!(mask.has(Square::G7));
+        assert!(mask.has(Square::H7));
     }
 }

@@ -25,10 +25,10 @@ pub fn mask_protected_passed_pawns(pos: &Position, color: Color) -> (u8, u8) {
     let our_pawns = pos.pieces[color as usize][Piece::Pawn as usize];
     let enemy_pawns = pos.pieces[color.enemy() as usize][Piece::Pawn as usize];
 
-    let dirs = if color == Color::White {
-        [Direction::NorthEast, Direction::NorthWest]
-    } else {
+    let back_dirs = if color == Color::White {
         [Direction::SouthEast, Direction::SouthWest]
+    } else {
+        [Direction::NorthEast, Direction::NorthWest]
     };
 
     let mut passed_pawns = Bitboard::empty();
@@ -40,10 +40,53 @@ pub fn mask_protected_passed_pawns(pos: &Position, color: Color) -> (u8, u8) {
         }
     }
 
-    let protected_pawns = our_pawns.shift(&dirs[0]) | our_pawns.shift(&dirs[1]);
+    let protected_pawns = our_pawns.shift(&back_dirs[0]) | our_pawns.shift(&back_dirs[1]);
 
     let passed_pawns_not_protected = (passed_pawns & !protected_pawns).count();
     let passed_pawns_protected = (passed_pawns & protected_pawns).count();
 
     (passed_pawns_not_protected, passed_pawns_protected)
+}
+
+#[cfg(test)]
+mod tests {
+    use sdk::position::tests::*;
+
+    use crate::engine::eval::pawns::protected_passed_pawnes::{
+        PASSED_PAWNS_BONUS, PROTECTED_PASSED_PAWNS_BONUS,
+    };
+
+    #[test]
+    fn test_passed_pawns_bonus() {
+        #[rustfmt::skip]
+        let board = [
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, p, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, p, 0, 0,
+                     P, 0, 0, 0, 0, 0, P, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0
+                    ];
+        let pos = test_board(&board);
+        assert_eq!(super::passed_pawns(&pos), PASSED_PAWNS_BONUS);
+
+        #[rustfmt::skip]
+        let board = [
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, p, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, P, 0, 0, 0, p, 0, 0,
+                     P, 0, 0, 0, 0, 0, P, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0
+                    ];
+        let pos = test_board(&board);
+        assert_eq!(
+            super::passed_pawns(&pos),
+            PASSED_PAWNS_BONUS + PROTECTED_PASSED_PAWNS_BONUS
+        );
+    }
 }

@@ -442,3 +442,60 @@ impl Color {
         [Color::White, Color::Black]
     }
 }
+
+#[allow(non_upper_case_globals)]
+pub mod tests {
+    use crate::square::Square;
+
+    use super::{Color, Piece, Position};
+
+    pub const P: usize = 1;
+    pub const N: usize = 2;
+    pub const B: usize = 3;
+    pub const R: usize = 4;
+    pub const Q: usize = 5;
+    pub const K: usize = 6;
+
+    pub const p: usize = 7;
+    pub const n: usize = 8;
+    pub const b: usize = 9;
+    pub const r: usize = 10;
+    pub const q: usize = 11;
+    pub const k: usize = 12;
+
+    fn piece_color(piece: usize) -> (Piece, Color) {
+        match piece {
+            P => (Piece::Pawn, Color::White),
+            N => (Piece::Knight, Color::White),
+            B => (Piece::Bishop, Color::White),
+            R => (Piece::Rook, Color::White),
+            Q => (Piece::Queen, Color::White),
+            K => (Piece::King, Color::White),
+            p => (Piece::Pawn, Color::Black),
+            n => (Piece::Knight, Color::Black),
+            b => (Piece::Bishop, Color::Black),
+            r => (Piece::Rook, Color::Black),
+            q => (Piece::Queen, Color::Black),
+            k => (Piece::King, Color::Black),
+            _ => panic!("Invalid piece"),
+        }
+    }
+
+    pub fn test_board(board: &[usize; 64]) -> Position {
+        let mut position = Position::default();
+        for (sq, &piece) in board.iter().enumerate() {
+            let sq = Square::from_u8((sq ^ 56) as u8);
+            position.remove_piece_at(sq);
+            if piece == 0 {
+                continue;
+            }
+
+            let (piece, color) = piece_color(piece);
+            position.add_piece_at(sq, piece, color).unwrap();
+        }
+
+        position.occupied = position.occupation(&Color::White) | position.occupation(&Color::Black);
+
+        position
+    }
+}

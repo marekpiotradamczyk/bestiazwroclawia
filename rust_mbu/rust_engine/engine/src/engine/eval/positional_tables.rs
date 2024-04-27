@@ -238,3 +238,26 @@ static ENDGAME_TABLES: [[i32; 64]; 6] = [
     -53, -34, -21, -11, -28, -14, -24, -43
     ]
 ];
+
+#[cfg(test)]
+mod tests {
+    use sdk::position::tests::*;
+
+    #[test]
+    fn test_positional_bonus() {
+        #[rustfmt::skip]
+        let board = [
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, k, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, K, 0, 0, 0
+                    ];
+        let pos = test_board(&board);
+        assert!(super::tapered_eval(&pos, 24) > 0);
+        assert!(super::tapered_eval(&pos, 0) < 0);
+    }
+}

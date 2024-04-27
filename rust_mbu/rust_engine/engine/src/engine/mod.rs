@@ -17,7 +17,7 @@ use crate::{
             isolated::isolated_pawns,
             protected_passed_pawnes::passed_pawns,
             stacked::stacked_pawns,
-            strong_squares::{bonus, bonus_for_piece, strong_squares},
+            strong_squares::{bonus, bonus_for_piece},
         },
         pin_bonus::bonus_for_absolute_pins,
         positional_tables::{game_phase, tapered_eval},
@@ -184,10 +184,7 @@ impl Engine {
             "Protected passed pawns bonus: {}",
             passed_pawns(&self.root_pos)
         );
-        println!(
-            "Strong squares bonus: {}",
-            bonus(&self.root_pos)
-        );
+        println!("Strong squares bonus: {}", bonus(&self.root_pos));
         println!(
             "Pieces on strong squares bonus: {}",
             bonus_for_piece(&self.root_pos)

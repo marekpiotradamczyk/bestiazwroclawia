@@ -39,3 +39,18 @@ impl EvaluationTable {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_evaluation_table() {
+        let table = EvaluationTable::new(16);
+        table.write(0, 10);
+        assert_eq!(table.read(0), Some(10));
+        assert_eq!(table.read(1), None);
+        table.write(0, 11);
+        assert_eq!(table.read(0), Some(11));
+    }
+}

@@ -106,3 +106,31 @@ pub fn strong_squares(pos: &Position, color: Color) -> Bitboard {
 
     strong_squares
 }
+
+#[cfg(test)]
+mod tests {
+    use sdk::position::tests::*;
+
+    use crate::engine::eval::pawns::strong_squares::{
+        STRONG_SQUARE_BONUS, STRONG_SQUARE_PIECE_BONUS,
+    };
+
+    #[test]
+    fn test_strong_squares() {
+        #[rustfmt::skip]
+        let board = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, p, 0, 0, 0, 0,
+            0, 0, 0, B, 0, 0, 0, 0,
+            0, P, P, P, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, P, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+
+        let pos = test_board(&board);
+        assert_eq!(super::bonus(&pos), STRONG_SQUARE_BONUS * 3);
+        assert_eq!(super::bonus_for_piece(&pos), STRONG_SQUARE_PIECE_BONUS);
+    }
+}

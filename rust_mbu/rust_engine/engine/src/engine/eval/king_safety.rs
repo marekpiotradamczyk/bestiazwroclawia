@@ -17,6 +17,7 @@ pub const PIECE_ATTACK_UNITS: [i32; 6] = [0, 2, 2, 3, 5, 0];
 const BONUS_FOR_UNIT: i32 = 15;
 const MAX_BONUS_FOR_UNIT: i32 = 60;
 
+#[must_use]
 pub fn calc_king_safety(position: &Position) -> i32 {
     let white_units = calc_king_safety_units(position, Color::White);
     let black_units = calc_king_safety_units(position, Color::Black);
@@ -42,8 +43,7 @@ fn pieces_close_to_king_count(position: &Position, color: Color) -> i32 {
     friendly_pieces_count - enemy_pieces
 }
 
-#[must_use]
-pub fn calc_king_safety_units(position: &Position, color: Color) -> i32 {
+fn calc_king_safety_units(position: &Position, color: Color) -> i32 {
     let king_sq = position.pieces[color as usize][Piece::King as usize].lsb();
 
     let near_king = MOVE_GEN.lookups.squares_near_king[color as usize][king_sq as usize];
@@ -59,4 +59,33 @@ pub fn calc_king_safety_units(position: &Position, color: Color) -> i32 {
     }
 
     bonus
+}
+
+#[cfg(test)]
+mod tests {
+    use sdk::position::{tests::*, Piece};
+
+    use crate::engine::eval::king_safety::{BONUS_FOR_UNIT, KING_SAFETY_TABLE, PIECE_ATTACK_UNITS};
+
+    #[test]
+    fn test_king_safety() {
+        #[rustfmt::skip]
+        let board = [
+                     0, 0, k, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, r, 0, 0,
+                     0, B, K, 0, 0, 0, 0, 0
+                    ];
+        let pos = test_board(&board);
+        let atk_idx = PIECE_ATTACK_UNITS[Piece::Rook as usize] * 3;
+        assert_eq!(
+            super::calc_king_safety(&pos),
+            -KING_SAFETY_TABLE[atk_idx as usize]
+        );
+        assert_eq!(super::bonus_for_pieces_close_to_king(&pos), BONUS_FOR_UNIT);
+    }
 }
