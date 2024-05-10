@@ -14,3 +14,6 @@
 mldl/stockfish_*
 
 rust_mbu/playtest/results.csv
+
+# Build directory
+cpp_bestia/build/*
