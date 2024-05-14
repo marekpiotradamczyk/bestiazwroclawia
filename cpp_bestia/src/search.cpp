@@ -8,12 +8,12 @@ const I32 drawValue = 0;
 
 I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
   move = Move(Move::NO_MOVE);
-  I32 colorMultiplier = board.sideToMove() == Color::WHITE ? 1 : -1;
   if (depth == 0) {
-    return colorMultiplier * heuristic(board);
+    return heuristic(board);
   }
-  Movelist movelist;
-  auto result = board.isGameOver(movelist);
+  Movelist moveList;
+  movegen::legalmoves(moveList, board);
+  auto result = board.isGameOver(moveList);
   switch (result.second) {
   case GameResult::DRAW:
     return drawValue;
@@ -27,7 +27,7 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
   I32 value = INT32_MIN;
   // one can order movelist to make pruning happen earlier thus speeding up the
   // search
-  for (Move m : movelist) {
+  for (Move m : moveList) {
     // Needs some testing whether copying is faster or making move in the
     // original board and unmaking it later
     Board newBoard = board;

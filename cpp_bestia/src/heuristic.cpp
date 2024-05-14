@@ -21,6 +21,6 @@ I16 heuristic(const chess::Board &board) {
                      getPieceCount(board, type[j], color[i]);
     }
   }
-  return returnValue;
+  return (board.sideToMove() == Color::WHITE ? 1 : -1) * returnValue;
 }
 } // namespace chess
