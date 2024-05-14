@@ -25,11 +25,11 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
     break;
   }
   I32 value = INT32_MIN;
-  // one can order movelist to make pruning happen earlier thus speeding up the
-  // search
+  // @todo one can order movelist to make pruning happen earlier thus speeding up the
+  //       search
   for (Move m : moveList) {
-    // Needs some testing whether copying is faster or making move in the
-    // original board and unmaking it later
+    // @todo Needs some testing whether copying is faster or making move in the
+    //       original board and unmaking it later
     Board newBoard = board;
     newBoard.makeMove(m);
     Move _discard;
