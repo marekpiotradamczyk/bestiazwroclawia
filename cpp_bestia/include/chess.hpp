@@ -2294,8 +2294,9 @@ class Board {
     /// current position to
     /// check if the game is over. If you are writing you should not use this
     /// function.
+    /// Edited it so that you can get the generated movelist - Grzegorz Zielonka
     /// @return
-    [[nodiscard]] std::pair<GameResultReason, GameResult> isGameOver() const {
+    [[nodiscard]] std::pair<GameResultReason, GameResult> isGameOver(Movelist &movelist) const {
         if (isHalfMoveDraw()) {
             return getHalfMoveDrawType();
         }
@@ -2304,7 +2305,6 @@ class Board {
 
         if (isRepetition()) return {GameResultReason::THREEFOLD_REPETITION, GameResult::DRAW};
 
-        Movelist movelist;
         movegen::legalmoves(movelist, *this);
 
         if (movelist.empty()) {
