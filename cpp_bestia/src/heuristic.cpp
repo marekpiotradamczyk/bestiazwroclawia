@@ -1,5 +1,7 @@
 #include "heuristic.hpp"
 
+namespace chess {
+
 I16 getPieceCount(const chess::Board &board, chess::PieceType pieceType,
                   chess::Color color) {
   return std::popcount(board.pieces(pieceType, color).getBits());
@@ -21,3 +23,4 @@ I16 heuristic(const chess::Board &board) {
   }
   return returnValue;
 }
+} // namespace chess
