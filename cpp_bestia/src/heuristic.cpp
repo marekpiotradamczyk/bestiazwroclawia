@@ -1,4 +1,5 @@
 #include "heuristic.hpp"
+#include <bit>
 
 I16 getPieceCount(const chess::Board &board, chess::PieceType pieceType,
                   chess::Color color) {

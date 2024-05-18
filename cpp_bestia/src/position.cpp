@@ -1,7 +1,7 @@
 #include <regex>
 
 #include "position.hpp"
-
+// TODO: all this stuff
 namespace position {
 
     Position::Position(std::vector<std::string> tokens) {
@@ -12,10 +12,6 @@ namespace position {
             // set default position
         }
         std::regex fenRegex("^([rnbqkpRNBQKP1-8]{1,8}/){7}[rnbqkpRNBQKP1-8]{1,8} (w|b) (-|[a-h][1-8]) (-|([1-9][0-9]*)) ([1-9][0-9]*)$");
-        bool isValid = std::regex_match(tokens[1], fenRegex);
-        if (!isValid) {
-            throw std::invalid_argument("FEN is invalid");
-        }
-        // ...
+        //...
     }
 }
