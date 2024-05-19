@@ -2,8 +2,6 @@
 
 namespace engine {
 
-    Engine::Engine() {
-        
-    }
+Engine::Engine() {}
 
-}
+} // namespace engine

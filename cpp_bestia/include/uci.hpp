@@ -8,18 +8,17 @@
 
 namespace uci {
 
-    class Uci {
-        public:
-            Uci(int argc, char** argv);
-            void loop();
+class Uci {
+public:
+  Uci(int argc, char **argv);
+  void loop();
 
-        private:
-            engine::Engine engine;
-            void parseEngineOption(std::vector<std::string> tokens);
-            void parseGo(std::vector<std::string> tokens);
-            void parsePosition(std::vector<std::string> tokens);
-            bool isFENValid(std::string fen);      
-
-    };
-}
+private:
+  engine::Engine engine;
+  void parseEngineOption(std::vector<std::string> tokens);
+  void parseGo(std::vector<std::string> tokens);
+  void parsePosition(std::vector<std::string> tokens);
+  bool isFENValid(std::string fen);
+};
+} // namespace uci
 #endif // __UCI__

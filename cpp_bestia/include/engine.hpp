@@ -3,11 +3,11 @@
 
 namespace engine {
 
-    class Engine {
-        public:
-            Engine();
-        private:
+class Engine {
+public:
+  Engine();
 
-    };
-}
+private:
+};
+} // namespace engine
 #endif // __ENGINE__
