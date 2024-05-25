@@ -10,7 +10,7 @@ namespace uci {
 
 class Uci {
 public:
-  Uci(int argc, char **argv);
+  Uci(engine::Engine& engine);
   void loop();
 
 private:

@@ -1,11 +1,13 @@
 #include <iostream>
 
 #include "uci.hpp"
+#include "engine.hpp"
 
 int main(int argc, char **argv) {
 
   std::cout << "Engine ready\n";
-  uci::Uci uci(argc, argv);
+  engine::Engine engine;
+  uci::Uci uci(engine);
   uci.loop();
 
   return 0;
