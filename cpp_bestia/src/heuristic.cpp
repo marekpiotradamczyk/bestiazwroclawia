@@ -1,4 +1,5 @@
 #include "heuristic.hpp"
+#include <bit>
 
 namespace chess {
 
