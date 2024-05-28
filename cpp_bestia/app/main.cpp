@@ -2,11 +2,12 @@
 
 #include "uci.hpp"
 #include "engine.hpp"
+#include "search.hpp"
 
 int main(int argc, char **argv) {
 
   std::cout << "Engine ready\n";
-  engine::Engine engine;
+  chess::MinMaxEngine engine; 
   uci::Uci uci(engine);
   uci.loop();
 
