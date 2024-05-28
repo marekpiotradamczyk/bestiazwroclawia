@@ -1,12 +1,25 @@
 #include "search.hpp"
+#include "engine.hpp"
 
 namespace chess {
 
-const I32 winValue = 20000;
-const I32 loseValue = -winValue;
-const I32 drawValue = 0;
+Move MinMaxEngine::search() {
+  Move a;
+  _search(board, depth, a, INT32_MIN, INT32_MAX);
+  return a;
+}
 
-I32 quiescenceSearch(Board board, I32 alpha, I32 beta) {
+void MinMaxEngine::makeMove(Move a) { board.makeMove(a); }
+
+void MinMaxEngine::setDepth(int d) { this->depth = d; }
+
+void MinMaxEngine::setPosition(Board b) { this->board = b; }
+
+Board MinMaxEngine::getPosition() { return this->board; }
+
+int MinMaxEngine::getDepth() { return this->depth; }
+
+I32 MinMaxEngine::quiescenceSearch(Board board, I32 alpha, I32 beta) {
   I32 standPat = heuristic(board);
   if (standPat >= beta) {
     return beta;
@@ -27,8 +40,8 @@ I32 quiescenceSearch(Board board, I32 alpha, I32 beta) {
   }
   return alpha;
 }
-
-I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
+I32 MinMaxEngine::_search(Board board, int depth, Move &move, I32 alpha,
+                          I32 beta) {
   move = Move(Move::NO_MOVE);
   if (depth == 0) {
     return quiescenceSearch(board, alpha, beta);
@@ -51,12 +64,13 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
   // up the
   //       search
   for (Move m : moveList) {
-    // @todo Needs some testing whether copying is faster or making move in the
+    // @todo Needs some testing whether copying is faster or making move in
+    // the
     //       original board and unmaking it later
     Board newBoard = board;
     newBoard.makeMove(m);
     Move _discard;
-    I32 nodeValue = search(newBoard, depth - 1, _discard, -beta, -alpha);
+    I32 nodeValue = _search(newBoard, depth - 1, _discard, -beta, -alpha);
     if (nodeValue >= value) {
       value = nodeValue;
       move = m;
@@ -68,4 +82,4 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
   }
   return value;
 }
-} // namespace chess
+}; // namespace chess
