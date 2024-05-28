@@ -1,5 +1,6 @@
 #include "search.hpp"
 #include "engine.hpp"
+#include "heuristic.hpp"
 
 namespace chess {
 
