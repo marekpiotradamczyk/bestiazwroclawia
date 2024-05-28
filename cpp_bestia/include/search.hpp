@@ -6,7 +6,7 @@
 
 namespace chess {
 using I32 = int32_t;
-class MinMaxEngine : public engine::Engine {
+class MinMaxEngine : public Engine {
 public:
   /// @brief Starts the search from position remembered in instance
   Move search();
