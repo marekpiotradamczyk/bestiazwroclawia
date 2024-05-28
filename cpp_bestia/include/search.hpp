@@ -26,7 +26,7 @@ private:
   const I32 winValue = 20000;
   const I32 loseValue = -winValue;
   const I32 drawValue = 0;
-  I32 _search(Board board, int depth, Move &move, I32 alpha, I32 beta);
+  I32 _search(Board board, int depth, I32 alpha, I32 beta, Move &move);
   I32 quiescenceSearch(Board board, I32 alpha, I32 beta);
 };
 } // namespace chess
