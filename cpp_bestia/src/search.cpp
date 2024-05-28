@@ -6,7 +6,7 @@ namespace chess {
 
 Move MinMaxEngine::search() {
   Move a;
-  _search(board, depth, a, INT32_MIN, INT32_MAX);
+  _search(board, depth, INT32_MIN, INT32_MAX, a);
   return a;
 }
 
@@ -41,8 +41,8 @@ I32 MinMaxEngine::quiescenceSearch(Board board, I32 alpha, I32 beta) {
   }
   return alpha;
 }
-I32 MinMaxEngine::_search(Board board, int depth, Move &move, I32 alpha,
-                          I32 beta) {
+I32 MinMaxEngine::_search(Board board, int depth, I32 alpha,
+                          I32 beta,  Move &move) {
   move = Move(Move::NO_MOVE);
   if (depth == 0) {
     return quiescenceSearch(board, alpha, beta);
