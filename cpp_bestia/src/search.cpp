@@ -69,7 +69,7 @@ I32 MinMaxEngine::_search(Board board, int depth, I32 alpha,
     Board newBoard = board;
     newBoard.makeMove(m);
     Move _discard;
-    I32 nodeValue = _search(newBoard, depth - 1, _discard, -beta, -alpha);
+    I32 nodeValue = -_search(newBoard, depth - 1, -beta, -alpha, _discard);
     if (nodeValue >= value) {
       value = nodeValue;
       move = m;
