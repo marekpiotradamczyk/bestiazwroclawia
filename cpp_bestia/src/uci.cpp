@@ -7,7 +7,7 @@
 #include "uci.hpp"
 namespace uci {
 
-Uci::Uci(chess::engine::Engine &engine) : engine(engine) {}
+Uci::Uci(chess::Engine &engine) : engine(engine) {}
 
 void Uci::loop() {
   std::string input;
