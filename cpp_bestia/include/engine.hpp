@@ -6,7 +6,7 @@ namespace engine {
 
 class Engine {
 public:
-  virtual ~Engine(){};
+  virtual ~Engine() = default;
   virtual Move search() = 0;
   virtual void makeMove(Move a) = 0;
   virtual void setPosition(Board board) = 0;
