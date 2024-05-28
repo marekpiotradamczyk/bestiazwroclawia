@@ -5,10 +5,9 @@
 
 #include "engine.hpp"
 #include "uci.hpp"
-
 namespace uci {
 
-Uci::Uci(engine::Engine& engine) { engine = engine; }
+Uci::Uci(chess::engine::Engine &engine) : engine(engine) {}
 
 void Uci::loop() {
   std::string input;

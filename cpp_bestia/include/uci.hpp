@@ -6,15 +6,16 @@
 
 #include "engine.hpp"
 
+
 namespace uci {
 
 class Uci {
 public:
-  Uci(engine::Engine& engine);
+  Uci(chess::engine::Engine &engine);
   void loop();
 
 private:
-  engine::Engine engine;
+  chess::engine::Engine &engine;
   void parseEngineOption(std::vector<std::string> tokens);
   void parseGo(std::vector<std::string> tokens);
   void parsePosition(std::vector<std::string> tokens);
