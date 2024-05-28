@@ -11,11 +11,11 @@ namespace uci {
 
 class Uci {
 public:
-  Uci(chess::engine::Engine &engine);
+  Uci(chess::Engine &engine);
   void loop();
 
 private:
-  chess::engine::Engine &engine;
+  chess::Engine &engine;
   void parseEngineOption(std::vector<std::string> tokens);
   void parseGo(std::vector<std::string> tokens);
   void parsePosition(std::vector<std::string> tokens);
