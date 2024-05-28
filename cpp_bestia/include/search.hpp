@@ -1,3 +1,5 @@
+#ifndef __SEARCH__
+#define __SEARCH__
 #include "chess.hpp"
 #include "engine.hpp"
 #include "heuristic.hpp"
@@ -28,3 +30,4 @@ private:
   I32 quiescenceSearch(Board board, I32 alpha, I32 beta);
 };
 } // namespace chess
+#endif
