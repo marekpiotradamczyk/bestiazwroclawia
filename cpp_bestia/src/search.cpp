@@ -6,10 +6,32 @@ const I32 winValue = 20000;
 const I32 loseValue = -winValue;
 const I32 drawValue = 0;
 
+I32 quiescenceSearch(Board board, I32 alpha, I32 beta) {
+  I32 standPat = heuristic(board);
+  if (standPat >= beta) {
+    return beta;
+  }
+  if (alpha < standPat) {
+    alpha = standPat;
+  }
+  Movelist moveList;
+  movegen::legalmoves<movegen::MoveGenType::CAPTURE>(moveList, board);
+  for (Move m : moveList) {
+    Board newBoard = board;
+    newBoard.makeMove(m);
+    I32 score = -quiescenceSearch(board, -beta, -alpha);
+    if (score >= beta) {
+      return beta;
+    }
+    alpha = std::max(alpha, score);
+  }
+  return alpha;
+}
+
 I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
   move = Move(Move::NO_MOVE);
   if (depth == 0) {
-    return heuristic(board);
+    return quiescenceSearch(board, alpha, beta);
   }
   Movelist moveList;
   movegen::legalmoves(moveList, board);
@@ -25,7 +47,8 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
     break;
   }
   I32 value = INT32_MIN;
-  // @todo one can order movelist to make pruning happen earlier thus speeding up the
+  // @todo one can order movelist to make pruning happen earlier thus speeding
+  // up the
   //       search
   for (Move m : moveList) {
     // @todo Needs some testing whether copying is faster or making move in the
