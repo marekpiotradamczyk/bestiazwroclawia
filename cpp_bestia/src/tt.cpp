@@ -28,11 +28,12 @@ uint64_t TTData::pack(int32_t score, Move move, uint8_t depth, uint8_t age,
 }
 
 TranspositionTable::TranspositionTable(uint64_t size_in_mb) {
-  entries_.resize(1024 * 1024 * size_in_mb / sizeof(TTEntry));
+  entries_size_ = 1024 * 1024 * size_in_mb / sizeof(TTEntry);
+  entries_ = std::make_unique_for_overwrite<TTEntry[]>(entries_size_);
 }
 
 std::optional<TTData> TranspositionTable::operator[](uint64_t hash) const {
-  const uint64_t index = hash % entries_.size();
+  const uint64_t index = hash % entries_size_;
 
   auto& entry = entries_[index];
   const uint64_t entry_hash = entry.hash.load(std::memory_order_relaxed);
@@ -44,7 +45,7 @@ std::optional<TTData> TranspositionTable::operator[](uint64_t hash) const {
 
 void TranspositionTable::add(uint64_t hash, int32_t score, Move move,
                              uint8_t depth, uint8_t age, TTData::Type type) {
-  const uint64_t index = hash % entries_.size();
+  const uint64_t index = hash % entries_size_;
 
   auto& old_entry = entries_[index];
   const uint64_t old_hash = old_entry.hash.load(std::memory_order_relaxed);

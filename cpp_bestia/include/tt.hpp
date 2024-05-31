@@ -3,8 +3,8 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <memory>
 #include <optional>
-#include <vector>
 
 #include "chess.hpp"
 
@@ -68,13 +68,14 @@ class TranspositionTable {
 
  private:
   struct TTEntry {
-    std::atomic<uint64_t> hash = 0;
-    std::atomic<uint64_t> data = 0;
+    std::atomic<uint64_t> hash;
+    std::atomic<uint64_t> data;
 
     void write(uint64_t hash, uint64_t data);
   };
 
-  std::vector<TTEntry> entries_;
+  std::unique_ptr<TTEntry[]> entries_;
+  uint64_t entries_size_;
 };
 
 }  // namespace chess
