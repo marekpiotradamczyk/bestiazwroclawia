@@ -10,3 +10,9 @@ FetchContent_MakeAvailable(googletest)
 
 # Prevent GoogleTest from overriding our compiler/linker options
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+add_executable(tt_test tt_test.cpp)
+target_link_libraries(tt_test tt GTest::gmock_main)
+
+include(GoogleTest)
+gtest_discover_tests(tt_test)

@@ -23,12 +23,16 @@ class TTData {
   };
 
   TTData(uint64_t data);
+  TTData(int32_t score, Move move, uint8_t depth, uint8_t age, Type type);
 
   int32_t score() const;
   Move move() const;
   uint8_t depth() const;
   uint8_t age() const;
   Type type() const;
+  uint64_t data() const;
+
+  bool operator==(const TTData& other) const;
 
   static uint64_t pack(int32_t score, Move move, uint8_t depth, uint8_t age,
                        Type type);
@@ -65,6 +69,8 @@ class TranspositionTable {
 
   void add(uint64_t hash, int32_t score, Move move, uint8_t depth, uint8_t age,
            TTData::Type type);
+  // Use only for tests to make them more readable.
+  void add(uint64_t hash, TTData data);
 
  private:
   struct TTEntry {

@@ -4,6 +4,9 @@ namespace chess {
 
 TTData::TTData(uint64_t data) : data_(data) {}
 
+TTData::TTData(int32_t score, Move move, uint8_t depth, uint8_t age, Type type)
+    : data_(pack(score, move, depth, age, type)) {}
+
 int32_t TTData::score() const { return data_ & SCORE_MASK; }
 
 Move TTData::move() const { return (data_ >> MOVE_SHIFT) & MOVE_MASK; }
@@ -14,6 +17,12 @@ uint8_t TTData::age() const { return (data_ >> DEPTH_SHIFT) & DEPTH_MASK; }
 
 TTData::Type TTData::type() const {
   return static_cast<Type>((data_ >> DEPTH_SHIFT) & DEPTH_MASK);
+}
+
+uint64_t TTData::data() const { return data_; }
+
+bool TTData::operator==(const TTData& other) const {
+  return data_ == other.data_;
 }
 
 uint64_t TTData::pack(int32_t score, Move move, uint8_t depth, uint8_t age,
@@ -60,6 +69,10 @@ void TranspositionTable::add(uint64_t hash, int32_t score, Move move,
       (old_data.age() == age && old_data.depth() < depth)) {
     old_entry.write(hash, TTData::pack(score, move, depth, age, type));
   }
+}
+
+void TranspositionTable::add(uint64_t hash, TTData data) {
+  add(hash, data.score(), data.move(), data.depth(), data.age(), data.type());
 }
 
 void TranspositionTable::TTEntry::write(uint64_t hash, uint64_t data) {
