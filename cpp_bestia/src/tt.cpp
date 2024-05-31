@@ -20,7 +20,9 @@ uint64_t TTData::pack(int32_t score, Move move, uint8_t depth, uint8_t age,
                       Type type) {
   return (static_cast<uint64_t>(score) << SCORE_SHIFT) |
          (static_cast<uint64_t>(move.move()) << MOVE_SHIFT) |
+         //  TODO: Should we do (depth & DEPTH_MASK)?
          (static_cast<uint64_t>(depth) << DEPTH_SHIFT) |
+         //  TODO: Should we do (age & AGE_MASK)?
          (static_cast<uint64_t>(age) << AGE_SHIFT) |
          (static_cast<uint64_t>(type) << TYPE_SHIFT);
 }
