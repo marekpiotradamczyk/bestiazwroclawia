@@ -7,8 +7,8 @@
 int main(int argc, char **argv) {
 
   std::cout << "Engine ready\n";
-  chess::MinMaxEngine engine; 
-  uci::Uci uci(engine);
+  std::unique_ptr<chess::Engine> engine = std::make_unique<chess::MinMaxEngine>(); 
+  uci::Uci uci(std::move(engine));
   uci.loop();
 
   return 0;
