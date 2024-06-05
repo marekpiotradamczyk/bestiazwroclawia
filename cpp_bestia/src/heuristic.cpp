@@ -158,7 +158,7 @@ I16 getPieceCountAll(const Board &board, PieceType pieceType) {
 PieceType type[] = {PieceType::PAWN, PieceType::KNIGHT, PieceType::BISHOP,
                     PieceType::ROOK, PieceType::QUEEN,  PieceType::KING};
 
-I16 material_heuristic(const Board &board) {
+I16 materialHeuristic(const Board &board) {
   I16 value[] = {100, 300, 325, 500, 900};
   Color color[] = {Color::WHITE, Color::BLACK};
   I16 colorMultiplier[] = {1, -1};
@@ -172,6 +172,8 @@ I16 material_heuristic(const Board &board) {
   return (board.sideToMove() == Color::WHITE ? 1 : -1) * returnValue;
 }
 
+// Phase is high at start of the game and lowers as more and more material gets
+// removed from the board
 std::pair<I16, I16> getCurrentPhase(const Board &board) {
   I16 value[] = {0, 1, 1, 2, 4};
   // 16 pawns, 4 knights, 4 bishops, 4 rooks and 2 queens in total
@@ -182,6 +184,7 @@ std::pair<I16, I16> getCurrentPhase(const Board &board) {
   for (int i = 0; i < 5; i++) {
     phase = value[i] * getPieceCountAll(board, type[i]);
   }
+  // std::max in case of early promotion
   return {std::max(phase, maxPhase), maxPhase};
 }
 
@@ -206,6 +209,7 @@ I16 pieceSquareHeuristic(const Board &board) {
     for (int i = 0; i < 6; i++) {
       std::vector<int> occupied = fromBitboard(board.pieces(type[i], color[c]));
       for (int sq : occupied) {
+        // sq ^ 56 "flips" the square to corresponding square of the other color (for example e1 to e8, and e8 to e1)
         sq = (color[c] == Color::WHITE ? sq ^ 56 : sq);
         middlegame += colorMultiplier[c] * mg_pesto_table[i][sq];
         endgame += colorMultiplier[c] * eg_pesto_table[i][sq];
@@ -221,7 +225,7 @@ I16 heuristic(const Board &board) {
   // or more on piece activity
   const I16 materialMultiplier = 1;
   const I16 pieceSquareMultiplier = 1;
-  return materialMultiplier * material_heuristic(board) +
+  return materialMultiplier * materialHeuristic(board) +
          pieceSquareMultiplier * pieceSquareHeuristic(board);
 }
 } // namespace chess
