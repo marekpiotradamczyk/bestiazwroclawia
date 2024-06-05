@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -6,8 +7,6 @@
 #include "engine.hpp"
 #include "uci.hpp"
 namespace uci {
-
-Uci::Uci(chess::Engine &engine) : engine(engine) {}
 
 void Uci::loop() {
   std::string input;
