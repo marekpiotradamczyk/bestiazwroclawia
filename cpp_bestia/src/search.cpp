@@ -33,7 +33,7 @@ I32 MinMaxEngine::quiescenceSearch(Board board, I32 alpha, I32 beta) {
   for (Move m : moveList) {
     Board newBoard = board;
     newBoard.makeMove(m);
-    I32 score = -quiescenceSearch(board, -beta, -alpha);
+    I32 score = -quiescenceSearch(newBoard, -beta, -alpha);
     if (score >= beta) {
       return beta;
     }
