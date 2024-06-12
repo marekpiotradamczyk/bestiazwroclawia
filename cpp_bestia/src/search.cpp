@@ -25,6 +25,7 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
     break;
   }
   I32 value = INT32_MIN;
+  bool first_child = true;
   // @todo one can order movelist to make pruning happen earlier thus speeding up the
   //       search
   for (Move m : moveList) {
@@ -33,7 +34,15 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
     Board newBoard = board;
     newBoard.makeMove(m);
     Move _discard;
-    I32 nodeValue = search(newBoard, depth - 1, _discard, -beta, -alpha);
+    I32 nodeValue;
+    if (first_child) {
+      first_child = false;
+      nodeValue = -search(newBoard, depth - 1, _discard, -beta, -alpha);
+    } else {
+      nodeValue = -search(newBoard, depth - 1, _discard, -alpha - 1, -alpha);
+      if (alpha < nodeValue && nodeValue < beta)
+        nodeValue = -search(newBoard, depth - 1, _discard, -beta, -nodeValue);
+    }
     if (nodeValue >= value) {
       value = nodeValue;
       move = m;
