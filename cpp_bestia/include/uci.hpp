@@ -4,21 +4,22 @@
 #include <string>
 #include <vector>
 
+#include "chess.hpp"
 #include "engine.hpp"
 
 namespace uci {
 
 class Uci {
 public:
-  Uci(engine::Engine& engine);
+  Uci(chess::Engine& engine);
   void loop();
 
 private:
-  engine::Engine engine;
+  chess::Engine engine;
   void parseEngineOption(std::vector<std::string> tokens);
   void parseGo(std::vector<std::string> tokens);
   void parsePosition(std::vector<std::string> tokens);
-  bool isFENValid(std::string fen);
+  bool isFENValid(const std::string& fen);
 };
 } // namespace uci
 #endif // __UCI__

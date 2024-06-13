@@ -1,12 +1,12 @@
 #include <iostream>
 
 #include "uci.hpp"
-#include "engine.hpp"
+#include "chess.hpp"
 
 int main(int argc, char **argv) {
 
   std::cout << "Engine ready\n";
-  engine::Engine engine;
+  chess::Engine engine;
   uci::Uci uci(engine);
   uci.loop();
 
