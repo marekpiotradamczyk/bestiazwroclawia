@@ -53,7 +53,6 @@ void Uci::parseGo(std::vector<std::string> tokens) {
     depth = stoi(tokens[2]);
   }
   chess::Move move;
-  std::cout << engine.getBoard() << std::endl;
   chess::I32 x =
       chess::search(engine.getBoard(), depth, move, INT32_MIN, INT32_MAX);
 
@@ -61,8 +60,9 @@ void Uci::parseGo(std::vector<std::string> tokens) {
 }
 
 void Uci::parsePosition(std::vector<std::string> tokens) {
-  // TODO: if someone's ambitious, make all this format check with one big regex,
-  //instead of regex only for FEN
+  // TODO: if someone's ambitious, make all this format check with one big
+  // regex,
+  // instead of regex only for FEN
 
   // Check if tokens are valid
   if (tokens.size() < 2 || (tokens[1] != "startpos" && tokens[1] != "fen")) {
@@ -72,14 +72,14 @@ void Uci::parsePosition(std::vector<std::string> tokens) {
 
   int parsing_index = 2; // last token position that was parsed + 1
   std::string fen = chess::constants::STARTPOS;
-  
+
   if (tokens[1] == "fen") {
     if (tokens.size() < 8) {
       std::cerr << "Missing FEN string!" << std::endl;
       return;
     }
-    std::string given_fen = tokens[2] + " " + tokens[3] + " " + tokens[4] + " " +
-                            tokens[5] + " " + tokens[6] + " " + tokens[7];
+    std::string given_fen = tokens[2] + " " + tokens[3] + " " + tokens[4] +
+                            " " + tokens[5] + " " + tokens[6] + " " + tokens[7];
     if (!isFENValid(given_fen)) {
       std::cerr << "Invalid FEN string!" << std::endl;
       return;
@@ -101,7 +101,7 @@ void Uci::parsePosition(std::vector<std::string> tokens) {
   }
 
   chess::Move move;
-  for (int i = parsing_index+1 ; i < tokens.size(); i++) {
+  for (int i = parsing_index + 1; i < tokens.size(); i++) {
     move = chess::uci::uciToMove(board, tokens[i]);
     board.makeMove(move);
   }
