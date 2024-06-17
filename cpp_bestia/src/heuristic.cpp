@@ -185,7 +185,7 @@ std::pair<I16, I16> getCurrentPhase(const Board &board) {
     phase = value[i] * getPieceCountAll(board, type[i]);
   }
   // std::max in case of early promotion
-  return {std::max(phase, maxPhase), maxPhase};
+  return {std::min(phase, maxPhase), maxPhase};
 }
 
 std::vector<int> fromBitboard(const Bitboard &b) {
