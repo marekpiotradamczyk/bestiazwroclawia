@@ -54,7 +54,7 @@ void Uci::parseGo(std::vector<std::string> tokens) {
   }
   chess::Move move;
   chess::I32 x =
-      chess::search(engine.getBoard(), depth, move, INT32_MIN, INT32_MAX);
+      chess::search(engine.getBoard(), depth, move, INT32_MIN+100, INT32_MAX-100); // +100, -100 to make sure there is no overflow
   std::cout << "bestmove " << chess::uci::moveToUci(move) << "\n";
 }
 

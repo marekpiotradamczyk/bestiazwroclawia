@@ -15,9 +15,9 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
   case GameResult::DRAW:
     return drawValue;
   case GameResult::WIN:
-    return (depth + 1) * winValue; // prioritize faster wins
+    return winValue+depth; // prioritize faster wins
   case GameResult::LOSE:
-    return (depth + 1) * loseValue; // prioritize slower loses
+    return loseValue-depth; // prioritize slower loses
   case GameResult::NONE:
     break;
   }
