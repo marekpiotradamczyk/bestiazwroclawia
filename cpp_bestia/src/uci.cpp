@@ -49,13 +49,12 @@ void Uci::loop() {
 
 void Uci::parseGo(std::vector<std::string> tokens) {
   int depth = 1;
-  if (tokens.size() > 3 && tokens[1] == "depth") {
+  if (tokens.size() >= 3 && tokens[1] == "depth") {
     depth = stoi(tokens[2]);
   }
   chess::Move move;
   chess::I32 x =
       chess::search(engine.getBoard(), depth, move, INT32_MIN, INT32_MAX);
-
   std::cout << "bestmove " << chess::uci::moveToUci(move) << "\n";
 }
 
