@@ -1,14 +1,14 @@
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
 
 #include "engine.hpp"
 #include "uci.hpp"
-
 namespace uci {
 
-Uci::Uci(engine::Engine& engine) { engine = engine; }
+Uci::Uci(std::unique_ptr<chess::Engine> engine) : engine(std::move(engine)) {}
 
 void Uci::loop() {
   std::string input;
