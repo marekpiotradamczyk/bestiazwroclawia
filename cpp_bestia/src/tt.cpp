@@ -16,7 +16,7 @@ uint8_t TTData::depth() const { return (data_ >> DEPTH_SHIFT) & DEPTH_MASK; }
 uint8_t TTData::age() const { return (data_ >> AGE_SHIFT) & AGE_MASK; }
 
 TTData::Type TTData::type() const {
-  return static_cast<Type>((data_ >> DEPTH_SHIFT) & DEPTH_MASK);
+  return static_cast<Type>((data_ >> TYPE_SHIFT) & TYPE_MASK);
 }
 
 uint64_t TTData::data() const { return data_; }
