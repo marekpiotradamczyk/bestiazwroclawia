@@ -8,6 +8,8 @@
 #include "uci.hpp"
 namespace uci {
 
+Uci::Uci(std::unique_ptr<chess::Engine> engine) : engine(std::move(engine)) {}
+
 void Uci::loop() {
   std::string input;
 

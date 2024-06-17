@@ -14,7 +14,7 @@ public:
   // Use (at least from what I understand about unique pointers):
   // unique_ptr<SomeEngine> engine(new SomeEngine(...));
   // Uci uci(std::move(engine));
-  Uci(std::unique_ptr<chess::Engine> engine) : engine(std::move(engine)) {}
+  Uci(std::unique_ptr<chess::Engine> engine);
   void loop();
 
 private:
