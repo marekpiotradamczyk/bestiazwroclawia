@@ -8,9 +8,6 @@ const I32 drawValue = 0;
 
 I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
   move = Move(Move::NO_MOVE);
-  if (depth == 0) {
-    return heuristic(board);
-  }
   Movelist moveList;
   movegen::legalmoves(moveList, board);
   auto result = board.isGameOver(moveList);
@@ -23,6 +20,9 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
     return (depth + 1) * loseValue; // prioritize slower loses
   case GameResult::NONE:
     break;
+  }
+  if (depth == 0) {
+      return heuristic(board);
   }
   I32 value = INT32_MIN;
   // @todo one can order movelist to make pruning happen earlier thus speeding up the
