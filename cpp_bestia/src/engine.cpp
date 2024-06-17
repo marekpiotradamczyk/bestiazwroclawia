@@ -1,7 +1,15 @@
+#include "chess.hpp"
 #include "engine.hpp"
 
-namespace engine {
+namespace chess {
 
-Engine::Engine() {}
+Engine::Engine() {};
 
+void Engine::setBoard(Board board) {
+    this->board = board;
+}
+
+Board Engine::getBoard() {
+    return board;
+}
 } // namespace engine

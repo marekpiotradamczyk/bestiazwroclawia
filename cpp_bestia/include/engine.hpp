@@ -1,13 +1,17 @@
 #ifndef __ENGINE__
 #define __ENGINE__
-
-namespace engine {
+#include "chess.hpp"
+namespace chess {
 
 class Engine {
 public:
   Engine();
-
+  void setBoard(Board board);
+  void setDepth(int depth);
+  void search();
+  Board getBoard();
 private:
+  Board board;
 };
-} // namespace engine
+} // namespace chess
 #endif // __ENGINE__
