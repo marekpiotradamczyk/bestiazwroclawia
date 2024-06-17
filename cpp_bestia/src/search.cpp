@@ -7,19 +7,19 @@ const I32 loseValue = -winValue;
 const I32 drawValue = 0;
 
 I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
-  move = Move(Move::NO_MOVE);
-  Movelist moveList;
-  movegen::legalmoves(moveList, board);
-  auto result = board.isGameOver(moveList);
-  switch (result.second) {
-  case GameResult::DRAW:
-    return drawValue;
-  case GameResult::WIN:
-    return winValue+depth; // prioritize faster wins
-  case GameResult::LOSE:
-    return loseValue-depth; // prioritize slower loses
-  case GameResult::NONE:
-    break;
+    move = Move(Move::NO_MOVE);
+    Movelist moveList;
+    movegen::legalmoves(moveList, board);
+    auto result = board.isGameOver(moveList);
+    switch (result.second) {
+        case GameResult::DRAW:
+            return drawValue;
+        case GameResult::WIN:
+            return winValue + depth; // prioritize faster wins
+        case GameResult::LOSE:
+            return loseValue - depth; // prioritize slower loses
+        case GameResult::NONE:
+            break;
   }
   if (depth == 0) {
       return heuristic(board);
@@ -39,7 +39,7 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
       move = m;
     }
     alpha = std::max(alpha, value);
-    if (alpha >= beta) {
+    if (alpha > beta) {
       break; // cutoff
     }
   }
