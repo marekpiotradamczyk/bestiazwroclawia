@@ -74,8 +74,8 @@ class TranspositionTable {
 
  private:
   struct TTEntry {
-    std::atomic<uint64_t> hash;
-    std::atomic<uint64_t> data;
+    std::atomic<uint64_t> hash = 0;
+    std::atomic<uint64_t> data = 0;
 
     void write(uint64_t hash, uint64_t data);
   };
