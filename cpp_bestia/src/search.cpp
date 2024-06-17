@@ -33,7 +33,7 @@ I32 search(Board board, int depth, Move &move, I32 alpha, I32 beta) {
     Board newBoard = board;
     newBoard.makeMove(m);
     Move _discard;
-    I32 nodeValue = search(newBoard, depth - 1, _discard, -beta, -alpha);
+    I32 nodeValue = -search(newBoard, depth - 1, _discard, -beta, -alpha);
     if (nodeValue >= value) {
       value = nodeValue;
       move = m;
