@@ -16,7 +16,7 @@ use super::{
     MATE_VALUE,
 };
 
-use crate::engine::{eval::evaluation_table::EvaluationTable, search::STOPPED};
+use crate::engine::{eval::evaluation_table::EvaluationTable, nn::DenseNetwork, search::STOPPED};
 use crate::engine::{options::Options, search::MAX_PLY};
 use move_gen::r#move::Move;
 pub const INF: i32 = 1_000_000;
@@ -32,6 +32,7 @@ pub struct Search {
     pub transposition_table: Arc<TranspositionTable>,
     pub eval_table: Arc<EvaluationTable>,
     pub age: usize,
+    pub dense: DenseNetwork,
 }
 
 pub struct SearchThread {
@@ -70,6 +71,7 @@ impl Search {
         transposition_table: Arc<TranspositionTable>,
         eval_table: Arc<EvaluationTable>,
         age: usize,
+        dense: DenseNetwork,
     ) -> Self {
         Self {
             time_control: Arc::new(options.time_control(is_white)),
@@ -79,12 +81,23 @@ impl Search {
             eval_table,
             engine_options,
             age,
+            dense,
         }
     }
 
     pub fn search(&mut self, position: &Position) {
         let mut threads = vec![];
         let threads_cnt = self.engine_options.threads;
+        let input = position.to_nn_input();
+        
+        let result = self.dense.forward(&input)[0];
+
+        if result > 0.5 {
+            self.options.depth = Some(14);
+        } else {
+            self.options.depth = Some(10);
+        }
+
         for id in 0..threads_cnt {
             let data = SearchData {
                 nodes_evaluated: 0,

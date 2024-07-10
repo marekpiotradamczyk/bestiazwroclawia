@@ -9,6 +9,8 @@ use crate::{
     square::{Square, FILE_MASKS},
 };
 
+use ndarray::Array2;
+
 #[derive(Derivative, Debug, Clone)]
 #[derivative(Hash)]
 pub struct Position {
@@ -204,6 +206,32 @@ impl Position {
         }
 
         self.turn
+    }
+
+    pub fn to_nn_input(&self) -> Array2<f64> {
+        let rows = 1;
+        let cols = 768;
+
+        let mut records = Vec::new();
+
+        for color in 0..2 {
+            for piece in 0..6 {
+                let mut bits = Vec::with_capacity(64);
+                for i in 0..64 {
+                    let bit = ((self.pieces[color][piece].0 >> i) & 1) as f64;
+                    bits.push(bit);
+                }
+                records.push(bits);
+            }
+        }
+
+        let flat_data: Vec<f64> = records.into_iter().flatten().collect();
+        let array = Array2::from_shape_vec((rows, cols), flat_data);
+
+        match array {
+            Ok(array) => return array,
+            Err(_error) => panic!("Problem")
+        }
     }
 
     pub fn remove_piece_at(&mut self, square: Square) -> Option<(Piece, Color)> {

@@ -29,6 +29,7 @@ use crate::{
     uci::{commands::Command, Result},
 };
 use move_gen::{generators::movegen::MoveGen, r#move::MakeMove};
+use nn::DenseNetwork;
 use sdk::{
     fen::Fen,
     position::{Color, Position},
@@ -57,6 +58,8 @@ use derivative::Derivative;
 pub mod eval;
 pub mod options;
 pub mod search;
+pub mod nn;
+
 
 #[derive(Derivative)]
 #[derivative(Default)]
@@ -69,6 +72,7 @@ pub struct Engine {
     pub age: usize,
     #[derivative(Default(value = "true"))]
     pub ready: bool,
+    pub dense: DenseNetwork,
 }
 
 impl Engine {
@@ -97,7 +101,7 @@ impl Engine {
 
             loop {
                 let command = rx.recv().expect("Failed to receive command");
-
+                
                 if matches!(command, Command::Quit) {
                     break;
                 }
@@ -120,6 +124,7 @@ impl Engine {
         let eval_table = self.evaluation_table.clone();
         let engine_options = self.options;
         let age = self.age;
+        let dense = DenseNetwork::default();
 
         let run = move || {
             let mut search = Search::new(
@@ -130,6 +135,7 @@ impl Engine {
                 transposition_table,
                 eval_table,
                 age,
+                dense,
             );
             search.search(&pos);
         };

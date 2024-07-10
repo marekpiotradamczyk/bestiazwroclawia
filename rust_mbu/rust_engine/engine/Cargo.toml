@@ -9,5 +9,9 @@ arrayvec = "0.7.4"
 derivative = "2.2.0"
 itertools = "0.12.0"
 lazy_static = "1.4.0"
+ndarray = "0.15"
+ndarray-rand = "0.14"
+ndarray-csv = "0.2"
+csv = "1.1"
 move_gen = { path = "../move-gen" }
 sdk = { path = "../sdk" }

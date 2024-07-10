@@ -39,7 +39,6 @@ impl Engine {
                 }
             }};
         }
-
         match name.replace(' ', "").to_lowercase().as_str() {
             "moveoverhead" => parse_set_field!(move_overhead, 0, 1000),
             "threads" => parse_set_field!(threads, 1, 1024),

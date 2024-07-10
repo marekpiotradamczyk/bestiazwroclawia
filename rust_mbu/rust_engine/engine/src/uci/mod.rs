@@ -59,8 +59,7 @@ fn parse_position(args: &[&str]) -> Result<Command> {
     } else {
         let mut iter = args.iter().skip(1).take_while(|s| **s != "moves");
         let idx = iter.clone().count() + 1;
-        let fen = iter.join(" ");
-
+        let fen: String = iter.join(" ");
         let pos = Position::from_fen(fen)?;
 
         (pos, idx)
