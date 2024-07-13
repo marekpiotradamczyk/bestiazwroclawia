@@ -93,9 +93,9 @@ impl Search {
         let result = self.dense.forward(&input)[0];
 
         if result > 0.5 {
-            self.options.depth = Some(14);
+            self.options.depth = Some(11);
         } else {
-            self.options.depth = Some(10);
+            self.options.depth = Some(8);
         }
 
         for id in 0..threads_cnt {
