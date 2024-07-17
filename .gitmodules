@@ -1,3 +1,6 @@
 [submodule "rust_mbu/playtest/c-chess-cli"]
 	path = rust_mbu/playtest/c-chess-cli
 	url = https://github.com/lucasart/c-chess-cli
+[submodule "rust_mbu/playtest/chess-openings"]
+	path = rust_mbu/playtest/chess-openings
+	url = https://github.com/lichess-org/chess-openings.git

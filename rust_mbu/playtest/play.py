@@ -2,14 +2,21 @@ import subprocess
 import re
 import time
 import argparse
+from copy import deepcopy
 
 argparser = argparse.ArgumentParser("Benchmark Morphebot against Stockfish")
 
 argparser.add_argument(
     "--rounds",
     type=int,
+    default=1,
+    help="Number of repetition of games to play for each elo rating and side, by default 1",
+)
+argparser.add_argument(
+    "--games",
+    type=int,
     default=50,
-    help="Number of games to play for each elo rating and side, by default 50",
+    help="Number of games to play"
 )
 argparser.add_argument(
     "--start_elo", type=int, default=1400, help="Start elo rating, by default 1400"
@@ -23,8 +30,8 @@ argparser.add_argument(
 argparser.add_argument(
     "--time_control",
     type=str,
-    default="1+0",
-    help="Time control for the games, by default 1+0",
+    default="5+0",
+    help="Time control for the games, by default 5+0",
 )
 argparser.add_argument(
     "--concurrency",
@@ -53,6 +60,11 @@ argparser.add_argument(
              "option.UCI_LimitStrength=true"],
     help="Engine that plays against engine1"
 )
+argparser.add_argument(
+    "--openings",
+    type=str,
+    default=None,
+)
 
 argparser.add_argument(
     "--errors", action="store_true", help="Print Morphebot error messages"
@@ -73,7 +85,14 @@ def setup_game(args, first_white=True):
     engine1 = ["-engine",f"cmd={args.engine1[0]}",*args.engine1[1:]]
     engine2 = ["-engine", f"cmd={args.engine2[0]}", *args.engine2[1:]]
 
-    rest = ["-rounds", str(rounds), "-concurrency", str(args.concurrency)]
+    rest = ["-games", str(args.games), 
+            "-rounds", str(rounds), 
+            "-concurrency", str(args.concurrency),
+            "-log", 
+            "-pgn", "games.pgn", "1",]
+
+    if args.openings != None:
+        rest += ["-openings", f"file={args.openings}", "-repeat"]
 
     stderr = subprocess.DEVNULL if not args.errors else None
 
@@ -122,16 +141,18 @@ def handle_output(output, play_as_white=True):
 
 
 def play():
-    for elo in range(args.start_elo, args.end_elo + 1, args.elo_step):
-        args.engine1 = list(map(lambda x: x.replace("`elo`", str(elo)), args.engine1))
-        args.engine2 = list(map(lambda x: x.replace("`elo`", str(elo)), args.engine2))
+    
 
-        engine1_name = f"{next(filter(lambda x: x.find('name') > -1, args.engine1)).replace('name=', '')}"
-        engine2_name = f"{next(filter(lambda x: x.find('name') > -1, args.engine2)).replace('name=', '')}"
-        
+    for elo in range(args.start_elo, args.end_elo + 1, args.elo_step):
+        arg = deepcopy(args)
+        arg.engine1 = list(map(lambda x: x.replace("`elo`", str(elo)), args.engine1))
+        arg.engine2 = list(map(lambda x: x.replace("`elo`", str(elo)), args.engine2))
+        engine1_name = f"{next(filter(lambda x: x.find('name') > -1, arg.engine1)).replace('name=', '')}"
+        engine2_name = f"{next(filter(lambda x: x.find('name') > -1, arg.engine2)).replace('name=', '')}"
+
         print(f"{engine1_name} playing against {engine2_name}:")
-        setup_game(args)
-        setup_game(args, False)
+        setup_game(arg)
+     #   setup_game(arg, False)
 
 
 play()
