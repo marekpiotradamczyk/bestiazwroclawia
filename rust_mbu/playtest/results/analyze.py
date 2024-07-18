@@ -88,7 +88,7 @@ class GameInfo:
         avg = 0 
 
         for v in self.move_history.values():
-            avg += sum(v.nodes)
+            avg += v.nodes[-1]
         
         return avg / self.moves
 
@@ -96,7 +96,7 @@ class GameInfo:
         nodes = 0
 
         for v in self.move_history.values():
-            nodes += sum(v.nodes)
+            nodes += v.nodes[-1]
         return nodes
 
     def compute_dist(self):
@@ -120,6 +120,10 @@ class GameInfo:
 
     def is_winner(self):
         outcome = self.board.outcome(claim_draw=True)
+
+        if outcome is None:
+            return False
+
         return True if self.side == outcome.winner else False
 
 
@@ -133,7 +137,9 @@ class GameInfo:
 
     def get_plot_title(self):
         outcome = self.board.outcome(claim_draw=True)
-        return f"""{self.n}. {self.side_str}, {outcome.result()}, {outcome.termination}, winner: {self.is_winner()}"""
+        result = "" if outcome is None else outcome.result()
+        termination = "Rules infraction" if outcome is None else outcome.termination
+        return f"""{self.n}. {self.side_str}, {result}, {termination}, winner: {self.is_winner()}"""
 
     
     def __str__(self):
@@ -287,4 +293,4 @@ def plot_single_game(start, end):
     fig.show()
 
 
-plot_single_game(0, 6)
+plot_single_game(0, 2)
