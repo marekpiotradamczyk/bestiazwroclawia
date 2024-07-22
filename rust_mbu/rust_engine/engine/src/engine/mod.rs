@@ -54,6 +54,7 @@ lazy_static::lazy_static! {
 }
 
 use derivative::Derivative;
+use rand::{rngs::ThreadRng, Rng};
 
 pub mod eval;
 pub mod options;
@@ -73,6 +74,8 @@ pub struct Engine {
     #[derivative(Default(value = "true"))]
     pub ready: bool,
     pub dense: DenseNetwork,
+    pub rng: ThreadRng
+
 }
 
 impl Engine {
@@ -115,7 +118,7 @@ impl Engine {
         tx
     }
 
-    pub fn go(&mut self, options: SearchOptions) {
+    pub fn go(&mut self, mut options: SearchOptions) {
         STOPPED.store(false, Ordering::Relaxed);
         let pos = self.root_pos.clone();
         let is_white = pos.turn == Color::White;
@@ -126,6 +129,20 @@ impl Engine {
         let age = self.age;
         let dense = DenseNetwork::default();
 
+        let input = pos.to_nn_input();
+        let result = dense.forward(&input)[0];
+        // let result = self.rng.gen::<f64>();
+
+        let time_left = if is_white {
+            options.wtime.unwrap_or(0)
+        } else {
+            options.btime.unwrap_or(0)
+        };
+
+        let limit = (time_left as f64 / 30.0).max(1.0) * (1.0 + result);
+        options.movetime = Some(limit as isize);
+        println!("nn_depth_debug: {}", result);
+
         let run = move || {
             let mut search = Search::new(
                 options,
@@ -134,8 +151,7 @@ impl Engine {
                 rep_table,
                 transposition_table,
                 eval_table,
-                age,
-                dense,
+                age
             );
             search.search(&pos);
         };

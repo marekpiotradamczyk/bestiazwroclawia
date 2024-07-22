@@ -6,11 +6,22 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import chess.pgn
 import io
+import sys
+import math
 
 PATHS = ["morphe_nn.out", "morphe_random.out"]
 BOTNAMES = ["morphebot_nn", "morphebot_random"] 
 
 DepthInfo = namedtuple('Depth_info', ['inc', 'nodes'])
+
+millnames = ['','K',' M',' B',' T']
+
+def millify(n):
+    n = float(n)
+    millidx = max(0,min(len(millnames)-1,
+                        int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))
+
+    return '{:.3f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
 
 class PGNProvider:
     
@@ -88,7 +99,8 @@ class GameInfo:
         avg = 0 
 
         for v in self.move_history.values():
-            avg += v.nodes[-1]
+            if len(v.nodes) > 0:
+                avg += v.nodes[-1]
         
         return avg / self.moves
 
@@ -96,7 +108,9 @@ class GameInfo:
         nodes = 0
 
         for v in self.move_history.values():
-            nodes += v.nodes[-1]
+            if len(v.nodes) > 0:
+                nodes += v.nodes[-1]
+
         return nodes
 
     def compute_dist(self):
@@ -139,7 +153,7 @@ class GameInfo:
         outcome = self.board.outcome(claim_draw=True)
         result = "" if outcome is None else outcome.result()
         termination = "Rules infraction" if outcome is None else outcome.termination
-        return f"""{self.n}. {self.side_str}, {result}, {termination}, winner: {self.is_winner()}"""
+        return f"""{self.n}. {self.side_str}, {result}, {termination}, winner: {self.is_winner()}<br>{millify(self.sum_nodes())}"""
 
     
     def __str__(self):
@@ -174,7 +188,8 @@ def parse_games(path, botname):
 
 
         elif "depth_debug" in line:
-            depth_increase = int(line[-1])
+            print(line[line.find(' '):])
+            depth_increase = float(line[line.find(' '):])
             game_info.add_move(depth_increase)
         
         elif "info" in line:
@@ -236,15 +251,15 @@ df = pd.DataFrame({'move' : list(range(max(len(added_nn[2]), len(added_random[2]
     'nn_relative' : added_nn[2], 'random_relative' : added_random[2], 
     'nn_absolute' : added_nn[3], 'random_absolute' : added_random[3]})
 
-# fig = px.bar(df, x='move', y=['nn_relative', 'random_relative'],
-#     color_continuous_scale='redor', barmode='group',
-#     title=f"Average % of nodes calculated in game for move")
-# fig.show()
+fig = px.bar(df, x='move', y=['nn_relative', 'random_relative'],
+    color_continuous_scale='redor', barmode='group',
+    title=f"Average % of nodes calculated in game for move")
+fig.show()
 
-# fig = px.bar(df, x='move', y=['nn_absolute', 'random_absolute'],
-#     color_continuous_scale='redor', barmode='group',
-#     title=f"Average number of nodes calculated in game for move")
-# fig.show()
+fig = px.bar(df, x='move', y=['nn_absolute', 'random_absolute'],
+    color_continuous_scale='redor', barmode='group',
+    title=f"Average number of nodes calculated in game for move")
+fig.show()
 
 print(len(games_nn))
 
@@ -287,10 +302,10 @@ def plot_single_game(start, end):
 
     fig.update_layout(
         title_text="Computed nodes and increases per move",
-        height=1000
+        height=400*(end-start)
     )
 
     fig.show()
 
 
-plot_single_game(0, 2)
+plot_single_game(int(sys.argv[1]), int(sys.argv[2]))

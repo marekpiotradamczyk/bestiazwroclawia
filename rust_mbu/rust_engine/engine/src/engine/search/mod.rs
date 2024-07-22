@@ -84,14 +84,14 @@ impl SearchData {
             return REPEATED_POSITION_SCORE;
         }
 
-        // If we can't win the game, the best score (alpha) is 0
+        // If we can't win the game, the opponent is guaranteed at least a draw
         if !can_win(node, node.turn) {
-            alpha = i32::min(alpha, DRAW_SCORE);
+            beta = i32::max(beta, DRAW_SCORE);
         }
 
-        // If enemy can't win the game, the worst score is 0
+        // If enemy can't win the game, we are guaranteed at least a draw
         if !can_win(node, node.turn.enemy()) {
-            beta = i32::min(beta, DRAW_SCORE);
+            alpha = i32::max(alpha, DRAW_SCORE);
         }
 
         // Prune mate distance
@@ -342,6 +342,12 @@ impl SearchData {
         // Store alpha cutoff in transposition table
         self.transposition_table
             .write(node.hash, alpha, best_move, depth, self.ply, flag, self.age);
+
+        // Make random move since no good moves were found 
+        // or the position has the same oucome no matter what
+        if self.is_root() && move_list.len() > 0 && self.pv.best().is_none() {
+            self.pv.push_pv_move(self.ply, move_list[0])
+        }
 
         alpha
     }

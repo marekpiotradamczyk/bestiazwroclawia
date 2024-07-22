@@ -154,5 +154,6 @@ def play():
         setup_game(arg)
      #   setup_game(arg, False)
 
-
+start = time.time()
 play()
+print(f"Took {time.time() - start}s")

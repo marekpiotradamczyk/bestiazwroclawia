@@ -1,0 +1,1 @@
+python3 play.py --engine1 ./testengines/morphebot_nn name=morphebot_nn --games 180 --engine2 ./testengines/morphebot_random name=morphebot_random --start_elo 2400 --end_elo 2400 --time_control 60+0 --openings sopening.epd --concurrency 1

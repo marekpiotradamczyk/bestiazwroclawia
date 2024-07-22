@@ -1,1 +1,0 @@
-python3 play.py --engine1 ./morphebot_nonn name=morphebot_nonn --games 300 --engine2 ./morphebot_nntime name=morphebot_nntime --start_elo 2400 --end_elo 2400 --time_control 60+0 --openings lopenings.epd

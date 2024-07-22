@@ -1,0 +1,64 @@
+morphebot_nn playing against morphebot_random:
+[1] Started game 1 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 1 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 0 - 0 - 1  [0.500] 1
+[1] Started game 2 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 2 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 0 - 1 - 1  [0.250] 2
+[1] Started game 3 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 3 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 0 - 2 - 1  [0.167] 3
+[1] Started game 4 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 4 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 0 - 3 - 1  [0.125] 4
+[1] Started game 5 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 5 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 0 - 4 - 1  [0.100] 5
+[1] Started game 6 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 6 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 0 - 5 - 1  [0.083] 6
+[1] Started game 7 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 7 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 0 - 5 - 2  [0.143] 7
+[1] Started game 8 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 8 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 0 - 6 - 2  [0.125] 8
+[1] Started game 9 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 9 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 6 - 2  [0.222] 9
+[1] Started game 10 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 10 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 7 - 2  [0.200] 10
+[1] Started game 11 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 11 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 8 - 2  [0.182] 11
+[1] Started game 12 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 12 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 9 - 2  [0.167] 12
+[1] Started game 13 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 13 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 1 - 9 - 3  [0.192] 13
+[1] Started game 14 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 14 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 10 - 3  [0.179] 14
+[1] Started game 15 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 15 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 11 - 3  [0.167] 15
+[1] Started game 16 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 16 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 12 - 3  [0.156] 16
+[1] Started game 17 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 17 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 1 - 12 - 4  [0.176] 17
+[1] Started game 18 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 18 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 13 - 4  [0.167] 18
+[1] Started game 19 of 20 (morphebot_random vs morphebot_nn)
+[1] Finished game 19 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 14 - 4  [0.158] 19
+[1] Started game 20 of 20 (morphebot_nn vs morphebot_random)
+[1] Finished game 20 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 15 - 4  [0.150] 20
+
+Win ratio: 15.00%
+Took 2250.9211077690125s
