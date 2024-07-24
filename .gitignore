@@ -12,5 +12,8 @@
 
 # stockfish binary
 mldl/stockfish_*
+nn/stockfish/*
+nn/data/*
+nn/archives/*
 
 rust_mbu/playtest/results.csv
