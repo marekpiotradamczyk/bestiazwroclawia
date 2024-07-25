@@ -1,41 +1,66 @@
 extern crate ndarray;
 
 use ndarray::{Array2, Array1};
+use std::fs;
 pub mod readcsv;
 pub struct DenseNetwork {
-    w1: Array2<f64>,
-    b1: Array1<f64>,
-    w2: Array2<f64>,
-    b2: Array1<f64>,
+    weights: Vec<Array2<f64>>,
+    biases: Vec<Array1<f64>>,
+    layers: usize,
 }
 
 impl Default for DenseNetwork {
     fn default() -> Self {
         Self {
-            w1: readcsv::read_array2_from_csv("layer1_weights.csv"),
-            b1: readcsv::read_array1_from_csv("layer1_biases.csv"),
-            w2: readcsv::read_array2_from_csv("layer2_weights.csv"),
-            b2: readcsv::read_array1_from_csv("layer2_biases.csv"),
+            weights: Vec::new(),
+            biases: Vec::new(),
+            layers: 0
         }
     }
 }
 
 impl DenseNetwork {
-    pub fn new(weight1: Array2<f64>, biases1: Array1<f64>, weight2: Array2<f64>, biases2: Array1<f64>) -> Self {
+    pub fn new(path: &str) -> Self {
+        let mut w = Vec::new();
+        let mut b =  Vec::new();
+
+        let mut paths: Vec<_> = fs::read_dir(path).unwrap()
+            .map(|r| r.unwrap())
+            .collect();
+
+        paths.sort_by_key(|dir| dir.path());
+
+        let l = paths.len()/2;
+        
+        for i in 0..paths.len()/2 {
+            b.push(readcsv::read_array1_from_csv(paths[2*i].path().to_str()));
+            w.push(readcsv::read_array2_from_csv(paths[2*i+1].path().to_str()));
+        }
+        
         Self {
-            w1: weight1,
-            b1: biases1,
-            w2: weight2,
-            b2: biases2,
+            weights: w,
+            biases: b,
+            layers: l
         }
     }
 
+    fn step_with_relu(&self, x: &Array2<f64>, w: &Array2<f64>, b: &Array1<f64>) -> Array2<f64> {
+        let z = x.dot(&w.t()) + b;
+        z.mapv(|v| v.max(0.0))
+    }
+
+    fn step_with_sigmoid(&self, x: &Array2<f64>, w: &Array2<f64>, b: &Array1<f64>) -> Array2<f64> {
+        let z = x.dot(&w.t()) + b;
+        z.mapv(|v| 1.0 / (1.0 + (-v).exp()))
+    }
+
     pub fn forward(&self, x: &Array2<f64>) -> Array1<f64> {
-        let z1 = x.dot(&self.w1.t()) + &self.b1;
-        let a1 = z1.mapv(|v| v.max(0.0));
-        let z2 = a1.dot(&self.w2.t()) + &self.b2;
-        let a2 = z2.mapv(|v| 1.0 / (1.0 + (-v).exp()));
-        a2.column(0).to_owned()
+        let mut a = x.clone();
+
+        for i in 0..self.layers-1 {
+            a = self.step_with_relu(&a, &self.weights[i], &self.biases[i]);
+        }
+        let result = self.step_with_sigmoid(&a, &self.weights[self.layers-1], &self.biases[self.layers-1]);
+        result.column(0).to_owned()
     }
 }
-

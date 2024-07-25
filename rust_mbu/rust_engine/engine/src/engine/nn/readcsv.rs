@@ -4,8 +4,8 @@ extern crate csv;
 use ndarray::{Array1, Array2};
 use std::fs::File;
 
-pub fn read_array2_from_csv(file_path: &str) -> Array2<f64> {
-    let file = read_csv(file_path);
+pub fn read_array2_from_csv(file_path: Option<&str>) -> Array2<f64> {
+    let file = read_csv(file_path.unwrap());
 
     let mut rdr = csv::ReaderBuilder::new().has_headers(false).from_reader(file);
     let mut records = Vec::new();
@@ -32,8 +32,8 @@ pub fn read_array2_from_csv(file_path: &str) -> Array2<f64> {
 }
 
 
-pub fn read_array1_from_csv(file_path: &str) -> Array1<f64> {
-    let file = read_csv(file_path);
+pub fn read_array1_from_csv(file_path: Option<&str>) -> Array1<f64> {
+    let file = read_csv(file_path.unwrap());
 
     let mut rdr = csv::ReaderBuilder::new().has_headers(false).from_reader(file);
     let mut records = Vec::new();
