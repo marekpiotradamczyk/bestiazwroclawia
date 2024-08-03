@@ -209,29 +209,43 @@ impl Position {
     }
 
     pub fn to_nn_input(&self) -> Array2<f64> {
-        let rows = 1;
-        let cols = 768;
-
-        let mut records = Vec::new();
+        let mut bits = Vec::with_capacity(12 * 64);
 
         for color in 0..2 {
             for piece in 0..6 {
-                let mut bits = Vec::with_capacity(64);
                 for i in 0..64 {
                     let bit = ((self.pieces[color][piece].0 >> i) & 1) as f64;
                     bits.push(bit);
                 }
-                records.push(bits);
             }
         }
-
-        let flat_data: Vec<f64> = records.into_iter().flatten().collect();
-        let array = Array2::from_shape_vec((rows, cols), flat_data);
+        let array = Array2::from_shape_vec((1, 12 * 64), bits);
 
         match array {
             Ok(array) => return array,
-            Err(_error) => panic!("Problem")
+            Err(_error) => panic!("Problem"),
         }
+    }
+
+    pub fn compare_with_idx(&self, other: &Position) -> [Vec<usize>; 2] {
+        let mut idxs = [Vec::<usize>::new(), Vec::<usize>::new()];
+
+        for color in 0..2 {
+            for piece in 0..6 {
+                let mut idx = (color * 6 * 64) + (piece * 64); 
+
+                for i in 0..64 {
+                    let our_bit = ((self.pieces[color][piece].0 >> i) & 1) as usize;
+                    let other_bit = ((other.pieces[color][piece].0 >> i) & 1) as usize;
+
+                    if our_bit ^ other_bit == 1 {
+                        idxs[our_bit].push(idx);
+                    }
+                    idx += 1;
+                }
+            }
+        }
+        idxs
     }
 
     pub fn remove_piece_at(&mut self, square: Square) -> Option<(Piece, Color)> {
