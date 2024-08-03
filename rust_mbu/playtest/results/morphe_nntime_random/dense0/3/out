@@ -1,0 +1,544 @@
+morphebot_nn playing against morphebot_random:
+[1] Started game 1 of 180 (morphebot_nn vs morphebot_random)
+[2] Started game 3 of 180 (morphebot_nn vs morphebot_random)
+[4] Started game 4 of 180 (morphebot_random vs morphebot_nn)
+[3] Started game 2 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 3 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 0 - 0 - 1  [0.500] 1
+[2] Started game 5 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 2 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 0 - 1 - 1  [0.250] 2
+[3] Started game 6 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 1 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 1 - 1 - 1  [0.500] 3
+[1] Started game 7 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 4 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 2 - 1 - 1  [0.625] 4
+[4] Started game 8 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 5 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 3 - 1 - 1  [0.700] 5
+[2] Started game 9 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 8 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 3 - 1 - 2  [0.667] 6
+[4] Started game 10 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 7 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 3 - 2 - 2  [0.571] 7
+[1] Started game 11 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 6 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 3 - 3 - 2  [0.500] 8
+[3] Started game 12 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 9 (morphebot_random vs morphebot_nn): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 3 - 3 - 3  [0.500] 9
+[2] Started game 13 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 10 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 4 - 3 - 3  [0.550] 10
+[4] Started game 14 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 11 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 5 - 3 - 3  [0.591] 11
+[1] Started game 15 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 12 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 5 - 3 - 4  [0.583] 12
+[3] Started game 16 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 13 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 5 - 4 - 4  [0.538] 13
+[2] Started game 17 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 15 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 5 - 5 - 4  [0.500] 14
+[1] Started game 18 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 16 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 6 - 5 - 4  [0.533] 15
+[3] Started game 19 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 14 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 7 - 5 - 4  [0.562] 16
+[4] Started game 20 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 17 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 7 - 5 - 5  [0.559] 17
+[2] Started game 21 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 18 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 7 - 5 - 6  [0.556] 18
+[1] Started game 22 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 19 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 7 - 5 - 7  [0.553] 19
+[3] Started game 23 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 20 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 7 - 6 - 7  [0.525] 20
+[4] Started game 24 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 21 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 7 - 6 - 8  [0.524] 21
+[2] Started game 25 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 22 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 8 - 6 - 8  [0.545] 22
+[1] Started game 26 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 23 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 8 - 7 - 8  [0.522] 23
+[3] Started game 27 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 24 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 9 - 7 - 8  [0.542] 24
+[4] Started game 28 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 25 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 9 - 8 - 8  [0.520] 25
+[2] Started game 29 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 26 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 10 - 8 - 8  [0.538] 26
+[1] Started game 30 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 29 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 10 - 8 - 9  [0.537] 27
+[2] Started game 31 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 27 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 11 - 8 - 9  [0.554] 28
+[3] Started game 32 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 28 (morphebot_nn vs morphebot_random): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 11 - 8 - 10  [0.552] 29
+[4] Started game 33 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 30 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 11 - 9 - 10  [0.533] 30
+[1] Started game 34 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 31 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 12 - 9 - 10  [0.548] 31
+[2] Started game 35 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 32 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 13 - 9 - 10  [0.562] 32
+[3] Started game 36 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 33 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 14 - 9 - 10  [0.576] 33
+[4] Started game 37 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 34 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 14 - 9 - 11  [0.574] 34
+[1] Started game 38 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 36 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 14 - 9 - 12  [0.571] 35
+[3] Started game 39 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 35 (morphebot_random vs morphebot_nn): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 14 - 9 - 13  [0.569] 36
+[2] Started game 40 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 37 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 14 - 10 - 13  [0.554] 37
+[4] Started game 41 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 38 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 15 - 10 - 13  [0.566] 38
+[1] Started game 42 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 39 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 15 - 11 - 13  [0.551] 39
+[3] Started game 43 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 40 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 15 - 11 - 14  [0.550] 40
+[2] Started game 44 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 41 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 16 - 11 - 14  [0.561] 41
+[4] Started game 45 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 42 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 16 - 12 - 14  [0.548] 42
+[1] Started game 46 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 43 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 16 - 12 - 15  [0.547] 43
+[3] Started game 47 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 44 (morphebot_random vs morphebot_nn): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 16 - 12 - 16  [0.545] 44
+[2] Started game 48 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 45 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 16 - 12 - 17  [0.544] 45
+[4] Started game 49 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 46 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 17 - 12 - 17  [0.554] 46
+[1] Started game 50 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 47 (morphebot_nn vs morphebot_random): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 17 - 12 - 18  [0.553] 47
+[3] Started game 51 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 48 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 18 - 12 - 18  [0.562] 48
+[2] Started game 52 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 49 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 18 - 12 - 19  [0.561] 49
+[4] Started game 53 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 50 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 19 - 12 - 19  [0.570] 50
+[1] Started game 54 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 51 (morphebot_nn vs morphebot_random): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 19 - 12 - 20  [0.569] 51
+[3] Started game 55 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 52 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 20 - 12 - 20  [0.577] 52
+[2] Started game 56 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 53 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 20 - 13 - 20  [0.566] 53
+[4] Started game 57 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 54 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 20 - 14 - 20  [0.556] 54
+[1] Started game 58 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 55 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 21 - 14 - 20  [0.564] 55
+[3] Started game 59 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 56 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 21 - 15 - 20  [0.554] 56
+[2] Started game 60 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 57 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 22 - 15 - 20  [0.561] 57
+[4] Started game 61 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 58 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 22 - 15 - 21  [0.560] 58
+[1] Started game 62 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 59 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 23 - 15 - 21  [0.568] 59
+[3] Started game 63 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 60 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 24 - 15 - 21  [0.575] 60
+[2] Started game 64 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 61 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 24 - 16 - 21  [0.566] 61
+[4] Started game 65 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 62 (morphebot_nn vs morphebot_random): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 24 - 16 - 22  [0.565] 62
+[1] Started game 66 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 63 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 25 - 16 - 22  [0.571] 63
+[3] Started game 67 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 64 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 25 - 16 - 23  [0.570] 64
+[2] Started game 68 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 65 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 25 - 17 - 23  [0.562] 65
+[4] Started game 69 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 68 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 26 - 17 - 23  [0.568] 66
+[2] Started game 70 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 66 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 26 - 17 - 24  [0.567] 67
+[1] Started game 71 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 67 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 27 - 17 - 24  [0.574] 68
+[3] Started game 72 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 69 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 27 - 18 - 24  [0.565] 69
+[4] Started game 73 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 70 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 27 - 19 - 24  [0.557] 70
+[2] Started game 74 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 72 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 28 - 19 - 24  [0.563] 71
+[3] Started game 75 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 71 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 29 - 19 - 24  [0.569] 72
+[1] Started game 76 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 74 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 29 - 19 - 25  [0.568] 73
+[2] Started game 77 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 73 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 29 - 19 - 26  [0.568] 74
+[4] Started game 78 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 76 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 29 - 19 - 27  [0.567] 75
+[1] Started game 79 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 75 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 29 - 19 - 28  [0.566] 76
+[3] Started game 80 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 77 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 29 - 19 - 29  [0.565] 77
+[2] Started game 81 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 78 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 30 - 19 - 29  [0.571] 78
+[4] Started game 82 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 79 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 30 - 20 - 29  [0.563] 79
+[1] Started game 83 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 80 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 31 - 20 - 29  [0.569] 80
+[3] Started game 84 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 81 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 32 - 20 - 29  [0.574] 81
+[2] Started game 85 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 82 (morphebot_nn vs morphebot_random): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 32 - 20 - 30  [0.573] 82
+[4] Started game 86 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 83 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 33 - 20 - 30  [0.578] 83
+[1] Started game 87 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 84 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 33 - 20 - 31  [0.577] 84
+[3] Started game 88 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 85 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 33 - 21 - 31  [0.571] 85
+[2] Started game 89 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 86 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 34 - 21 - 31  [0.576] 86
+[4] Started game 90 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 87 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 35 - 21 - 31  [0.580] 87
+[1] Started game 91 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 88 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 36 - 21 - 31  [0.585] 88
+[3] Started game 92 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 89 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 37 - 21 - 31  [0.590] 89
+[2] Started game 93 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 90 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 37 - 21 - 32  [0.589] 90
+[4] Started game 94 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 91 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 37 - 21 - 33  [0.588] 91
+[1] Started game 95 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 92 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 38 - 21 - 33  [0.592] 92
+[3] Started game 96 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 93 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 39 - 21 - 33  [0.597] 93
+[2] Started game 97 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 94 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 40 - 21 - 33  [0.601] 94
+[4] Started game 98 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 95 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 40 - 21 - 34  [0.600] 95
+[1] Started game 99 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 96 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 40 - 22 - 34  [0.594] 96
+[3] Started game 100 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 97 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 41 - 22 - 34  [0.598] 97
+[2] Started game 101 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 98 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 41 - 22 - 35  [0.597] 98
+[4] Started game 102 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 100 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 41 - 22 - 36  [0.596] 99
+[3] Started game 103 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 99 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 41 - 22 - 37  [0.595] 100
+[1] Started game 104 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 101 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 41 - 22 - 38  [0.594] 101
+[2] Started game 105 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 102 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 41 - 23 - 38  [0.588] 102
+[4] Started game 106 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 103 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 41 - 24 - 38  [0.583] 103
+[3] Started game 107 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 104 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 42 - 24 - 38  [0.587] 104
+[1] Started game 108 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 105 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 42 - 24 - 39  [0.586] 105
+[2] Started game 109 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 106 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 43 - 24 - 39  [0.590] 106
+[4] Started game 110 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 107 (morphebot_random vs morphebot_nn): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 43 - 24 - 40  [0.589] 107
+[3] Started game 111 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 108 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 43 - 24 - 41  [0.588] 108
+[1] Started game 112 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 109 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 44 - 24 - 41  [0.592] 109
+[2] Started game 113 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 110 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 44 - 24 - 42  [0.591] 110
+[4] Started game 114 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 111 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 45 - 24 - 42  [0.595] 111
+[3] Started game 115 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 112 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 45 - 25 - 42  [0.589] 112
+[1] Started game 116 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 113 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 45 - 25 - 43  [0.588] 113
+[2] Started game 117 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 114 (morphebot_nn vs morphebot_random): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 45 - 25 - 44  [0.588] 114
+[4] Started game 118 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 115 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 46 - 25 - 44  [0.591] 115
+[3] Started game 119 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 116 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 46 - 26 - 44  [0.586] 116
+[1] Started game 120 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 120 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 46 - 26 - 45  [0.585] 117
+[1] Started game 121 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 117 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 46 - 27 - 45  [0.581] 118
+[2] Started game 122 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 118 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 47 - 27 - 45  [0.584] 119
+[4] Started game 123 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 119 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 47 - 27 - 46  [0.583] 120
+[3] Started game 124 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 121 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 47 - 28 - 46  [0.579] 121
+[1] Started game 125 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 122 (morphebot_nn vs morphebot_random): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 47 - 28 - 47  [0.578] 122
+[2] Started game 126 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 123 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 47 - 29 - 47  [0.573] 123
+[4] Started game 127 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 124 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 48 - 29 - 47  [0.577] 124
+[3] Started game 128 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 125 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 48 - 30 - 47  [0.572] 125
+[1] Started game 129 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 126 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 48 - 30 - 48  [0.571] 126
+[2] Started game 130 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 128 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 48 - 30 - 49  [0.571] 127
+[3] Started game 131 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 127 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 48 - 30 - 50  [0.570] 128
+[4] Started game 132 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 129 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 49 - 30 - 50  [0.574] 129
+[1] Started game 133 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 130 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 49 - 31 - 50  [0.569] 130
+[2] Started game 134 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 131 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 49 - 32 - 50  [0.565] 131
+[3] Started game 135 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 132 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 50 - 32 - 50  [0.568] 132
+[4] Started game 136 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 133 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 51 - 32 - 50  [0.571] 133
+[1] Started game 137 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 134 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 51 - 33 - 50  [0.567] 134
+[2] Started game 138 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 136 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 51 - 34 - 50  [0.563] 135
+[4] Started game 139 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 135 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 52 - 34 - 50  [0.566] 136
+[3] Started game 140 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 137 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 53 - 34 - 50  [0.569] 137
+[1] Started game 141 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 138 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 53 - 34 - 51  [0.569] 138
+[2] Started game 142 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 139 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 53 - 34 - 52  [0.568] 139
+[4] Started game 143 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 140 (morphebot_random vs morphebot_nn): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 53 - 34 - 53  [0.568] 140
+[3] Started game 144 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 141 (morphebot_random vs morphebot_nn): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 53 - 34 - 54  [0.567] 141
+[1] Started game 145 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 142 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 53 - 35 - 54  [0.563] 142
+[2] Started game 146 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 143 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 53 - 35 - 55  [0.563] 143
+[4] Started game 147 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 144 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 54 - 35 - 55  [0.566] 144
+[3] Started game 148 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 145 (morphebot_nn vs morphebot_random): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 54 - 35 - 56  [0.566] 145
+[1] Started game 149 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 146 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 54 - 36 - 56  [0.562] 146
+[2] Started game 150 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 148 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 54 - 37 - 56  [0.558] 147
+[3] Started game 151 of 180 (morphebot_random vs morphebot_nn)
+[4] Finished game 147 (morphebot_nn vs morphebot_random): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 54 - 37 - 57  [0.557] 148
+[4] Started game 152 of 180 (morphebot_nn vs morphebot_random)
+[1] Finished game 149 (morphebot_random vs morphebot_nn): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 54 - 37 - 58  [0.557] 149
+[1] Started game 153 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 150 (morphebot_nn vs morphebot_random): 1/2-1/2 {insufficient material}
+Score of morphebot_random vs morphebot_nn: 54 - 37 - 59  [0.557] 150
+[2] Started game 154 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 151 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 54 - 37 - 60  [0.556] 151
+[3] Started game 155 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 152 (morphebot_nn vs morphebot_random): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 54 - 37 - 61  [0.556] 152
+[4] Started game 156 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 153 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 54 - 37 - 62  [0.556] 153
+[1] Started game 157 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 154 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 55 - 37 - 62  [0.558] 154
+[2] Started game 158 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 155 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 55 - 38 - 62  [0.555] 155
+[3] Started game 159 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 156 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 56 - 38 - 62  [0.558] 156
+[4] Started game 160 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 157 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 56 - 39 - 62  [0.554] 157
+[1] Started game 161 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 158 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 56 - 40 - 62  [0.551] 158
+[2] Started game 162 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 159 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 57 - 40 - 62  [0.553] 159
+[3] Started game 163 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 160 (morphebot_random vs morphebot_nn): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 57 - 40 - 63  [0.553] 160
+[4] Started game 164 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 161 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 58 - 40 - 63  [0.556] 161
+[1] Started game 165 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 163 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 59 - 40 - 63  [0.559] 162
+[3] Started game 166 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 162 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 60 - 40 - 63  [0.561] 163
+[2] Started game 167 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 164 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 60 - 41 - 63  [0.558] 164
+[4] Started game 168 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 165 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 61 - 41 - 63  [0.561] 165
+[1] Started game 169 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 166 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 61 - 42 - 63  [0.557] 166
+[3] Started game 170 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 167 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 62 - 42 - 63  [0.560] 167
+[2] Started game 171 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 168 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 63 - 42 - 63  [0.562] 168
+[4] Started game 172 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 169 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 63 - 43 - 63  [0.559] 169
+[1] Started game 173 of 180 (morphebot_nn vs morphebot_random)
+[2] Finished game 171 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 63 - 44 - 63  [0.556] 170
+[2] Started game 174 of 180 (morphebot_random vs morphebot_nn)
+[3] Finished game 170 (morphebot_random vs morphebot_nn): 1/2-1/2 {50 moves rule}
+Score of morphebot_random vs morphebot_nn: 63 - 44 - 64  [0.556] 171
+[3] Started game 175 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 172 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 63 - 45 - 64  [0.552] 172
+[4] Started game 176 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 173 (morphebot_nn vs morphebot_random): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 64 - 45 - 64  [0.555] 173
+[1] Started game 177 of 180 (morphebot_nn vs morphebot_random)
+[3] Finished game 175 (morphebot_nn vs morphebot_random): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 64 - 46 - 64  [0.552] 174
+[3] Started game 178 of 180 (morphebot_random vs morphebot_nn)
+[2] Finished game 174 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 64 - 47 - 64  [0.549] 175
+[2] Started game 179 of 180 (morphebot_nn vs morphebot_random)
+[4] Finished game 176 (morphebot_random vs morphebot_nn): 1-0 {checkmate}
+Score of morphebot_random vs morphebot_nn: 65 - 47 - 64  [0.551] 176
+[4] Started game 180 of 180 (morphebot_random vs morphebot_nn)
+[1] Finished game 177 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 65 - 47 - 65  [0.551] 177
+[3] Finished game 178 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 65 - 48 - 65  [0.548] 178
+[2] Finished game 179 (morphebot_nn vs morphebot_random): 1/2-1/2 {3-fold repetition}
+Score of morphebot_random vs morphebot_nn: 65 - 48 - 66  [0.547] 179
+[4] Finished game 180 (morphebot_random vs morphebot_nn): 0-1 {checkmate}
+Score of morphebot_random vs morphebot_nn: 65 - 49 - 66  [0.544] 180
+
+Win ratio: 54.44%
+Took 5112.914837598801s

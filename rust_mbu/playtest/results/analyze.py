@@ -8,6 +8,10 @@ import chess.pgn
 import io
 import sys
 import math
+import numpy as np
+from decimal import *
+from scipy.stats import kstest
+
 
 PATHS = ["morphe_nn.out", "morphe_random.out"]
 BOTNAMES = ["morphebot_nn", "morphebot_random"] 
@@ -166,6 +170,7 @@ class GameInfo:
 
 def parse_games(path, botname):
     games = []
+    dist  = []
     game_info = GameInfo(None, None, None, None)
     pgn_provider = PGNProvider('../games.pgn')
     game = None
@@ -188,16 +193,18 @@ def parse_games(path, botname):
 
 
         elif "depth_debug" in line:
-            print(line[line.find(' '):])
-            depth_increase = float(line[line.find(' '):])
-            game_info.add_move(depth_increase)
+            rgx = re.search(": (\\d+(\\.\\d+)?)$", line)
+            r = rgx.group(1)
+
+            dist.append(float(r))
+            game_info.add_move(float(r))
         
         elif "info" in line:
             x = re.search("nodes (\\d+)", line)
             nodes = x.group(1) 
             game_info.add_nodes(int(nodes))
     games.append(game_info)
-    return games
+    return games, dist
 
 
 def countup_avg(games):
@@ -239,31 +246,30 @@ def add_games(games):
     return result
 
 
-games_nn = parse_games(PATHS[0], BOTNAMES[0])
+games_nn, nn_dist = parse_games(PATHS[0], BOTNAMES[0])
 added_nn = countup_avg(games_nn)
 print(f"{PATHS[0]}  mean inc: {added_nn[0]}, mean nodes: {added_nn[1]}")
     
-games_random = parse_games(PATHS[1], BOTNAMES[1])
+
+games_random, random_dist = parse_games(PATHS[1], BOTNAMES[1])
 added_random = countup_avg(games_random)
 print(f"{PATHS[1]}  mean inc: {added_random[0]}, mean nodes: {added_random[1]}")
 
-df = pd.DataFrame({'move' : list(range(max(len(added_nn[2]), len(added_random[2])))),
-    'nn_relative' : added_nn[2], 'random_relative' : added_random[2], 
-    'nn_absolute' : added_nn[3], 'random_absolute' : added_random[3]})
+# df = pd.DataFrame({'move' : list(range(max(len(added_nn[2]), len(added_random[2])))),
+#     'nn_relative' : added_nn[2], 'random_relative' : added_random[2], 
+#     'nn_absolute' : added_nn[3], 'random_absolute' : added_random[3]})
 
-fig = px.bar(df, x='move', y=['nn_relative', 'random_relative'],
-    color_continuous_scale='redor', barmode='group',
-    title=f"Average % of nodes calculated in game for move")
-fig.show()
+# fig = px.bar(df, x='move', y=['nn_relative', 'random_relative'],
+#     color_continuous_scale='redor', barmode='group',
+#     title=f"Average % of nodes calculated in game for move")
+# fig.show()
 
-fig = px.bar(df, x='move', y=['nn_absolute', 'random_absolute'],
-    color_continuous_scale='redor', barmode='group',
-    title=f"Average number of nodes calculated in game for move")
-fig.show()
+# fig = px.bar(df, x='move', y=['nn_absolute', 'random_absolute'],
+#     color_continuous_scale='redor', barmode='group',
+#     title=f"Average number of nodes calculated in game for move")
+# fig.show()
 
-print(len(games_nn))
-
-def plot_single_game(start, end):
+def plot_single_games(start, end):
     
     fig = make_subplots(rows=end-start, cols=2, 
         subplot_titles=['asd' for _ in range(2*(end-start))]
@@ -308,4 +314,67 @@ def plot_single_game(start, end):
     fig.show()
 
 
-plot_single_game(int(sys.argv[1]), int(sys.argv[2]))
+plot_single_games(int(sys.argv[1]), int(sys.argv[2]))
+
+fig = px.histogram(nn_dist, nbins=100, title="Distribution of morphebot output frequencies with using logistic regression")
+fig.show()
+
+fig = px.histogram(random_dist, nbins=100, title="Distribution of morphebot output frequencies with using random")
+fig.show()
+
+
+def get_distribution(dist):
+    d = [0 for i in range(101)]
+
+    for v in dist:
+        idx = int(Decimal(v) * 100)
+        d[idx] += 1
+
+    return d
+
+nnd = np.array(get_distribution(nn_dist))
+rnd = np.array(get_distribution(random_dist))
+
+samples = sum(nnd)
+
+print(kstest(nnd, rnd))
+print(get_distribution(nn_dist))
+
+# ps = nnd / samples
+
+# choices = np.arange(0, 1.01, 0.01)
+# c = np.random.choice(choices, size=samples, p=ps)
+
+# print(kstest(nnd, c))
+
+# fig = px.histogram(c, nbins=100, title="Test")
+# fig.show()
+
+
+# d_old = [0, 0, 0, 0, 5, 15, 9, 18, 28, 36, 69, 77, 101, 126, 151, 168, 214, 243, 242, 257, 314, 285, 282, 313, 345, 334, 336, 370, 368, 360, 349, 355, 381, 393, 396, 354, 412, 443, 311, 287, 311, 311, 297, 299, 221, 304, 298, 290, 270, 309, 229, 213, 217, 187, 177, 199, 137, 139, 112, 108, 100, 83, 77, 94, 65, 41, 31, 19, 30, 12, 21, 15, 5, 4, 8, 7, 1, 3, 7, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+# dd_old = []
+
+# idx = 0
+# for i in d_old:
+#     for j in range(i):
+#         dd_old.append(idx)
+#     idx += 0.01
+
+# fig = px.histogram(dd_old, nbins=100, title="Test_old")
+# fig.show()
+
+
+# d_new = [0, 0, 0, 0, 0, 8, 22, 26, 29, 43, 68, 73, 71, 112, 143, 136, 201, 217, 240, 287, 348, 254, 250, 351, 291, 371, 379, 444, 430, 404, 371, 369, 378, 399, 412, 363, 390, 393, 336, 280, 334, 280, 361, 283, 255, 315, 273, 246, 245, 286, 248, 220, 199, 182, 198, 160, 124, 108, 100, 100, 85, 60, 83, 66, 67, 48, 26, 33, 48, 12, 16, 24, 8, 1, 3, 1, 1, 1, 3, 0, 2, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+# dd_new = []
+
+# idx = 0
+# for i in d_new:
+#     for j in range(i):
+#         dd_new.append(idx)
+#     idx += 0.01
+
+# fig = px.histogram(dd_new, nbins=100, title="Test_new")
+# fig.show()
+
