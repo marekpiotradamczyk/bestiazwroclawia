@@ -1,5 +1,5 @@
-extern crate ndarray_csv;
 extern crate csv;
+extern crate ndarray_csv;
 
 use ndarray::{Array1, Array2};
 use std::fs::File;
@@ -7,7 +7,9 @@ use std::fs::File;
 pub fn read_array2_from_csv(file_path: Option<&str>) -> Array2<f64> {
     let file = read_csv(file_path.unwrap());
 
-    let mut rdr = csv::ReaderBuilder::new().has_headers(false).from_reader(file);
+    let mut rdr = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .from_reader(file);
     let mut records = Vec::new();
     for result in rdr.records() {
         let record_result = result;
@@ -27,15 +29,16 @@ pub fn read_array2_from_csv(file_path: Option<&str>) -> Array2<f64> {
 
     match array {
         Ok(array) => return array,
-        Err(_error) => panic!("Problem")
+        Err(_error) => panic!("Problem"),
     }
 }
-
 
 pub fn read_array1_from_csv(file_path: Option<&str>) -> Array1<f64> {
     let file = read_csv(file_path.unwrap());
 
-    let mut rdr = csv::ReaderBuilder::new().has_headers(false).from_reader(file);
+    let mut rdr = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .from_reader(file);
     let mut records = Vec::new();
     for result in rdr.records() {
         let record_result = result;
@@ -50,7 +53,6 @@ pub fn read_array1_from_csv(file_path: Option<&str>) -> Array1<f64> {
     }
     return Array1::from(records);
 }
-
 
 fn read_csv(file_path: &str) -> File {
     let file_result = File::open(file_path);

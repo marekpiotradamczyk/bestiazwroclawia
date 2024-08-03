@@ -16,6 +16,7 @@ nn/stockfish/*
 nn/data/*
 nn/archives/*
 rust_mbu/playtest/results.csv
+rust_mbu/playtest/results/test_rust/*
 
 # Build directory
 cpp_bestia/build/*

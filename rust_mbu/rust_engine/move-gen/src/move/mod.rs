@@ -29,7 +29,7 @@ impl PartialEq for Move {
 }
 
 pub trait MakeMove {
-    fn make_move(&mut self, mv: &Move) -> Result<Option<Piece>>;
+    fn make_move(&mut self, mv: &Move) -> Result<(Option<Piece>, [Vec<usize>; 2])>;
     fn make_null_move(&mut self);
 }
 
@@ -58,10 +58,12 @@ impl fmt::Display for Move {
 }
 
 impl MakeMove for Position {
-    fn make_move(&mut self, mv: &Move) -> Result<Option<Piece>> {
+    fn make_move(&mut self, mv: &Move) -> Result<(Option<Piece>, [Vec<usize>; 2])> {
         let from = mv.from();
         let to = mv.to();
         let color = self.turn;
+
+        let mut move_idx = [Vec::<usize>::new(), Vec::<usize>::new()];
 
         let old_castling = self.castling.inner;
 
@@ -73,7 +75,7 @@ impl MakeMove for Position {
         ]
         .iter()
         {
-            if mv.from() == *rook_sq || mv.to() == *rook_sq {
+            if from == *rook_sq || to == *rook_sq {
                 self.castling.remove_castling_kind(kind);
             }
         }
@@ -108,6 +110,8 @@ impl MakeMove for Position {
         let captured = match mv.kind() {
             MoveKind::Quiet => {
                 self.add_piece_at(to, from_piece, from_color)?;
+                move_idx[0].push((color as usize * 64 * 6) + (from_piece as usize * 64) + from as usize);
+                move_idx[1].push((color as usize * 64 * 6) + (from_piece as usize * 64) + to as usize);
 
                 None
             }
@@ -119,6 +123,10 @@ impl MakeMove for Position {
                 // Update captured piece hash
                 self.hash ^=
                     ZOBRIST_KEYS.pieces[target_color as usize][target_piece as usize][to as usize];
+
+                move_idx[0].push((target_color as usize * 64 * 6) + (target_piece as usize * 64) + to as usize);
+                move_idx[0].push((color as usize * 64 * 6) + (from_piece as usize * 64) + from as usize);
+                move_idx[1].push((color as usize * 64 * 6) + (from_piece as usize * 64) + to as usize);
 
                 Some((target_piece, target_color))
             }
@@ -138,6 +146,10 @@ impl MakeMove for Position {
                 self.hash ^= ZOBRIST_KEYS.pieces[target_color as usize][target_piece as usize]
                     [captured_sq as usize];
 
+                move_idx[0].push((target_color as usize * 64 * 6) + (target_piece as usize * 64) + captured_sq as usize);
+                move_idx[0].push((color as usize * 64 * 6) + (from_piece as usize * 64) + from as usize);
+                move_idx[1].push((color as usize * 64 * 6) + (from_piece as usize * 64) + to as usize);
+
                 Some((target_piece, target_color))
             }
             MoveKind::Castling => {
@@ -145,7 +157,7 @@ impl MakeMove for Position {
                     .castling_kind(&self.turn)
                     .expect("BUG: Move does not castle.");
 
-                let (rook_from, _) = castling.from_squares();
+                let (rook_from, king_from) = castling.from_squares();
                 let (rook_to, king_to) = castling.target_squares();
 
                 let (rook, _) = self.remove_piece_at(rook_from).unwrap_or_else(|| {
@@ -164,6 +176,12 @@ impl MakeMove for Position {
                 self.hash ^= ZOBRIST_KEYS.pieces[from_color as usize][Piece::Rook as usize]
                     [rook_to as usize];
 
+                move_idx[0].push((color as usize * 64 * 6) + (Piece::King as usize * 64) + king_from as usize);
+                move_idx[0].push((color as usize * 64 * 6) + (Piece::Rook as usize * 64) + rook_from as usize);
+                
+                move_idx[1].push((color as usize * 64 * 6) + (Piece::King as usize * 64) + king_to as usize);
+                move_idx[1].push((color as usize * 64 * 6) + (Piece::Rook as usize * 64) + rook_to as usize);
+
                 None
             }
             MoveKind::Promotion | MoveKind::PromotionCapture => {
@@ -179,11 +197,15 @@ impl MakeMove for Position {
                 self.hash ^=
                     ZOBRIST_KEYS.pieces[from_color as usize][promotion as usize][to as usize];
 
+
+                
                 // Update captured piece hash
                 if let Some((target_piece, target_color)) = captured {
-                    self.hash ^= ZOBRIST_KEYS.pieces[target_color as usize][target_piece as usize]
-                        [to as usize];
+                    self.hash ^= ZOBRIST_KEYS.pieces[target_color as usize][target_piece as usize][to as usize];
+                    move_idx[0].push((target_color as usize * 64 * 6) + (target_piece as usize * 64) + to as usize);
                 }
+                move_idx[0].push((color as usize * 64 * 6) + (Piece::Pawn as usize * 64) + from as usize);
+                move_idx[1].push((color as usize * 64 * 6) + (promotion as usize * 64) + to as usize);
 
                 captured
             }
@@ -201,6 +223,9 @@ impl MakeMove for Position {
 
                 // Update en_passant hash
                 self.hash ^= ZOBRIST_KEYS.en_passant[enpass_sq as usize];
+
+                move_idx[0].push((color as usize * 64 * 6) + (Piece::Pawn as usize * 64) + from as usize);
+                move_idx[1].push((color as usize * 64 * 6) + (Piece::Pawn as usize * 64) + to as usize);
 
                 captured
             }
@@ -225,7 +250,7 @@ impl MakeMove for Position {
             self.fullmove_number += 1;
         }
 
-        Ok(captured)
+        Ok((captured, move_idx))
     }
 
     fn make_null_move(&mut self) {

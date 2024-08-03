@@ -1,5 +1,7 @@
 use std::{
-    mem::MaybeUninit, sync::{atomic::Ordering, Arc}, time::Instant
+    mem::MaybeUninit,
+    sync::{atomic::Ordering, Arc},
+    time::Instant,
 };
 
 use sdk::position::Position;
@@ -14,7 +16,7 @@ use super::{
     MATE_VALUE,
 };
 
-use crate::engine::{eval::evaluation_table::EvaluationTable, search::STOPPED};
+use crate::engine::{eval::evaluation_table::EvaluationTable, nn::DenseNetwork, search::STOPPED};
 use crate::engine::{options::Options, search::MAX_PLY};
 use move_gen::r#move::Move;
 pub const INF: i32 = 1_000_000;
@@ -55,6 +57,7 @@ pub struct SearchData {
     pub time_control: Arc<TimeControl>,
     pub age: usize,
     pub current_move: MaybeUninit<Move>,
+    pub dense: DenseNetwork,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -80,19 +83,9 @@ impl Search {
         }
     }
 
-    pub fn search(&mut self, position: &Position) {
+    pub fn search(&mut self, position: &Position, dense: DenseNetwork) {
         let mut threads = vec![];
         let threads_cnt = self.engine_options.threads;
-
-        // let result = self.rng.gen::<f64>();
-
-        // if result < 0.19 {
-        //     println!("nnrandom_depth_debug: 1");
-        //     self.options.depth = Some(11);
-        // } else {
-        //     println!("nnrandom_depth_debug: 0");
-        //     self.options.depth = Some(8);
-        // }
 
         for id in 0..threads_cnt {
             let data = SearchData {
@@ -109,6 +102,7 @@ impl Search {
                 counter_moves: vec![vec![None; MAX_PLY]; 2],
                 pair_moves: vec![vec![None; MAX_PLY]; 2],
                 current_move: MaybeUninit::uninit(),
+                dense: dense.clone()
             };
 
             let mut thread = SearchThread {
@@ -136,20 +130,23 @@ impl SearchThread {
     pub fn go(&mut self, position: &Position) {
         let is_prime_thread = self.id == 0;
         let (mut alpha, mut beta) = (DEFAULT_ALPHA, DEFAULT_BETA);
-
+        self.data.dense.init_acc(position);
         let mut best_move = None;
         for depth in 1..=self.depth {
             if self.data.stopped() {
                 break;
             }
             self.data.reset();
-            let mut best_score = self.data.negamax(position, alpha, beta, depth);
-
+            // self.data.dense.save_acc();
+            let mut best_score = self.data.negamax(position, alpha, beta, depth, [Vec::<usize>::new(), Vec::<usize>::new()]);
+            // self.data.dense.forget_acc();
             // Try full search if aspiration window failed
             if best_score <= alpha || best_score >= beta {
                 alpha = DEFAULT_ALPHA;
                 beta = DEFAULT_BETA;
-                best_score = self.data.negamax(position, alpha, beta, depth);
+                self.data.dense.save_acc();
+                best_score = self.data.negamax(position, alpha, beta, depth, [Vec::<usize>::new(), Vec::<usize>::new()]);
+                self.data.dense.forget_acc();
             }
 
             // Adjust aspiration window

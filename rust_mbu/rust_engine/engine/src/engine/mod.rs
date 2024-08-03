@@ -53,15 +53,16 @@ lazy_static::lazy_static! {
     pub static ref MOVE_GEN: MoveGen = MoveGen::default();
 }
 
-use rand::prelude::*;
 use rand::distributions::WeightedIndex;
+use rand::prelude::*;
 use std::time::Instant;
+use move_gen::r#move::{Move, MoveKind};
+use sdk::square::Square;
 
 pub mod eval;
+pub mod nn;
 pub mod options;
 pub mod search;
-pub mod nn;
-
 
 pub struct Engine {
     pub root_pos: Position,
@@ -76,14 +77,36 @@ pub struct Engine {
     pub dist: WeightedIndex<i32>,
 }
 
-const CHOICES: &'static [f64] = &[0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99, 1.0];
-const WEIGHTS: &'static [i32] = &[76, 178, 234, 264, 248, 271, 263, 298, 254, 284, 280, 259, 294, 282, 277, 267, 255, 261, 261, 254, 274, 229, 248, 266, 206, 219, 211, 223, 241, 223, 177, 175, 187, 201, 172, 157, 170, 153, 148, 134, 138, 165, 148, 157, 134, 132, 119, 144, 157, 126, 119, 115, 109, 100, 86, 90, 114, 105, 86, 86, 102, 97, 96, 89, 85, 80, 93, 73, 78, 80, 75, 73, 75, 81, 66, 64, 61, 55, 53, 60, 52, 60, 63, 55, 42, 45, 36, 28, 37, 38, 32, 23, 11, 22, 9, 10, 2, 0, 1, 0, 0];
+const CHOICES: &'static [f64] = &[
+    0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15,
+    0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31,
+    0.32, 0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.46, 0.47,
+    0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63,
+    0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79,
+    0.8, 0.81, 0.82, 0.83, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95,
+    0.96, 0.97, 0.98, 0.99, 1.0,
+];
+// const WEIGHTS: &'static [i32] = &[76, 178, 234, 264, 248, 271, 263, 298, 254, 284, 280, 259, 294, 282, 277, 267, 255, 261, 261, 254, 274, 229, 248, 266, 206, 219, 211, 223, 241, 223, 177, 175, 187, 201, 172, 157, 170, 153, 148, 134, 138, 165, 148, 157, 134, 132, 119, 144, 157, 126, 119, 115, 109, 100, 86, 90, 114, 105, 86, 86, 102, 97, 96, 89, 85, 80, 93, 73, 78, 80, 75, 73, 75, 81, 66, 64, 61, 55, 53, 60, 52, 60, 63, 55, 42, 45, 36, 28, 37, 38, 32, 23, 11, 22, 9, 10, 2, 0, 1, 0, 0];
+
+// Dense 0 hidden layers
+// const WEIGHTS: &'static [i32] = &[
+//     0, 0, 0, 0, 1, 6, 15, 24, 34, 47, 66, 77, 80, 114, 161, 184, 197, 234, 242, 274, 363, 282, 253,
+//     352, 318, 393, 379, 440, 440, 409, 409, 393, 383, 421, 400, 372, 390, 415, 359, 294, 311, 285,
+//     332, 291, 264, 309, 298, 267, 272, 315, 243, 229, 206, 191, 192, 173, 148, 121, 104, 108, 100,
+//     66, 85, 87, 65, 51, 31, 25, 50, 18, 17, 21, 7, 4, 8, 3, 1, 2, 4, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0,
+//     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+// ];
+
+// Dense 1 hidden layer
+const WEIGHTS: &'static [i32] = &[
+    450, 437, 456, 366, 335, 310, 292, 270, 218, 242, 228, 225, 180, 189, 184, 194, 165, 157, 164, 166, 139, 132, 122, 119, 117, 116, 104, 115, 118, 93, 103, 108, 117, 113, 117, 88, 92, 92, 97, 104, 85, 118, 73, 89, 105, 61, 90, 78, 76, 85, 69, 72, 68, 87, 70, 79, 93, 83, 69, 79, 63, 83, 80, 60, 74, 80, 69, 88, 85, 75, 69, 88, 87, 82, 66, 77, 73, 79, 79, 87, 103, 77, 84, 89, 82, 90, 91, 95, 97, 102, 85, 97, 91, 103, 118, 125, 116, 141, 94, 60, 0
+];
 
 impl Default for Engine {
     fn default() -> Self {
         let rng = rand::thread_rng();
         let dist: WeightedIndex<i32> = WeightedIndex::new(WEIGHTS).unwrap();
-        let dense = DenseNetwork::new("weights/0l");
+        let dense = DenseNetwork::new("../weights/0l/");
 
         Self {
             root_pos: Default::default(),
@@ -126,7 +149,7 @@ impl Engine {
 
             loop {
                 let command = rx.recv().expect("Failed to receive command");
-                
+
                 if matches!(command, Command::Quit) {
                     break;
                 }
@@ -149,14 +172,44 @@ impl Engine {
         let eval_table = self.evaluation_table.clone();
         let engine_options = self.options;
         let age = self.age;
+        let d = self.dense.clone();
+        
+        self.dense.init_acc(&pos);
+        // let mv = Move::new(Square::E2, Square::E4, None, &MoveKind::DoublePawnPush);
+        // let (new_pos, move_idx) = {
+        //     let mut child_pos = pos.clone();
+        //     let result = child_pos.make_move(&mv);
+        //     (child_pos, result.ok().unwrap().1)
+        // };
 
-        // let now = Instant::now();
 
-        let input = pos.to_nn_input();
-        let result = self.dense.forward(&input).get(0).unwrap().clone();
+        // let mut now = Instant::now();
 
-        let result = CHOICES[self.dist.sample(&mut self.rng)];
-        // println!("Elapsed: {:.2?}", now.elapsed());
+        let mut result = self.dense.forward(&pos).get(0).unwrap().clone();
+
+        // let mut result = CHOICES[self.dist.sample(&mut self.rng)];
+        // println!("Forward time: {:.2?}", now.elapsed());
+        // println!("Forward result: {}", result);
+
+        // now = Instant::now();
+
+        // result = self.dense.update(move_idx);
+
+        // println!("Update time: {:.2?}", now.elapsed());
+        // println!("Update result: {}", result);
+
+
+        // now = Instant::now();
+
+        // result = self.dense.forward(&new_pos).get(0).unwrap().clone();
+
+        // println!("New forward time: {:.2?}", now.elapsed());
+        // println!("New forward result: {}", result);
+
+
+        if result <= 0.5 {
+            result = 0.0;
+        }
 
         let time_left = if is_white {
             options.wtime.unwrap_or(0)
@@ -176,9 +229,9 @@ impl Engine {
                 rep_table,
                 transposition_table,
                 eval_table,
-                age
+                age,
             );
-            search.search(&pos);
+            search.search(&pos, d);
         };
 
         thread::Builder::new()

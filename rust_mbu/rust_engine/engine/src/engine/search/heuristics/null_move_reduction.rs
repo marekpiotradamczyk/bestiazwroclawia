@@ -1,7 +1,7 @@
 use move_gen::r#move::MakeMove;
 use sdk::position::Position;
 
-use crate::engine::search::parallel::SearchData;
+use crate::engine::{nn::DenseNetwork, search::parallel::SearchData};
 
 pub const NULL_MOVE_DEPTH_REDUCTION: usize = 2;
 
@@ -15,7 +15,7 @@ impl SearchData {
         beta: i32,
         depth: usize,
         in_check: bool,
-        ply: usize,
+        ply: usize
     ) -> bool {
         if !is_null_move_reduction_applicable(node, depth, in_check, ply) {
             return false;
@@ -29,12 +29,17 @@ impl SearchData {
 
         self.repetition_table.push(&child, false);
         self.ply += 1;
+
+        self.dense.save_acc();
         let score = -self.negamax(
             &child,
             -beta,
             -beta + 1,
             depth - NULL_MOVE_DEPTH_REDUCTION - 1,
+            [Vec::<usize>::new(), Vec::<usize>::new()]
         );
+        self.dense.forget_acc();
+        
         self.ply -= 1;
         self.repetition_table.decrement();
 

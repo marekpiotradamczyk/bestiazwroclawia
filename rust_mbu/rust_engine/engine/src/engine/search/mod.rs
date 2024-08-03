@@ -4,7 +4,7 @@ use std::{
 };
 
 use move_gen::r#move::{MakeMove, Move};
-use sdk::position::Position;
+use sdk::position::{tests::P, Position};
 
 pub mod draw;
 pub mod heuristics;
@@ -37,8 +37,7 @@ use self::{
 use lazy_static::lazy_static;
 
 use super::{
-    eval::{evaluate, PIECE_VALUES},
-    MOVE_GEN,
+    eval::{evaluate, PIECE_VALUES}, MOVE_GEN
 };
 
 lazy_static! {
@@ -56,10 +55,24 @@ pub struct BestMove {
 }
 
 impl SearchData {
-    fn negamax(&mut self, node: &Position, mut alpha: i32, mut beta: i32, depth: usize) -> i32 {
+    fn negamax(&mut self, node: &Position, mut alpha: i32, mut beta: i32, depth: usize, move_idx: [Vec<usize>; 2]) -> i32 {
         if self.stopped() {
             return 0;
         }
+
+        // let result = self.dense.update(move_idx.clone());
+        // let result2 = self.dense.forward(node);
+        // let err = (result1 - result2[0]).abs();
+
+        // if err > 0.000001 {
+        //     println!("{}, {}, err = {}", result1, result2[0], (result1 - result2[0]).abs());
+        // }
+
+        // if result > 0.5 && depth < 100 {
+        //     depth += 1;
+        // }
+
+
         // Initialize PV table
         self.pv.init_length(self.ply);
 
@@ -202,11 +215,12 @@ impl SearchData {
             let mut extend = 0;
 
             // Make a move
-            let child_pos = {
+            let (child_pos, move_idx) = {
                 let mut child_pos = node.clone();
-                let _ = child_pos.make_move(child);
-                child_pos
+                let move_idx = child_pos.make_move(child).unwrap().1;
+                (child_pos, move_idx)
             };
+
             self.current_move = MaybeUninit::new(*child);
 
             let gives_check = MOVE_GEN.is_check(&child_pos);
@@ -275,7 +289,7 @@ impl SearchData {
             }
 
             // Search move
-            let score = self.search_move(&child_pos, alpha, beta, depth, reduce, extend, pv_node);
+            let score = self.search_move(&child_pos, alpha, beta, depth, reduce, extend, pv_node, move_idx);
 
             self.repetition_table.decrement();
             self.ply -= 1;
@@ -343,7 +357,7 @@ impl SearchData {
         self.transposition_table
             .write(node.hash, alpha, best_move, depth, self.ply, flag, self.age);
 
-        // Make random move since no good moves were found 
+        // Make random move since no good moves were found
         // or the position has the same oucome no matter what
         if self.is_root() && move_list.len() > 0 && self.pv.best().is_none() {
             self.pv.push_pv_move(self.ply, move_list[0])
@@ -358,10 +372,11 @@ impl SearchData {
         child_pos: &Position,
         alpha: i32,
         beta: i32,
-        depth: usize,
+        mut depth: usize,
         reduce: usize,
         extend: usize,
         pv_node: bool,
+        move_idx: [Vec<usize>; 2]
     ) -> i32 {
         if self.stopped() {
             return 0;
@@ -371,16 +386,29 @@ impl SearchData {
 
         let final_depth = (depth + extend).saturating_sub(reduce + 1);
         // Do the PV search to check whether move is good or not
-        let mut score = -self.negamax(child_pos, -alpha - 1, -alpha, final_depth);
+
+        let result = self.dense.update(move_idx.clone());
+
+        if result > 0.7 && self.ply < 200 {
+            depth += 3;
+        }
+
+        self.dense.save_acc();
+        let mut score = -self.negamax(child_pos, -alpha - 1, -alpha, final_depth, move_idx.clone());
+        self.dense.forget_acc();
 
         // If we found potentailly better move at lower depth, search it with full depth
         if score > alpha && reduce > 0 {
-            score = -self.negamax(child_pos, -alpha - 1, -alpha, depth - 1);
+            self.dense.save_acc();
+            score = -self.negamax(child_pos, -alpha - 1, -alpha, depth - 1, move_idx.clone());
+            self.dense.forget_acc();
         }
 
         if score > alpha && score < beta && pv_node {
             // LMR failed, search normally with full depth
-            score = -self.negamax(child_pos, -beta, -alpha, depth - 1);
+            self.dense.save_acc();
+            score = -self.negamax(child_pos, -beta, -alpha, depth - 1, move_idx);
+            self.dense.forget_acc();
         }
 
         score
