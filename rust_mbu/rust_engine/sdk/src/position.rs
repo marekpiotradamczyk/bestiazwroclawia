@@ -208,13 +208,14 @@ impl Position {
         self.turn
     }
 
-    pub fn to_nn_input(&self) -> Array2<f64> {
+    pub fn to_nn_input(&self) -> Array2<f32> {
         let mut bits = Vec::with_capacity(12 * 64);
 
         for color in 0..2 {
             for piece in 0..6 {
+                println!("{}", self.pieces[color][piece].0);
                 for i in 0..64 {
-                    let bit = ((self.pieces[color][piece].0 >> i) & 1) as f64;
+                    let bit = ((self.pieces[color][piece].0 >> (63 - i)) & 1) as f32;
                     bits.push(bit);
                 }
             }
