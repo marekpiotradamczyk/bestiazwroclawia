@@ -1,1 +1,0 @@
-python3 play.py --engine1 ./testengines/morphebot_nntime_dense3 name=morphebot_nn --engine2 ./testengines/morphebot_nntime_random_dense3 name=morphebot_random --games 180 --start_elo 2500 --end_elo 2500 --time_control 60+0 --openings 90openings.epd --concurrency 4 --errors

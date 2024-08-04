@@ -13,7 +13,7 @@ from decimal import *
 from scipy.stats import kstest
 
 
-PATHS = ["morphe_nn.out", "morphe_random.out"]
+PATHS = [sys.argv[1] + "morphe_nn.out", sys.argv[1] + "morphe_random.out"]
 BOTNAMES = ["morphebot_nn", "morphebot_random"] 
 
 DepthInfo = namedtuple('Depth_info', ['inc', 'nodes'])
@@ -123,8 +123,8 @@ class GameInfo:
 
         for i, v in enumerate(self.move_history.values()):
             dist['moves'].append(i)
-            dist['relative'].append(sum(v.nodes) / nodes)
-            dist['absolute'].append(sum(v.nodes))
+            dist['relative'].append(v.nodes[-1] / nodes)
+            dist['absolute'].append(v.nodes[-1])
             dist['inc'].append(v.inc)
         
         return dist
@@ -172,7 +172,7 @@ def parse_games(path, botname):
     games = []
     dist  = []
     game_info = GameInfo(None, None, None, None)
-    pgn_provider = PGNProvider('../games.pgn')
+    pgn_provider = PGNProvider(sys.argv[1] + 'games.pgn')
     game = None
     n = 0
     for line in open(path):
@@ -313,9 +313,9 @@ def plot_single_games(start, end):
     fig.show()
 
 
-plot_single_games(int(sys.argv[1]), int(sys.argv[2]))
+plot_single_games(int(sys.argv[2]), int(sys.argv[3]))
 
-fig = px.histogram(nn_dist, nbins=100, title="Distribution of morphebot output frequencies with using logistic regression")
+fig = px.histogram(nn_dist, nbins=100, title="Distribution of morphebot output frequencies - dense1")
 fig.show()
 
 fig = px.histogram(random_dist, nbins=100, title="Distribution of morphebot output frequencies with using random")

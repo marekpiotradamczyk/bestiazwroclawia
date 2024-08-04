@@ -7,10 +7,10 @@ use sdk::position::Position;
 
 #[derive(Clone)]
 pub struct DenseNetwork {
-    weights: Vec<Array2<f64>>,
-    biases: Vec<Array1<f64>>,
+    weights: Vec<Array2<f32>>,
+    biases: Vec<Array1<f32>>,
     layers: usize,
-    acc: Vec<Array1<f64>>,
+    acc: Vec<Array1<f32>>,
     last_pos: Option<Position>,
 
 }
@@ -53,20 +53,20 @@ impl DenseNetwork {
         }
     }
 
-    fn step_with_relu(&self, x: &Array2<f64>, w: &Array2<f64>, b: &Array1<f64>) -> Array2<f64> {
+    fn step_with_relu(&self, x: &Array2<f32>, w: &Array2<f32>, b: &Array1<f32>) -> Array2<f32> {
         let z = x.dot(&w.t()) + b;
         z.mapv(|v| v.max(0.0))
     }
 
-    fn step_with_sigmoid(&self, x: &Array2<f64>, w: &Array2<f64>, b: &Array1<f64>) -> Array2<f64> {
+    fn step_with_sigmoid(&self, x: &Array2<f32>, w: &Array2<f32>, b: &Array1<f32>) -> Array2<f32> {
         let z = x.dot(&w.t()) + b;
         z.mapv(|v| 1.0 / (1.0 + (-v).exp()))
     }
 
-    pub fn forward(&mut self, x: &Position) -> Array1<f64> {
+    pub fn forward(&mut self, x: &Position) -> Array1<f32> {
         self.last_pos = Some(x.clone());
         let mut a = x.to_nn_input();
-
+        
         for i in 0..self.layers - 1 {
             a = self.step_with_relu(&a, &self.weights[i], &self.biases[i]);
         }
@@ -78,7 +78,7 @@ impl DenseNetwork {
         result.column(0).to_owned()
     }
 
-    pub fn update(&mut self, move_idx: [Vec<usize>; 2]) -> f64 {
+    pub fn update(&mut self, move_idx: [Vec<usize>; 2]) -> f32 {
 
         let last_idx = self.acc.len()-1;
 

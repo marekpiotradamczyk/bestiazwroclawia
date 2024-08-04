@@ -213,7 +213,6 @@ impl Position {
 
         for color in 0..2 {
             for piece in 0..6 {
-                println!("{}", self.pieces[color][piece].0);
                 for i in 0..64 {
                     let bit = ((self.pieces[color][piece].0 >> (63 - i)) & 1) as f32;
                     bits.push(bit);

@@ -86,13 +86,12 @@ impl SearchData {
 
         // If we can't win the game, the opponent is guaranteed at least a draw
         if !can_win(node, node.turn) {
-            beta = i32::max(beta, DRAW_SCORE);
-        }
+            beta = i32::max(beta, DRAW_SCORE);        }
 
         // If enemy can't win the game, we are guaranteed at least a draw
+        // and the enemy cant' get more than a draw
         if !can_win(node, node.turn.enemy()) {
-            alpha = i32::max(alpha, DRAW_SCORE);
-        }
+            alpha = i32::max(alpha, DRAW_SCORE);        }
 
         // Prune mate distance
         // If we can see mate, we don't need to search further
