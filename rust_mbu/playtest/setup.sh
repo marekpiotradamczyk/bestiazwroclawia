@@ -6,7 +6,7 @@ echo '[+] Installing c-chess-cli (chess arena client)'
 python3 make.py
 popd
 
-cp ../rust_engine/target/release/morphebot .
+cp ../rust_engine/target/release/morphebot $1
 cp ../../nn/stockfish/stockfish* stockfish
 
 echo '[+] All done.'

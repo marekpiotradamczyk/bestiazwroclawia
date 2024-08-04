@@ -213,7 +213,6 @@ def countup_avg(games):
     rdist = [0 for i in range(120)]
     adist = [0 for i in range(120)]
 
-
     for game in games:
         ainc += game.avg_inc()
         anodes += game.avg_nodes()
@@ -323,13 +322,11 @@ fig = px.histogram(random_dist, nbins=100, title="Distribution of morphebot outp
 fig.show()
 
 
-def get_distribution(dist):
-    d = [0 for i in range(101)]
-
-    for v in dist:
-        idx = int(Decimal(v) * 100)
-        d[idx] += 1
-
+def get_distribution(pred):
+    d = np.zeros(101)
+    pred = np.array(pred).astype(np.double)
+    pred = (pred * 100).astype(np.int32)
+    np.add.at(d, pred, 1)
     return d
 
 nnd = np.array(get_distribution(nn_dist))
@@ -338,7 +335,9 @@ rnd = np.array(get_distribution(random_dist))
 samples = sum(nnd)
 
 print(kstest(nnd, rnd))
-print(get_distribution(nn_dist))
+print(get_distribution(nn_dist).sum())
+
+
 
 # ps = nnd / samples
 
