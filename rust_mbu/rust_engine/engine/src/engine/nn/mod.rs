@@ -34,6 +34,8 @@ impl DenseNetwork {
 
         let mut paths: Vec<_> = fs::read_dir(path).unwrap().map(|r| r.unwrap()).collect();
 
+        paths.retain(|x| x.path().file_name().unwrap().to_str().unwrap().starts_with("model"));
+
         paths.sort_by_key(|dir| dir.path());
 
         let l = paths.len() / 2;

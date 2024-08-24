@@ -30,6 +30,8 @@ use crate::{
 };
 use move_gen::{generators::movegen::MoveGen, r#move::MakeMove};
 use nn::DenseNetwork;
+use nn::readcsv::load_array_from_csv;
+
 use sdk::{
     fen::Fen,
     position::{Color, Position},
@@ -56,6 +58,7 @@ lazy_static::lazy_static! {
 use rand::prelude::*;
 use rand::distributions::WeightedIndex;
 use std::time::Instant;
+use std::env;
 
 pub mod eval;
 pub mod options;
@@ -77,25 +80,19 @@ pub struct Engine {
 }
 
 const CHOICES: &'static [f32] = &[0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99, 1.0];
-const WEIGHTS: &'static [i32] = &[54692, 64927, 62216, 57447, 54019, 50586, 47454, 44499, 42058,
-40116, 37963, 35939, 34605, 33103, 31964, 30435, 29534, 28399,
-27521, 26784, 25912, 24643, 24139, 23686, 22802, 22387, 21323,
-21080, 20605, 20408, 19830, 19589, 18669, 18432, 18244, 17903,
-17492, 16977, 16624, 16540, 16039, 15858, 15501, 15542, 15385,
-14876, 14796, 14707, 14292, 14176, 14108, 13828, 13690, 13466,
-13468, 13226, 13135, 12847, 12686, 12795, 12660, 12619, 12351,
-12583, 12179, 11885, 12225, 12064, 12099, 11975, 11898, 11734,
-11714, 11674, 11676, 11692, 11609, 11716, 11735, 11624, 11771,
-11976, 11732, 11828, 11961, 11858, 12051, 11861, 12139, 12093,
-12396, 12601, 12511, 12701, 12590, 12567, 12435, 11917, 10152,
- 5181,     0];
 
 impl Default for Engine {
     fn default() -> Self {
-        let rng = rand::thread_rng();
-        let dist: WeightedIndex<i32> = WeightedIndex::new(WEIGHTS).unwrap();
-        let dense = DenseNetwork::new("../weights/1l/83/");
+        let args: Vec<String> = env::args().collect();
+        let mut dist_path = args[1].clone();
+        dist_path.push_str("dist.csv");
+        let weights = load_array_from_csv(&dist_path);
 
+        let rng = rand::thread_rng();
+        let dist: WeightedIndex<i32> = WeightedIndex::new(weights.unwrap()).unwrap();
+        let dense = DenseNetwork::new(args[1].as_str());
+
+        // let dense = DenseNetwork::default();
         Self {
             root_pos: Default::default(),
             repetition_table: Default::default(),
@@ -165,17 +162,22 @@ impl Engine {
 
         let result = self.dense.forward(&pos).get(0).unwrap().clone();
 
-        let result = CHOICES[self.dist.sample(&mut self.rng)];
+        // let result = CHOICES[self.dist.sample(&mut self.rng)];
         // println!("Elapsed: {:.2?}", now.elapsed());
 
-        let time_left = if is_white {
-            options.wtime.unwrap_or(0)
-        } else {
-            options.btime.unwrap_or(0)
-        };
+        // let time_left = if is_white {
+        //     options.wtime.unwrap_or(0)
+        // } else {
+        //     options.btime.unwrap_or(0)
+        // };
 
-        let limit = (time_left as f32 / 30.0).max(1.0) * (1.0 + result);
-        options.movetime = Some(limit as isize);
+        // if result < 0.2 {
+        //     options.depth = Some(12);
+        // } else {
+        //     let limit = (time_left as f32 / (200.0 - (self.age as f32))).max(1.0) * (2.0 - result);
+        //     options.movetime = Some(limit as isize);
+        // }
+
         println!("depth_debug: {}", result);
 
         let run = move || {

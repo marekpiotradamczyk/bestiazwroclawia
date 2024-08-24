@@ -6,6 +6,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import chess.pgn
 import io
+import os
 import sys
 import math
 import numpy as np
@@ -110,7 +111,6 @@ class GameInfo:
 
     def sum_nodes(self):
         nodes = 0
-
         for v in self.move_history.values():
             if len(v.nodes) > 0:
                 nodes += v.nodes[-1]
@@ -122,9 +122,11 @@ class GameInfo:
         dist = {'moves' : [], 'relative' : [], 'absolute' : [], 'inc' : []}
 
         for i, v in enumerate(self.move_history.values()):
+            max_n = v.nodes[-1] if len(v.nodes) > 0 else 0
+
             dist['moves'].append(i)
-            dist['relative'].append(v.nodes[-1] / nodes)
-            dist['absolute'].append(v.nodes[-1])
+            dist['relative'].append(max_n / nodes)
+            dist['absolute'].append(max_n)
             dist['inc'].append(v.inc)
         
         return dist
@@ -157,7 +159,8 @@ class GameInfo:
         outcome = self.board.outcome(claim_draw=True)
         result = "" if outcome is None else outcome.result()
         termination = "Rules infraction" if outcome is None else outcome.termination
-        return f"""{self.n}. {self.side_str}, {result}, {termination}, winner: {self.is_winner()}<br>{millify(self.sum_nodes())}"""
+        return f"Odwiedzone węzły: {self.sum_nodes()}"
+        # return f"""{self.n}. {self.side_str}, {result}, {termination}, winner: {self.is_winner()}<br>{millify(self.sum_nodes())}"""
 
     
     def __str__(self):
@@ -247,12 +250,12 @@ def add_games(games):
 
 games_nn, nn_dist = parse_games(PATHS[0], BOTNAMES[0])
 added_nn = countup_avg(games_nn)
-print(f"{PATHS[0]}  mean inc: {added_nn[0]}, mean nodes: {added_nn[1]}")
+# print(f"{PATHS[0]}  mean inc: {added_nn[0]}, mean nodes: {added_nn[1]}")
     
 
 games_random, random_dist = parse_games(PATHS[1], BOTNAMES[1])
 added_random = countup_avg(games_random)
-print(f"{PATHS[1]}  mean inc: {added_random[0]}, mean nodes: {added_random[1]}")
+# print(f"{PATHS[1]}  mean inc: {added_random[0]}, mean nodes: {added_random[1]}")
 
 # df = pd.DataFrame({'move' : list(range(max(len(added_nn[2]), len(added_random[2])))),
 #     'nn_relative' : added_nn[2], 'random_relative' : added_random[2], 
@@ -306,20 +309,24 @@ def plot_single_games(start, end):
         k += 1
 
     fig.update_layout(
-        title_text="Computed nodes and increases per move",
-        height=400*(end-start)
+        # title_text="Computed nodes and increases per move",
+        showlegend=False,
+        height=400*(end-start),
+        width = 1200
     )
+
+    # fig.write_image("morphe_5M_5l_vs_blank.svg")
 
     fig.show()
 
 
 plot_single_games(int(sys.argv[2]), int(sys.argv[3]))
 
-fig = px.histogram(nn_dist, nbins=100, title="Distribution of morphebot output frequencies - dense1")
-fig.show()
+# fig = px.histogram(nn_dist, nbins=101)
+# fig.show()
 
-fig = px.histogram(random_dist, nbins=100, title="Distribution of morphebot output frequencies with using random")
-fig.show()
+# fig = px.histogram(random_dist, nbins=101)
+# fig.show()
 
 
 def get_distribution(pred):
@@ -334,10 +341,19 @@ rnd = np.array(get_distribution(random_dist))
 
 samples = sum(nnd)
 
-print(kstest(nnd, rnd))
+
+
+normalized_path = os.path.normpath(sys.argv[1])
+parts = normalized_path.split(os.sep)
+path_part = os.path.join(*parts[1:]) 
+full_path = '/home/jan/bestiazwroclawia/rust_mbu/playtest/testengines/' + path_part + '/dist.csv'
+
+
+# pd.DataFrame(nnd.astype(np.uint32)).to_csv(full_path, header=False, index=False)
+
+# print(normalized_path)
+print(kstest(nnd, rnd).pvalue)
 print(get_distribution(nn_dist).sum())
-
-
 
 # ps = nnd / samples
 

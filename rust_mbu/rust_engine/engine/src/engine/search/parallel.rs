@@ -84,16 +84,6 @@ impl Search {
         let mut threads = vec![];
         let threads_cnt = self.engine_options.threads;
 
-        // let result = self.rng.gen::<f64>();
-
-        // if result < 0.19 {
-        //     println!("nnrandom_depth_debug: 1");
-        //     self.options.depth = Some(11);
-        // } else {
-        //     println!("nnrandom_depth_debug: 0");
-        //     self.options.depth = Some(8);
-        // }
-
         for id in 0..threads_cnt {
             let data = SearchData {
                 nodes_evaluated: 0,
@@ -201,7 +191,7 @@ impl SearchThread {
                 if let Some(best) = self.data.pv.best() {
                     println!("bestmove {best}");
                 } else {
-                    println!("bestmove a1a1");
+                    println!("bestmove 0000");
                 }
             }
         }

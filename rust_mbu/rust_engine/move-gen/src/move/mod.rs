@@ -59,7 +59,7 @@ impl fmt::Display for Move {
 
 impl MakeMove for Position {
     fn make_move(&mut self, mv: &Move) -> Result<Option<Piece>> {
-        let from = mv.from();
+        let from: Square = mv.from();
         let to = mv.to();
         let color = self.turn;
 

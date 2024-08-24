@@ -3,6 +3,11 @@ extern crate csv;
 
 use ndarray::{Array1, Array2};
 use std::fs::File;
+use std::error::Error;
+
+use csv::ReaderBuilder;
+const CHOICES_NUMBER: usize = 101;
+
 
 pub fn read_array2_from_csv(file_path: Option<&str>) -> Array2<f32> {
     let file = read_csv(file_path.unwrap());
@@ -59,4 +64,25 @@ fn read_csv(file_path: &str) -> File {
         Ok(file) => return file,
         Err(_error) => panic!("File problem"),
     };
+}
+
+pub fn load_array_from_csv(filename: &str) -> Result<[i32; CHOICES_NUMBER], Box<dyn Error>> {
+    // Open the CSV file
+    let mut rdr = ReaderBuilder::new().has_headers(false).from_path(filename)?;
+
+    // Initialize the static array with zeros
+    let mut array = [0; CHOICES_NUMBER];
+
+    // Populate the array with data from the CSV file
+    for (i, result) in rdr.records().enumerate() {
+        let record = result?;
+        if i < CHOICES_NUMBER {
+            // Parsing the first field of the record as i32
+            array[i] = record[0].parse::<i32>()?;
+        } else {
+            break;
+        }
+    }
+
+    Ok(array)
 }

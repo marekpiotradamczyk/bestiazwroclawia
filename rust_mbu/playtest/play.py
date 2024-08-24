@@ -83,7 +83,7 @@ def setup_game(args, first_white=True):
     ]
 
     engine1 = ["-engine",f"cmd={args.engine1[0]}",*args.engine1[1:]]
-    engine2 = ["-engine", f"cmd={args.engine2[0]}", *args.engine2[1:]]
+    engine2 = ["-engine",f"cmd={args.engine2[0]}", *args.engine2[1:]]
 
     rest = ["-games", str(args.games), 
             "-rounds", str(rounds), 
