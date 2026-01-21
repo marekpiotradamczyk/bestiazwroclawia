@@ -139,6 +139,23 @@ int eg_king_table[64] = {
     -27, -11,   4,  13,  14,   4,  -5, -17,
     -53, -34, -21, -11, -28, -14, -24, -43
 };
+
+int KING_SAFETY_TABLE[150] = {
+    0, 0, 0, 1, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 36, 42, 48, 55, 62, 70, 80, 90, 100,
+    110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290,
+    300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480,
+    490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 650, 650, 650,
+    650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650,
+    650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650,
+    650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650, 650,
+    650, 650, 650, 650, 650, 650, 650, 650, 650, 650,
+};
+
+const int PIECE_ATTACK_UNITS[6] = {0, 2, 2, 3, 5, 0};
+const int BONUS_FOR_UNIT = 15;
+const int MAX_BONUS_FOR_UNIT = 60;
+
+
 // clang-format on
 int *mg_pesto_table[6] = {mg_pawn_table, mg_knight_table, mg_bishop_table,
                           mg_rook_table, mg_queen_table,  mg_king_table};
@@ -220,12 +237,106 @@ I16 pieceSquareHeuristic(const Board &board) {
          (middlegame * phase + endgame * (maxPhase - phase)) / maxPhase;
 }
 
+//////////////////////////////////////////////////////////////
+/// TODO:
+/// both this functions can be used to populate lookup tables like in rust version
+/// made to complete Issue #31
+Bitboard squares_near_king(Square king_sq, Color king_color)
+{
+    Bitboard squares = attacks::king(king_sq);
+    Direction dir = king_color == Color::WHITE ? Direction::NORTH : Direction::SOUTH;
+    Bitboard shifted = squares;
+    switch (dir) {
+        case Direction::NORTH:
+            shifted = shifted << 8;
+            break;
+        case Direction::SOUTH:
+            shifted = shifted >> 8;
+            break;
+        default:
+            break;
+    }
+    return squares |= shifted;
+}
+
+/// @brief function to generate squares near king for both kings and all squares, 0 - WHITE, 1 - BLACK
+/// @return 
+std::vector<std::vector<Bitboard>> generate_square_close_to_king()
+{
+    std::vector<std::vector<Bitboard>> squares(2, std::vector<Bitboard> (10, 0));  
+    Color color[] = {Color::WHITE, Color::BLACK};
+    for (int c = 0; c < 2; c++) 
+        for(int i=0; i<64; i++)
+            squares[c][i] = squares_near_king(i, c);
+    return squares;
+}
+//////////////////////////////////////////////////////////////
+
+
+I16 calc_king_safety_units(const Board &board, Color color)
+{
+    Square king_sq = board.kingSq(color);
+    Bitboard near_king = squares_near_king(king_sq, color);
+    int bonus = 0;
+    for(Square sq : fromBitboard(near_king))
+    {
+        for(Square piece_sq : fromBitboard(attacks::attackers(board, ~color, sq)))
+        {
+            Piece piece = board.at(piece_sq);
+            bonus += PIECE_ATTACK_UNITS[piece.type()];
+        }
+    }
+
+    return bonus;
+}
+
+I16 pieces_close_to_king_count(const Board &board, Color color)
+{
+    Square king_sq = board.kingSq(color);
+    Bitboard near_king = squares_near_king(king_sq, color);
+    int friendly_pieces_count = 0;
+    int enemy_pieces_count = 0;
+    for (int j = 0; j < 6; j++) { // for every piece type
+        friendly_pieces_count += std::popcount((board.pieces(type[j], color) & near_king).getBits());
+        enemy_pieces_count    += std::popcount((board.pieces(type[j], ~color) & near_king).getBits());
+    }
+    friendly_pieces_count--; // friendly king can not be counted 
+
+    return friendly_pieces_count - enemy_pieces_count;
+}
+
+I16 calc_king_safety(const Board &board)
+{
+    I16 white_units = calc_king_safety_units(board, Color::WHITE);
+    I16 black_units = calc_king_safety_units(board, Color::BLACK);
+    int side_multiplier = board.sideToMove() == Color::WHITE ? 1 : -1;
+    return -(KING_SAFETY_TABLE[white_units] - KING_SAFETY_TABLE[black_units])*side_multiplier;
+}
+
+
+I16 bonus_for_pieces_close_to_king(const Board &board)
+{
+    I16 white_count = pieces_close_to_king_count(board, Color::WHITE);
+    I16 black_count = pieces_close_to_king_count(board, Color::BLACK);
+    int side_multiplier = board.sideToMove() == Color::WHITE ? 1 : -1;
+
+    return std::clamp(((white_count - black_count) * BONUS_FOR_UNIT), -MAX_BONUS_FOR_UNIT, MAX_BONUS_FOR_UNIT)*side_multiplier;
+}
+
+
+
+
 I16 heuristic(const Board &board) {
   // We might want to finetune this so that the engine focuses more on material
   // or more on piece activity
   const I16 materialMultiplier = 1;
   const I16 pieceSquareMultiplier = 1;
+  const I16 kingSafetyMultiplier = 1;
+  const I16 kingNearFriendsMultiplier = 1;
   return materialMultiplier * materialHeuristic(board) +
-         pieceSquareMultiplier * pieceSquareHeuristic(board);
+         pieceSquareMultiplier * pieceSquareHeuristic(board) + 
+         kingSafetyMultiplier * calc_king_safety(board) +
+         kingNearFriendsMultiplier * bonus_for_pieces_close_to_king(board);
 }
+
 } // namespace chess
